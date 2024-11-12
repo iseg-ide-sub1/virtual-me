@@ -1,7 +1,7 @@
 {
   "name": "virtual-me",
   "displayName": "virtual-me",
-  "description": "In-IDE data collection plugin",
+  "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
@@ -14,8 +14,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "virtual-me.helloWorld",
-        "title": "Hello World"
+        "command": "virtual-me.activate",
+        "title": "Virtuale Activate"
+      },
+      {
+        "command": "virtualme-me.savelog",
+        "title": "VirtualMe Save Log"
       }
     ]
   },

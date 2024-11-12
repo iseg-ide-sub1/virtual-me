@@ -1,71 +1,73 @@
 # virtual-me README
 
-This is the README for your extension "virtual-me". After writing up a brief description, we recommend including the following sections.
+A VS Code plugin for collecting and predicting developer action sequences in the IDE.
 
-## Features
+```
+? What type of extension do you want to create? New Extension (TypeScript)
+? What's the name of your extension? virtual-me
+? What's the identifier of your extension? virtual-me
+? What's the description of your extension? In-IDE data collection plugin
+? Initialize a git repository? Yes
+? Which bundler to use? webpack
+? Which package manager to use? npm
+```
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## 开发前准备
 
-For example if there is an image subfolder under your extension project workspace:
+1. 将仓库克隆到本地
 
-\!\[feature X\]\(images/feature-x.png\)
+2. 执行 `npm install` 安装项目依赖
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+3. 在编辑器中，打开 `src/extension.ts` 文件，然后按 `F5` 或者从命令面板运行 `Debug: Start Debugging`，这将编译并运行扩展程序在一个新的扩展开发主机窗口中
 
-## Requirements
+   > 如果发现修改了代码而没在插件中生效，可以先在控制台执行 `npm run watch` 再尝试运行
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## 开发记录
 
-## Extension Settings
+在更改项目源代码后请将修改内容记录到 [develop-log.md](./res/docs/develop-log.md) 中。
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## 文件说明
 
-For example:
+### /res
 
-This extension contributes the following settings:
+资源文件夹，用于保存项目相关的资源
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+#### /dataset
 
-## Known Issues
+数据集文件夹，用于保存收集的高质量数据
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+#### /docs
 
-## Release Notes
+用于保存项目文档
 
-Users appreciate release notes as you update your extension.
+- [develop-log.md](./res/docs/develop-log.md) 开发记录文档
+- [plugin-architecture.md](./res/docs/plugin-architecture.md) 插件架构文档
 
-### 1.0.0
+#### /raw
 
-Initial release of ...
+保存一些原始（非文本）内容
 
-### 1.0.1
+- [log-item.xmind](./res/raw/log-item.xmind) 事件类型数据结构的思维导图（用 `Xmind` 打开）
+- [log-item.png](./res/raw/log-item.png) 事件类型数据结构的思维导图的图片
 
-Fixed issue #.
+### /src
 
-### 1.1.0
+源代码文件夹
 
-Added features X, Y, and Z.
+- [extension.ts](./src/extension.ts) 插件入口文件，导出两个函数 `activate` 和 `deactivate`
 
----
+#### /types
 
-## Following extension guidelines
+保存数据结构声明文件
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+- [log-item.ts](./src/types/log-item.ts) 保存事件类型数据结构相关声明和实现
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+#### /utils
 
-## Working with Markdown
+保存工具函数
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+- [common.ts](./src/utils/common.ts) 常用函数
+- [context-process.ts](./src/utils/context-process.ts) 文本内容相关的处理函数
+- [file-process.ts](./src/utils/file-process.ts) 文件相关的处理函数
+- [terminal-process.ts](./src/utils/terminal-process.ts) 终端相关的处理函数
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
