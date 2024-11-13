@@ -14,11 +14,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "virtual-me.activate",
-        "title": "Virtuale Activate"
+        "command": "virtualme.activate",
+        "title": "VirtualMe Activate"
       },
       {
-        "command": "virtualme-me.savelog",
+        "command": "virtualme.savelog",
         "title": "VirtualMe Save Log"
       }
     ]
