@@ -82,3 +82,4 @@ export function saveLog(content: string, relPath: string = '/res/log', fileName 
     const filePath = path.join(saveDirectory, fileName)
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
 }
+

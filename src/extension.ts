@@ -1,11 +1,10 @@
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as log from './types/log-item'
+import * as logItem from './types/log-item'
 import * as common from './utils/common'
+import * as conextProcess from './utils/context-process'
 import * as pluginTest from './test/plugin-test'
 
-let logs: log.LogItem[] = []
+let logs: logItem.LogItem[] = []
 let saved: boolean = false
 export function activate(context: vscode.ExtensionContext) {
 
@@ -27,6 +26,12 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Log file has been saved!');
     })
     context.subscriptions.push(saveLogCommand);
+
+    /** 用光标选择文本内容 */
+	const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
+		// 待实现
+	})
+	context.subscriptions.push(selectTextWatcher)
 }
 
 export function deactivate() {
