@@ -25,7 +25,7 @@
 | 2-3  | 修改文件内容 | `EditTextDocument`   |          |          |
 | 2-4  | 重做文件内容 | `RedoTextDocument`   |          |          |
 | 2-5  | 撤销文件内容 | `UndoTextDocument`   |          |          |
-| 2-6  | 选中文本     | `SelectText`         |          |          |
+| 2-6  | 选中文本     | `SelectText`         | PZP      | YES      |
 | 2-7  | 查找文件内容 |                      |          | X        |
 | 2-8  | 替换文件内容 |                      |          | X        |
 | 2-9  | 重命名符号   |                      |          | X        |
@@ -49,6 +49,10 @@
 | 4-2  | 版本控制 |      |          | X        |
 
 ## 事件属性
+
+[log-item.xmind](../raw/log-item.xmind)
+
+![](../raw/log-item.png)
 
 ### 通用属性
 
@@ -148,14 +152,52 @@
 
 **触发条件：**鼠标、键盘、命令都可能触发该事件，仅仅移动光标，也会触发此事件
 
-**注意：**插件进行了处理，只有选择的文本内容不为空时才记录
+**注意：**
 
-**附加属性：**无
+1. 插件进行了处理，只有选择的文本内容不为空时才记录
+2. 如果选择的内容横跨多个工件，按整体进行计算（也就是层级中的工件需要同时包含选择内容的开始位置和结束位置）
+3. 为节省空间 `artifact.conext.after` 一定为空
+4. 在使用鼠标或键盘进行选择时，选择区域每扩大一次就会记录一次选中，这使得记录内容暴增，优化：当连续选择时，如果两次选择操作间隔小于1000毫秒，且上次选择内容是新选择内容的子集，那么删除上次选择记录
+
+**附加属性：**`context`
 
 **示例数据：**
 
 ```json
-
+{
+    "id": 17,
+    "timeStamp": "2024-11-13 22:04:27.317",
+    "eventType": "SelectText",
+    "artifact": {
+      "name": "Student",
+      "type": "Class",
+      "hierarchy": [
+        {
+          "name": "c:\\Users\\hiron\\Desktop\\Code\\testplus.cpp",
+          "type": "File"
+        },
+        {
+          "name": "Student",
+          "type": "Class"
+        }
+      ]
+    },
+    "context": {
+      "type": "Select",
+      "content": {
+        "before": "class Course{\r\n    private:\r\n        int course_id;\r\n        char course_name[20];\r\n    };",
+        "after": "class Course{\r\n    private:\r\n        int course_id;\r\n        char course_name[20];\r\n    };"
+      },
+      "start": {
+        "line": 7,
+        "character": 5
+      },
+      "end": {
+        "line": 11,
+        "character": 7
+      }
+    }
+  }
 ```
 
 ## 插件代码组织结构

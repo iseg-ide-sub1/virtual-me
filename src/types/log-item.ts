@@ -72,12 +72,13 @@ export enum ArtifactType {
     Unknown = "Unknown"
 }
 
-export enum ChangeType {
+export enum ContextType {
     Add = "Add",
     Delete = "Delete",
     Edit = "Edit",
     Redo = "Redo",
     Undo = "Undo",
+    Select = "Select",
     Unknown = "Unknown"
 }
 
@@ -97,7 +98,7 @@ export class Artifact {
 
 export class Context {
     constructor(
-        public type: ChangeType,
+        public type: ContextType,
         public content: {before: string, after: string},
         public start: {line: number, character: number},
         public end: {line: number, character: number}

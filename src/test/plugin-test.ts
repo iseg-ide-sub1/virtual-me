@@ -22,7 +22,7 @@ export function saveTest(){
             ]
         ),
         new logItem.Context( // 上下文，可选
-            logItem.ChangeType.Edit,
+            logItem.ContextType.Edit,
             {before: "a", after: "var_a"},
             {line: 10, character: 4},
             {line: 10, character: 8}

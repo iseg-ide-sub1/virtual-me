@@ -17,3 +17,5 @@
 
 - 创建 `src/test/plugin-test.ts`，可以在里面编写一些函数用于测试功能
 - 在 `common.ts` 中新增了保存文件的函数
+- 实现选中文本 `SelectText` 事件
+- `Context` 类的 `ChangeType` 属性修改为 `ContextType`，其中新增了 `Select` 标签
