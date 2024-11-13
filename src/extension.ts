@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // 测试LogItem的初始化和保存功能
     // 可以先去看看对应代码，无需使用时将下面注释掉
-    pluginTest.saveTest()
+    // pluginTest.saveTest()
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
@@ -38,16 +38,17 @@ export function activate(context: vscode.ExtensionContext) {
 		if (selection.isEmpty) return // 只有选择内容不为空才记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
-        if(new Date().getTime() - lastSelectStamp < 1000 && start.compareTo(lastSelectStart) <= 0 && end.compareTo(lastSelectEnd) >= 0){
+        if(new Date().getTime() - lastSelectStamp < 1000 && start.isBeforeOrEqual(lastSelectStart) && end.isAfterOrEqual(lastSelectEnd)){
             for(let i = logs.length - 1; i >= 0; i--) if(logs[i].id === lastSelectLogID){
                 // 在鼠标连续选择时会产生大量高度相似数据，采用此方法删除满足条件的记录
                 logs.splice(i, 1)
+                // console.log('delete log#', lastSelectLogID)
                 break
             }
         }
         const document = event.textEditor.document // 当前编辑的文件
         const log = await conextProcess.getLogItemFromSelectedText(document, start, end)
-        console.log('debug(log) =', log)
+        // console.log('debug(log) =', log)
         logs.push(log)
         lastSelectStamp = new Date().getTime()
         lastSelectStart = start
@@ -55,6 +56,16 @@ export function activate(context: vscode.ExtensionContext) {
         lastSelectLogID = log.id
 	})
 	context.subscriptions.push(selectTextWatcher)
+
+    /** 修改文件内容(新增、删除、修改、Redo、Undo) */
+	const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
+        // event.contentChanges 是一个数组，记录了每次修改文件的内容，数组为 0 时记录的是修改前的状态
+        // event.reason 是一个字符串，记录了修改的原因，可能是 Undo、Redo 和 Undefined
+        // https://code.visualstudio.com/api/references/vscode-api#TextDocumentChangeEvent
+        console.log(event)
+        console.log(event.document.getText())
+	})
+	context.subscriptions.push(changeTextDocumentWatcher)
 }
 
 export function deactivate() {

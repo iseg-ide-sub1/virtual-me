@@ -64,25 +64,20 @@ function getArtifactTypeFromSymbolKind(kind: vscode.SymbolKind): logItem.Artifac
     }
 }
 
-/**
- * 获取选择内容的层级
- * @param document 
- * @param position 
- * @returns 
- */
+
 export async function getArtifactFromSelectedText(
     document: vscode.TextDocument,
     start: vscode.Position,
     end: vscode.Position
 ):Promise<logItem.Artifact> {
     let hierarchy: logItem.Artifact[] = [
-        new logItem.Artifact(document.fileName, logItem.ArtifactType.File)
+        new logItem.Artifact(document.uri.toString(), logItem.ArtifactType.File)
     ]
     // 获取该文件的符号表
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', document.uri
     )
-    console.log('debug(symbols) =',symbols)
+    // console.log('debug(symbols) =',symbols)
     if(!symbols) return hierarchy[0] // 没有符号，直接返回
 
     let curSymbols = symbols // 当前层级的符号表
@@ -100,7 +95,7 @@ export async function getArtifactFromSelectedText(
         }
         if(!isFind) break // 没有找到，退出循环
     }
-    console.log('debug(hierarchy) =',hierarchy)
+    // console.log('debug(hierarchy) =',hierarchy)
     let artifact: logItem.Artifact = new logItem.Artifact(
         hierarchy[hierarchy.length - 1].name,
         hierarchy[hierarchy.length - 1].type,
@@ -109,6 +104,13 @@ export async function getArtifactFromSelectedText(
     return artifact
 }
 
+/**
+ * 从选中的文本中获取 LogItem 对象
+ * @param document 当前文本文件的文件对象
+ * @param start 选择开始位置
+ * @param end 选择结束位置
+ * @returns 返回 LogItem 对象
+ */
 export async function getLogItemFromSelectedText(
     document: vscode.TextDocument,
     start: vscode.Position,
