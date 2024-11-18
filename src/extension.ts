@@ -5,12 +5,8 @@ import * as conextProcess from './utils/context-process'
 import * as pluginTest from './test/plugin-test'
 
 let logs: logItem.LogItem[] = []
-let saved: boolean = false
-// 以下数据用于 selectText 事件
-let lastSelectStamp: number = 0;
-let lastSelectStart: vscode.Position;
-let lastSelectEnd: vscode.Position;
-let lastSelectLogID: number;
+let saved: boolean = false // 是否执行过保存指令
+let lastText: string // 保存上一次编辑后的代码
 export function activate(context: vscode.ExtensionContext) {
 
     // 测试LogItem的初始化和保存功能
@@ -34,36 +30,30 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 用光标选择文本内容 */
 	const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
-		const selection = event.selections[0]
+		const selection = event.selections[0] // 只考虑有一个选区的情况
 		if (selection.isEmpty) return // 只有选择内容不为空才记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
-        if(new Date().getTime() - lastSelectStamp < 1000 && start.isBeforeOrEqual(lastSelectStart) && end.isAfterOrEqual(lastSelectEnd)){
-            for(let i = logs.length - 1; i >= 0; i--) if(logs[i].id === lastSelectLogID){
-                // 在鼠标连续选择时会产生大量高度相似数据，采用此方法删除满足条件的记录
-                logs.splice(i, 1)
-                // console.log('delete log#', lastSelectLogID)
-                break
-            }
-        }
         const document = event.textEditor.document // 当前编辑的文件
         const log = await conextProcess.getLogItemFromSelectedText(document, start, end)
-        // console.log('debug(log) =', log)
         logs.push(log)
-        lastSelectStamp = new Date().getTime()
-        lastSelectStart = start
-        lastSelectEnd = end
-        lastSelectLogID = log.id
+        // console.log(event)
+        // console.log(log)
 	})
 	context.subscriptions.push(selectTextWatcher)
 
     /** 修改文件内容(新增、删除、修改、Redo、Undo) */
 	const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
-        // event.contentChanges 是一个数组，记录了每次修改文件的内容，数组为 0 时记录的是修改前的状态
-        // event.reason 是一个字符串，记录了修改的原因，可能是 Undo、Redo 和 Undefined
-        // https://code.visualstudio.com/api/references/vscode-api#TextDocumentChangeEvent
-        console.log(event)
-        console.log(event.document.getText())
+        if(event.contentChanges.length === 0){ // 脏状态改变
+            lastText = event.document.getText()
+            // console.log(lastText)
+            return
+        }
+        let changeLogs = await conextProcess.getLogItemsFromChangedText(event,lastText)
+        logs = logs.concat(changeLogs)
+        lastText = event.document.getText()
+        // console.log(event)
+        // console.log(changeLogs)
 	})
 	context.subscriptions.push(changeTextDocumentWatcher)
 }

@@ -19,3 +19,8 @@
 - 在 `common.ts` 中新增了保存文件的函数
 - 实现选中文本 `SelectText` 事件
 - `Context` 类的 `ChangeType` 属性修改为 `ContextType`，其中新增了 `Select` 标签
+
+### 20241118-HiMeditator
+
+- 删除 `SelectText` 事件中的预处理操作
+- 实现 5 个修改文本文件的事件（增加、删除、修改、Redo、Undo），**未进行预处理**
