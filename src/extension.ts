@@ -63,6 +63,12 @@ export function activate(context: vscode.ExtensionContext) {
         logs.push(log)
     })
     context.subscriptions.push(terminalOpenWatcher)
+    /** 关闭终端 */
+    const terminalCloseWatcher = vscode.window.onDidCloseTerminal(async terminal => {
+        const log = await terminalProcess.getLogItemFromCloseTerminal(terminal)
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalCloseWatcher)
 }
 
 export function deactivate() {
