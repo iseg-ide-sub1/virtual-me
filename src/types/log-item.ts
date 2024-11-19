@@ -1,4 +1,5 @@
-import { getFormattedTime } from '../utils/common'
+import {getFormattedTime} from '../utils/common'
+import vscode from "vscode";
 
 /**
  * 事件类型枚举
@@ -86,8 +87,10 @@ export class Artifact {
     constructor(
         public name: string,
         public type: ArtifactType,
-        public hierarchy?: Artifact[]
-    ) {}
+        public hierarchy?: Artifact[],
+        public reference?: Reference
+    ) {
+    }
 
     toString(): string {
         let ret = ""
@@ -99,13 +102,31 @@ export class Artifact {
 export class Context {
     constructor(
         public type: ContextType,
-        public content: {before: string, after: string},
-        public start: {line: number, character: number},
-        public end: {line: number, character: number}
-    ) {}
+        public content: { before: string, after: string },
+        public start: { line: number, character: number },
+        public end: { line: number, character: number }
+    ) {
+    }
 }
 
-// Reference 类尚未实现，后续再考虑
+// 引用链节点，展开后是树形
+export class RefNode {
+    constructor(
+        public hierarchy: Artifact[],
+        public reference: RefNode[],
+    ) {
+    }
+}
+
+// 依赖关系，递归存储hierarchy中每个符号的所有声明位置和被引用位置（深度为depth，单边图不记录引用）
+// 为节省重构成本，将它加入artifact字段
+export class Reference {
+    constructor(
+        public definitionsMap: RefNode[], // length = hierarchy.length
+        public usagesMap: RefNode[] // length = hierarchy.length
+    ) {
+    }
+}
 
 export class LogItem {
     static #nextId = 1
@@ -114,13 +135,15 @@ export class LogItem {
     eventType: EventType
     artifact: Artifact
     context?: Context
+    reference?: Reference
 
-    constructor(eventType: EventType, artifact: Artifact, context?: Context) {
+    constructor(eventType: EventType, artifact: Artifact, context?: Context, reference?: Reference) {
         this.id = LogItem.#nextId++
         this.timeStamp = getFormattedTime()
         this.eventType = eventType
         this.artifact = artifact
         this.context = context
+        this.reference = reference
     }
 
     toString(): string {

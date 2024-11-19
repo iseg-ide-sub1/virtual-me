@@ -1,5 +1,7 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
+import * as refUtils from "./ref-process"
+
 /**
  * 将 SymbolKind 枚举值转换为对应的 ArtifactType 枚举描述。
  * @param kind SymbolKind 枚举值。
@@ -66,48 +68,74 @@ function getArtifactTypeFromSymbolKind(kind: vscode.SymbolKind): logItem.Artifac
 
 /**
  * 获取文件的对于范围的工件信息（包含当前位置的工件信息和当前位置的工件层级）
- * @param document 给定文件
+ * @param uri 给定文件的uri即路径
  * @param start 给定范围开始位置
  * @param end 给定范围结束位置
+ * @param getRef 是否获取引用信息
  * @returns 给定范围的工件信息
  */
 export async function getArtifactFromSelectedText(
-    document: vscode.TextDocument,
+    uri: vscode.Uri,
     start: vscode.Position,
-    end: vscode.Position
-):Promise<logItem.Artifact> {
+    end: vscode.Position,
+    getRef: boolean = true
+): Promise<logItem.Artifact> {
     let hierarchy: logItem.Artifact[] = [
-        new logItem.Artifact(document.uri.toString(), logItem.ArtifactType.File)
+        new logItem.Artifact(uri.toString(), logItem.ArtifactType.File)
     ]
+    let reference: logItem.Reference = {
+        definitionsMap: [],
+        usagesMap: []
+    }
+
     // 获取该文件的符号表
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
-        'vscode.executeDocumentSymbolProvider', document.uri
+        'vscode.executeDocumentSymbolProvider', uri
     )
     // console.log('symbols =',symbols)
-    if(!symbols) return hierarchy[0] // 没有符号，直接返回
-
+    if (!symbols) return hierarchy[0] // 没有符号，直接返回
     let curSymbols = symbols // 当前层级的符号表
-    while(curSymbols.length > 0) {
+    while (curSymbols.length > 0) {
         let isFind: boolean = false
-        for(const symbol of curSymbols){
-            if(symbol.range.contains(start) && symbol.range.contains(end)){
+        for (const symbol of curSymbols) {
+            if (symbol.range.contains(start) && symbol.range.contains(end)) {
+
+                // 构造hierarchy
                 hierarchy.push(new logItem.Artifact(
-                    symbol.name,getArtifactTypeFromSymbolKind(symbol.kind)
+                    symbol.name,
+                    getArtifactTypeFromSymbolKind(symbol.kind)
                 ))
-                curSymbols = symbol.children // 继续查找下一层级
+
+                // 构造reference
+                if (getRef) {
+                    const start = symbol.selectionRange.start
+                    const end = symbol.selectionRange.end
+                    const depth = 1 // 层级为1,只看一层依赖，不递归，递归目前会超时和没判断回环依赖
+                    const definitionRoot = await refUtils.getDefinitionsFromSymbol(uri, start, end, depth);
+                    console.log('definitionRoot = ', definitionRoot)
+
+                    const referenceRoot = await refUtils.getUsagesFromSymbol(uri, start, end, depth);
+                    console.log('referenceRoot = ', referenceRoot)
+                    reference.definitionsMap.push(definitionRoot);
+                    reference.usagesMap.push(referenceRoot);
+                }
+
+                // 继续查找下一层级
+                curSymbols = symbol.children
                 isFind = true
                 break
             }
         }
-        if(!isFind) break // 没有找到，退出循环
+        if (!isFind) break // 没有找到，退出循环
     }
     // console.log('hierarchy =',hierarchy)
-    let artifact: logItem.Artifact = new logItem.Artifact(
-        hierarchy[hierarchy.length - 1].name,
-        hierarchy[hierarchy.length - 1].type,
-        hierarchy
+    const artifactSelf = hierarchy[hierarchy.length - 1]
+    return new logItem.Artifact(
+        artifactSelf.name,
+        artifactSelf.type,
+        hierarchy,
+        reference
     )
-    return artifact
 }
 
 /**
@@ -121,15 +149,72 @@ export async function getLogItemFromSelectedText(
     document: vscode.TextDocument,
     start: vscode.Position,
     end: vscode.Position
-):Promise<logItem.LogItem> {
-    return new logItem.LogItem(
-        logItem.EventType.SelectText,
-        await getArtifactFromSelectedText(document, start, end),
-        new logItem.Context(
-            logItem.ContextType.Select,
+): Promise<logItem.LogItem> {
+    const eventType = logItem.EventType.SelectText
+    const artifact = await getArtifactFromSelectedText(document.uri, start, end)
+    const context = new logItem.Context(
+        logItem.ContextType.Select,
+        {
+            before: document.getText(new vscode.Range(start, end)),
+            after: ''
+        },
+        {
+            line: start.line + 1,
+            character: start.character + 1
+        },
+        {
+            line: end.line + 1,
+            character: end.character + 1
+        }
+    )
+    return new logItem.LogItem(eventType, artifact, context);
+}
+
+
+export async function getLogItemsFromChangedText(
+    event: vscode.TextDocumentChangeEvent,
+    lastText: string
+): Promise<logItem.LogItem[]> {
+    let logItems: logItem.LogItem[] = [] // 存放返回的 LogItem，每个修改对应一个 LogItem
+    let document = event.document
+    let reason = event.reason // 文件修改的原因，可能是 Undo、Redo 和 Undefined
+    for (let change of event.contentChanges) { // 遍历每次修改的内容
+        let start = change.range.start
+        let end = change.range.end
+        let eventType: logItem.EventType = logItem.EventType.EditTextDocument
+        let contextType: logItem.ContextType = logItem.ContextType.Edit
+        let before: string = ''
+        let after: string = change.text // 增加的内容
+
+        if (change.rangeLength > 0) { // 说明有删除内容
+            before = lastText.substring(change.rangeOffset, change.rangeOffset + change.rangeLength)
+        }
+        if (reason === vscode.TextDocumentChangeReason.Undo) {
+            eventType = logItem.EventType.UndoTextDocument
+            contextType = logItem.ContextType.Undo
+        } else if (reason === vscode.TextDocumentChangeReason.Redo) {
+            eventType = logItem.EventType.RedoTextDocument
+            contextType = logItem.ContextType.Redo
+        } else {
+            if (before !== '' && after !== '') { // 删除和增加内容均有，说明是修改操作
+                eventType = logItem.EventType.EditTextDocument
+                contextType = logItem.ContextType.Edit
+            } else if (before !== '') { // 只有删除内容，说明是删除操作
+                eventType = logItem.EventType.DeleteTextDocument
+                contextType = logItem.ContextType.Delete
+            } else if (after !== '') { // 只有增加内容，说明是增加操作
+                eventType = logItem.EventType.AddTextDocument
+                contextType = logItem.ContextType.Add
+            }
+        }
+
+        // console.log('before',before,'after',after)
+        const artifact = await getArtifactFromSelectedText(document.uri, start, end)
+        const context = new logItem.Context(
+            contextType,
             {
-                before: document.getText(new vscode.Range(start, end)),
-                after: ''
+                before,
+                after
             },
             {
                 line: start.line + 1,
@@ -140,68 +225,7 @@ export async function getLogItemFromSelectedText(
                 character: end.character + 1
             }
         )
-    );
-}
-
-export async function getLogItemsFromChangedText(
-    event: vscode.TextDocumentChangeEvent,
-    lastText: string
-):Promise<logItem.LogItem[]>{
-    let logItems: logItem.LogItem[] = [] // 存放返回的 LogItem，每个修改对应一个 LogItem
-    let document = event.document
-    let reason = event.reason // 文件修改的原因，可能是 Undo、Redo 和 Undefined
-    for(let change of event.contentChanges){ // 遍历每次修改的内容
-        let start = change.range.start
-        let end = change.range.end
-        let eventType: logItem.EventType = logItem.EventType.EditTextDocument
-        let contextType: logItem.ContextType = logItem.ContextType.Edit
-        let before: string = ''
-        let after: string = change.text // 增加的内容
-        if(change.rangeLength > 0){ // 说明有删除内容
-            before = lastText.substring(change.rangeOffset,change.rangeOffset+change.rangeLength)
-        }
-        if(event.reason === vscode.TextDocumentChangeReason.Undo) {
-            eventType = logItem.EventType.UndoTextDocument
-            contextType = logItem.ContextType.Undo
-        }
-        else if(event.reason === vscode.TextDocumentChangeReason.Redo) {
-            eventType = logItem.EventType.RedoTextDocument
-            contextType = logItem.ContextType.Redo
-        }
-        else {
-            if(before !== '' && after !== ''){ // 删除和增加内容均有，说明是修改操作
-                eventType = logItem.EventType.EditTextDocument
-                contextType = logItem.ContextType.Edit
-            }
-            else if(before !== ''){ // 只有删除内容，说明是删除操作
-                eventType = logItem.EventType.DeleteTextDocument
-                contextType = logItem.ContextType.Delete
-            }
-            else if(after !== ''){ // 只有增加内容，说明是增加操作
-                eventType = logItem.EventType.AddTextDocument
-                contextType = logItem.ContextType.Add
-            }
-        }
-        // console.log('before',before,'after',after)
-        logItems.push(new logItem.LogItem(
-            eventType,
-            await getArtifactFromSelectedText(document, start, end),
-            new logItem.Context(
-                contextType,
-                {
-                    before,
-                    after
-                },
-                {
-                    line: start.line + 1,
-                    character: start.character + 1
-                },
-                {
-                    line: end.line + 1,
-                    character: end.character + 1
-                }
-            )
-        ))
+        logItems.push(new logItem.LogItem(eventType, artifact, context))
     }
     return logItems
 }
