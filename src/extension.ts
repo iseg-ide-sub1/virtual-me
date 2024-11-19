@@ -3,6 +3,7 @@ import * as logItem from './types/log-item'
 import * as common from './utils/common'
 import * as conextProcess from './utils/context-process'
 import * as pluginTest from './test/plugin-test'
+import * as terminalProcess from './utils/terminal-process'
 
 let logs: logItem.LogItem[] = []
 let saved: boolean = false // 是否执行过保存指令
@@ -56,6 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
         // console.log(changeLogs)
 	})
 	context.subscriptions.push(changeTextDocumentWatcher)
+    /** 打开终端 */
+    const terminalOpenWatcher = vscode.window.onDidOpenTerminal(async terminal => {
+        const log = await terminalProcess.getLogItemFromOpenTerminal(terminal)
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalOpenWatcher)
 }
 
 export function deactivate() {
