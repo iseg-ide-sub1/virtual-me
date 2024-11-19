@@ -3,10 +3,12 @@ import * as logItem from './types/log-item'
 import * as common from './utils/common'
 import * as conextProcess from './utils/context-process'
 import * as pluginTest from './test/plugin-test'
+import * as terminalProcess from './utils/terminal-process'
 
 let logs: logItem.LogItem[] = []
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
+let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 export function activate(context: vscode.ExtensionContext) {
 
     // 测试LogItem的初始化和保存功能
@@ -56,6 +58,26 @@ export function activate(context: vscode.ExtensionContext) {
         // console.log(changeLogs)
 	})
 	context.subscriptions.push(changeTextDocumentWatcher)
+    /** 打开终端 */
+    const terminalOpenWatcher = vscode.window.onDidOpenTerminal(async terminal => {
+        const log = await terminalProcess.getLogItemFromOpenTerminal(terminal)
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalOpenWatcher)
+    /** 关闭终端 */
+    const terminalCloseWatcher = vscode.window.onDidCloseTerminal(async terminal => {
+        const log = await terminalProcess.getLogItemFromCloseTerminal(terminal)
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalCloseWatcher)
+    /** 切换终端 */
+    const terminalChangeWatcher = vscode.window.onDidChangeActiveTerminal(async terminal => {
+        if (!terminal) return; // 如果没有活动终端，则不记录
+        const log = await terminalProcess.getLogItemFromChangeTerminal(currentTerminal, terminal)
+        currentTerminal = terminal; // 更新当前终端
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalChangeWatcher)
 }
 
 export function deactivate() {
