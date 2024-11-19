@@ -34,3 +34,23 @@ export async function getLogItemFromCloseTerminal(
         artifact
     )
 }
+
+export async function getLogItemFromChangeTerminal(
+    fromTerminal: vscode.Terminal | undefined,
+    toTerminal: vscode.Terminal
+): Promise<logItem.LogItem> {
+    const fromProcessId = fromTerminal ? await fromTerminal.processId : undefined
+    const toProcessId = await toTerminal.processId
+    
+    const terminalName = `${fromProcessId ? fromProcessId.toString() : 'unknown'}->${toProcessId ? toProcessId.toString() : 'unknown'}`
+    
+    const artifact = new logItem.Artifact(
+        terminalName,
+        logItem.ArtifactType.Terminal
+    )
+    
+    return new logItem.LogItem(
+        logItem.EventType.ChangeActiveTerminal,
+        artifact
+    )
+}
