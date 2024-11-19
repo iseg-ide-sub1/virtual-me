@@ -33,13 +33,13 @@
 
 ### 终端事件
 
-| 编号 | 名称         | 符号                     | 开发人员 | 是否实现 |
-| ---- | ------------ | ------------------------ | -------- | -------- |
-| 3-1  | 打开终端     | `OpenTerminal`         |          |          |
-| 3-2  | 关闭终端     | `CloseTerminal`        |          |          |
-| 3-3  | 切换终端     | `ChangeActiveTerminal` |          |          |
-| 3-4  | 执行终端命令 |                          |          | X        |
-| 3-5  | 终端输出内容 |                          |          | X        |
+| 编号 | 名称         | 符号                   | 开发人员 | 是否实现 |
+| ---- | ------------ | ---------------------- | -------- | -------- |
+| 3-1  | 打开终端     | `OpenTerminal`         | LSW      | Y        |
+| 3-2  | 关闭终端     | `CloseTerminal`        | LSW      | Y        |
+| 3-3  | 切换终端     | `ChangeActiveTerminal` | LSW      | Y        |
+| 3-4  | 执行终端命令 |                        |          | X        |
+| 3-5  | 终端输出内容 |                        |          | X        |
 
 ### 其他事件
 
@@ -196,6 +196,63 @@
         "line": 11,
         "character": 7
       }
+    }
+  }
+```
+
+### 3-1 `OpenTerminal`
+
+**实现 API**：`vscode.window.onDidOpenTerminal`
+
+**触发条件**：在 Vs Code 中打开新的终端
+
+**示例数据**：
+
+```json
+  {
+    "id": 4,
+    "timeStamp": "2024-11-19 23:00:58.141",
+    "eventType": "OpenTerminal",
+    "artifact": {
+      "name": "2168", // 进程 id，用于区别不同终端
+      "type": "Terminal"
+    }
+  },
+```
+
+### 3-2 `CloseTerminal`
+**实现 API**：`vscode.window.onDidCloseTerminal`
+
+**触发条件**：在 Vs Code 中关闭终端
+
+**示例数据**：
+
+```json
+  {
+    "id": 2,
+    "timeStamp": "2024-11-19 23:00:53.373",
+    "eventType": "CloseTerminal",
+    "artifact": {
+      "name": "2085",
+      "type": "Terminal"
+    }
+  },
+```
+### 3-3 `ChangeActiveTerminal`
+**实现 API**：`vscode.window.onDidChangeActiveTerminal`
+
+**触发条件**：在 Vs Code 中切换不同的终端
+
+**示例数据**：
+
+```json
+  {
+    "id": 8,
+    "timeStamp": "2024-11-19 22:19:28.982",
+    "eventType": "ChangeActiveTerminal",
+    "artifact": {
+      "name": "64942->65654", // 涉及到的终端进程 id
+      "type": "Terminal"
     }
   }
 ```
