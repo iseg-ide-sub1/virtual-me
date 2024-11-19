@@ -6,3 +6,5 @@ node_modules
 /res/log/*
 .obsidian
 .idea/
+.DS_Store
+
