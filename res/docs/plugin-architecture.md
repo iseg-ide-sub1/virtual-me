@@ -6,15 +6,15 @@
 
 | 编号 | 名称           | 符号                   | 开发人员 | 是否实现 |
 | ---- | -------------- | ---------------------- | -------- | -------- |
-| 1-1  | 打开文本文件   | `OpenTextDocument`   |          |    Y      |
-| 1-2  | 关闭文本文件   | `CloseTextDocument`  |          |    Y      |
-| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |          |     Y     |
-| 1-4  | 新建文件       | `CreateFile`         |          |    Y     |
-| 1-5  | 删除文件       | `DeleteFile`         |          |    Y     |
-| 1-6  | 保存文件       | `SaveFile`           |          |    Y     |
-| 1-7  | 重命名文件     | `RenameFile`         |          |    Y      |
-| 1-8  | 移动文件       | `MoveFile`           |          |    Y     |
-| 1-9  | 粘贴文件       | `PasteFile`          |          |    X     |
+| 1-1  | 打开文本文件   | `OpenTextDocument`   | SYH      | Y        |
+| 1-2  | 关闭文本文件   | `CloseTextDocument`  |          | Y        |
+| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |          | Y        |
+| 1-4  | 新建文件       | `CreateFile`         |          | Y        |
+| 1-5  | 删除文件       | `DeleteFile`         |          | Y        |
+| 1-6  | 保存文件       | `SaveFile`           |          | Y        |
+| 1-7  | 重命名文件     | `RenameFile`         |          | Y        |
+| 1-8  | 移动文件       | `MoveFile`           |          | Y        |
+| 1-9  | 粘贴文件       | `PasteFile`          |          | X        |
 
 ### 文本内容相关事件
 
@@ -33,13 +33,13 @@
 
 ### 终端事件
 
-| 编号 | 名称         | 符号                   | 开发人员 | 是否实现 |
-| ---- | ------------ | ---------------------- | -------- | -------- |
+| 编号 | 名称         | 符号                     | 开发人员 | 是否实现 |
+| ---- | ------------ | ------------------------ | -------- | -------- |
 | 3-1  | 打开终端     | `OpenTerminal`         | LSW      | Y        |
 | 3-2  | 关闭终端     | `CloseTerminal`        | LSW      | Y        |
 | 3-3  | 切换终端     | `ChangeActiveTerminal` | LSW      | Y        |
-| 3-4  | 执行终端命令 |                        |          | X        |
-| 3-5  | 终端输出内容 |                        |          | X        |
+| 3-4  | 执行终端命令 |                          |          | X        |
+| 3-5  | 终端输出内容 |                          |          | X        |
 
 ### 其他事件
 
@@ -221,6 +221,7 @@
 ```
 
 ### 3-2 `CloseTerminal`
+
 **实现 API**：`vscode.window.onDidCloseTerminal`
 
 **触发条件**：在 Vs Code 中关闭终端
@@ -238,7 +239,9 @@
     }
   },
 ```
+
 ### 3-3 `ChangeActiveTerminal`
+
 **实现 API**：`vscode.window.onDidChangeActiveTerminal`
 
 **触发条件**：在 Vs Code 中切换不同的终端

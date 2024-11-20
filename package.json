@@ -1,6 +1,8 @@
 {
   "name": "virtual-me",
   "displayName": "virtual-me",
+  "publisher": "iseg-ide-sub1",
+  "repository": "https://github.com/iseg-ide-sub1/virtual-me",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "version": "0.0.1",
   "engines": {
@@ -49,6 +51,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "virtual-me": "file:"
+    "virtual-me": "file:",
+    "vsce": "^2.15.0"
   }
 }

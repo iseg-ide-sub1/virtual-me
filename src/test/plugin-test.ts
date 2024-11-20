@@ -38,7 +38,6 @@ export function saveTest(){
     );
 
     test_logs = [var_1, var_2] // 事件列表
-
     // 转换为字符串
-    common.saveLog(common.logsToString(test_logs),'/res/log', 'test.json')
+    common.saveLog(common.logsToString(test_logs), true, 'test.json')
 }

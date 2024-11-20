@@ -112,10 +112,10 @@ export async function getArtifactFromSelectedText(
                     const end = symbol.selectionRange.end
                     const depth = 1 // 层级为1,只看一层依赖，不递归，递归目前会超时和没判断回环依赖
                     const definitionRoot = await refUtils.getDefinitionsFromSymbol(uri, start, end, depth);
-                    console.log('definitionRoot = ', definitionRoot)
+                    // console.log('definitionRoot = ', definitionRoot)
 
                     const referenceRoot = await refUtils.getUsagesFromSymbol(uri, start, end, depth);
-                    console.log('referenceRoot = ', referenceRoot)
+                    // console.log('referenceRoot = ', referenceRoot)
                     reference.definitionsMap.push(definitionRoot);
                     reference.usagesMap.push(referenceRoot);
                 }

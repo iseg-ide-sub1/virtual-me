@@ -7,6 +7,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as path from 'path'
 
 let logs: logItem.LogItem[] = []
+let isDev: boolean = false // 是否处在开发环境
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -23,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
 		saved = true;
-        common.saveLog(common.logsToString(logs));
+        common.saveLog(common.logsToString(logs), isDev);
         vscode.window.showInformationMessage('Log file has been saved!');
     })
     context.subscriptions.push(saveLogCommand);
@@ -36,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 	context.subscriptions.push(openTextDocumentWatcher)
 
-	// /** 关闭文件 */
+	/** 关闭文件 */
 	const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
         const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
         logs.push(log)
@@ -155,6 +156,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
 	if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
-		common.saveLog(common.logsToString(logs));
+		common.saveLog(common.logsToString(logs), isDev);
 	}
 }

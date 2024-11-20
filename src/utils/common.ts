@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
-
+import * as logItem from '../types/log-item'
+import * as vscode from 'vscode'
 /**
  * 获取格式化的当前时间字符串，包括年月日时分秒和毫秒。
  * @returns {string} 格式化的当前时间。
@@ -34,7 +35,13 @@ export function getFormattedTime() {
  * @param logs 日志列表
  * @returns 日志列表的字符串
  */
-export function logsToString(logs: any[]): string {
+export function logsToString(logs: logItem.LogItem[]): string {
+    for(let i = 0; i < logs.length; i++){
+        if(logs[i]?.artifact?.reference){
+            logs[i].reference = JSON.parse(JSON.stringify(logs[i].artifact.reference)) // 深拷贝
+            delete logs[i].artifact.reference // 删除 artifact.reference 属性，减少层级
+        }
+    }
     return JSON.stringify(logs, (key, value) => {
         return value;
     },2);
@@ -69,15 +76,27 @@ export function getFormattedTime1() {
 /**
  * 将内容保存到指定路径文件夹中，默认为 /res/log 文件夹
  * @param content 要保存的文件内容
- * @param relPath 要保存的相对路径，以插件根路径为起点，默认为 /res/log
+ * @param isDev 是否处在开发环境，如果是保存到开发环境的 ./res/log 文件夹，否则保存到工作环境的 ./log 文件夹
  * @param fileName 文件名，默认为当前日期时间
  */
-export function saveLog(content: string, relPath: string = '/res/log', fileName = ''){
-    const extensionPath = path.join(__dirname, '..')
-    const saveDirectory = path.join(extensionPath, relPath)
+export function saveLog(content: string, isDev: boolean = true, fileName = ''){
+    let saveDirectory: string = '';
+    if(isDev){
+        const extensionPath = path.join(__dirname, '..')
+        saveDirectory = path.join(extensionPath, '/res/log')
+    }
+    else{
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            vscode.window.showErrorMessage('No workspace folder found.');
+            return;
+        }
+        saveDirectory = path.join(workspaceFolders[0].uri.fsPath, './log');
+    }
     if (!fs.existsSync(saveDirectory)) {
         fs.mkdirSync(saveDirectory, { recursive: true })
     }
+    // 如果名称为空，用日期替代
     if(fileName === '') fileName = getFormattedTime1() + '.json'
     const filePath = path.join(saveDirectory, fileName)
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
