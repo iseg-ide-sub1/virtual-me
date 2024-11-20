@@ -20,6 +20,10 @@ export enum EventType {
     DeleteFile = "DeleteFile",
     /** 保存文件 */
     SaveFile = "SaveFile",
+    /** 重命名文件 */
+    RenameFile = "RenameFile",
+    /** 移动文件 */
+    MoveFile = "MoveFile",
 
     /** 添加文件内容 */
     AddTextDocument = "AddTextDocument",

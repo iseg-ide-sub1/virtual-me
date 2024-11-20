@@ -6,15 +6,15 @@
 
 | 编号 | 名称           | 符号                   | 开发人员 | 是否实现 |
 | ---- | -------------- | ---------------------- | -------- | -------- |
-| 1-1  | 打开文本文件   | `OpenTextDocument`   |          |          |
-| 1-2  | 关闭文本文件   | `CloseTextDocument`  |          |          |
-| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |          |          |
-| 1-4  | 新建文件       | `CreateFile`         |          |          |
-| 1-5  | 删除文件       | `DeleteFile`         |          |          |
-| 1-6  | 保存文件       | `SaveFile`           |          |          |
-| 1-7  | 重命名文件     | `RenameFile`         |          | X        |
-| 1-8  | 移动文件       | `MoveFile`           |          | X        |
-| 1-9  | 粘贴文件       | `PasteFile`          |          | X        |
+| 1-1  | 打开文本文件   | `OpenTextDocument`   |          |    Y      |
+| 1-2  | 关闭文本文件   | `CloseTextDocument`  |          |    Y      |
+| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |          |     Y     |
+| 1-4  | 新建文件       | `CreateFile`         |          |    Y     |
+| 1-5  | 删除文件       | `DeleteFile`         |          |    Y     |
+| 1-6  | 保存文件       | `SaveFile`           |          |    Y     |
+| 1-7  | 重命名文件     | `RenameFile`         |          |    Y      |
+| 1-8  | 移动文件       | `MoveFile`           |          |    Y     |
+| 1-9  | 粘贴文件       | `PasteFile`          |          |    X     |
 
 ### 文本内容相关事件
 

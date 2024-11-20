@@ -1,14 +1,17 @@
 import * as vscode from 'vscode'
 import * as logItem from './types/log-item'
 import * as common from './utils/common'
+import * as fileProcess from './utils/file-process'
 import * as conextProcess from './utils/context-process'
 import * as pluginTest from './test/plugin-test'
 import * as terminalProcess from './utils/terminal-process'
+import * as path from 'path'
 
 let logs: logItem.LogItem[] = []
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
+let openFile : boolean = false // 是否打开了文件
 export function activate(context: vscode.ExtensionContext) {
 
     // 测试LogItem的初始化和保存功能
@@ -29,6 +32,74 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Log file has been saved!');
     })
     context.subscriptions.push(saveLogCommand);
+
+    /** 打开文件 */
+	const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
+        openFile = true
+        const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.toString())
+		logs.push(log)
+	})
+	context.subscriptions.push(openTextDocumentWatcher)
+
+	// /** 关闭文件 */
+	const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
+        const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
+        logs.push(log)
+	})
+	context.subscriptions.push(closeTextDocumentWatcher)
+
+	/** 切换当前文件 */
+	const changeActiveTextDocumentWatcher = vscode.window.onDidChangeActiveTextEditor(editor => {
+        // 若当前关闭所有编辑视图，editor 值为 undefined
+        // 切换编辑视图，会触发两次此事件，第一次 editor 值为 undefined
+        if (editor === undefined || openFile) {
+            openFile = false
+            return
+        }
+        openFile = false
+        const log = fileProcess.getLogItemFromChangeTextDocument(editor.document.uri.toString())
+        logs.push(log)
+	})
+	context.subscriptions.push(changeActiveTextDocumentWatcher)
+
+    if (vscode.workspace.workspaceFolders) {
+		const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
+		/** 文件保存 */
+        filesWatcher.onDidChange(uri => {
+            const log = fileProcess.getLogItemFromSaveFile(uri.toString())
+            logs.push(log)
+        })
+		/** 文件创建 */
+        filesWatcher.onDidCreate(uri => {
+            const log = fileProcess.getLogItemFromCreateFile(uri.toString())
+            logs.push(log)
+        })
+		/** 文件删除 */
+        filesWatcher.onDidDelete(uri => {
+            const log = fileProcess.getLogItemFromDeleteFile(uri.toString())
+            logs.push(log)
+        })
+	} else {
+		vscode.window.showInformationMessage('No workspace folders are open.')
+	}
+    /** 文件重命名或移动 */
+    const renameFileWatcher = vscode.workspace.onDidRenameFiles((event) => {
+        for (const rename of event.files) {
+            const oldPath = rename.oldUri.fsPath;
+            const newPath = rename.newUri.fsPath;
+            // 检查路径是否发生变化
+            if (path.dirname(oldPath) === path.dirname(newPath)) {
+                // 文件名改变了，认为是重命名
+                const log = fileProcess.getLogItemFromRenameFile(oldPath, newPath);
+                logs.push(log)
+            } else {
+                // 路径改变了，认为是移动
+                const log = fileProcess.getLogItemFromMoveFile(oldPath, newPath);
+                logs.push(log)
+            }
+        }
+    })
+    context.subscriptions.push(renameFileWatcher)
 
     /** 用光标选择文本内容 */
 	const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
