@@ -115,13 +115,13 @@
 
 **实现API：**`vscode.window.onDidChangeActiveTextEditor`
 
-**触发条件：**
+**触发条件：**切换文本文件时触发
 
-切换文本文件时触发，若当前关闭所有编辑视图，`editor` 值为 `undefined`
+**注意：**
 
-切换编辑视图，会触发两次此事件，第一次 `editor` 值为 `undefined`
-
-插件不会记录 `editor` 值为 `undefined` 的情况
+1. 若当前关闭所有编辑视图，`editor` 值为 `undefined`
+2. 切换编辑视图，会触发两次此事件，第一次 `editor` 值为 `undefined`
+3. 插件不会记录 `editor` 值为 `undefined` 的情况
 
 **附加属性：**无
 
@@ -142,9 +142,220 @@
 
 ### 1-4 `CreateFile`
 
+**实现技术：**
+
+```typescript
+const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
+filesWatcher.onDidCreate(uri => {...})
+```
+
+**触发条件：**创建文件时触发
+
+**附加属性：**无
+
+**示例数据：**
+
+```json
+  {
+    "id": 2,
+    "timeStamp": "2024-11-20 21:38:14.496",
+    "eventType": "CreateFile",
+    "artifact": {
+      "name": "file:///c%3A/Users/hiron/Desktop/Code/new-file.cpp",
+      "type": "File"
+    }
+  }
+```
+
 ### 1-5 `DeleteFile`
 
+**实现技术：**
+
+```typescript
+const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
+filesWatcher.onDidDelete(uri => {...})
+```
+
+**触发条件：**删除文件时触发
+
+**附加属性：**无
+
+**示例数据：**
+
+```json
+  {
+    "id": 27,
+    "timeStamp": "2024-11-20 21:43:32.637",
+    "eventType": "DeleteFile",
+    "artifact": {
+      "name": "file:///c%3A/Users/hiron/Desktop/Code/new.txt",
+      "type": "File"
+    }
+  }
+```
+
 ### 1-6 `SaveFile`
+
+**实现技术：**
+
+```typescript
+const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
+filesWatcher.onDidChange(uri => {...})
+```
+
+**触发条件：**文件发生改变时触发
+
+**附加属性：**无
+
+**示例数据：**
+
+```json
+  {
+    "id": 4,
+    "timeStamp": "2024-11-20 21:50:44.805",
+    "eventType": "SaveFile",
+    "artifact": {
+      "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+      "type": "File"
+    }
+  }
+```
+
+### 2-1 to 2-5 `*TextDocument`
+
+**实现API：**`vscode.workspace.onDidChangeTextDocument`
+
+**触发条件：**文本文件发生改变
+
+**注意：**
+
+1. 包含 5 种情况：增加内容、删除内容、修改内容、撤销内容、重做内容
+
+**附加属性：**`context`、`refernence`
+
+**示例数据：**
+
+```json
+  {
+    "id": 155,
+    "timeStamp": "2024-11-20 21:57:01.848",
+    "eventType": "AddTextDocument",
+    "artifact": {
+      "name": "main()",
+      "type": "Function",
+      "hierarchy": [
+        {
+          "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+          "type": "File"
+        },
+        {
+          "name": "main()",
+          "type": "Function"
+        }
+      ]
+    },
+    "context": {
+      "type": "Add",
+      "content": {
+        "before": "",
+        "after": "printf(\"Press any key to exit.\\n\");"
+      },
+      "start": {
+        "line": 38,
+        "character": 5
+      },
+      "end": {
+        "line": 38,
+        "character": 5
+      }
+    },
+    "reference": {
+      "definitionsMap": [
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "main()",
+              "type": "Function"
+            }
+          ],
+          "reference": []
+        }
+      ],
+      "usagesMap": [
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "main()",
+              "type": "Function"
+            }
+          ],
+          "reference": [
+            {
+              "hierarchy": [
+                {
+                  "name": "file:///c%3A/Users/hiron/Desktop/Code/new-f.c",
+                  "type": "File"
+                },
+                {
+                  "name": "main()",
+                  "type": "Function"
+                }
+              ],
+              "reference": []
+            },
+            {
+              "hierarchy": [
+                {
+                  "name": "file:///c%3A/Users/hiron/Desktop/Code/new-file.c",
+                  "type": "File"
+                },
+                {
+                  "name": "main()",
+                  "type": "Function"
+                }
+              ],
+              "reference": []
+            },
+            {
+              "hierarchy": [
+                {
+                  "name": "file:///c%3A/Users/hiron/Desktop/Code/test.c",
+                  "type": "File"
+                },
+                {
+                  "name": "main()",
+                  "type": "Function"
+                }
+              ],
+              "reference": []
+            },
+            {
+              "hierarchy": [
+                {
+                  "name": "file:///c%3A/Users/hiron/Desktop/Code/testplus.cpp",
+                  "type": "File"
+                },
+                {
+                  "name": "main()",
+                  "type": "Function"
+                }
+              ],
+              "reference": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+```
 
 ### 2-6 `SelectText`
 
@@ -157,45 +368,129 @@
 1. 插件进行了处理，只有选择的文本内容不为空时才记录
 2. 如果选择的内容横跨多个工件，按整体进行计算（也就是层级中的工件需要同时包含选择内容的开始位置和结束位置）
 3. 为节省空间 `artifact.conext.after` 一定为空
-4. 在使用鼠标或键盘进行选择时，选择区域每扩大一次就会记录一次选中，这使得记录内容暴增，优化：当连续选择时，如果两次选择操作间隔小于1000毫秒，且上次选择内容是新选择内容的子集，那么删除上次选择记录
+4. 在使用鼠标或键盘进行选择时，选择区域每扩大一次就会记录一次选中，这使得记录内容暴增，优化（**已废弃**）：当连续选择时，如果两次选择操作间隔小于1000毫秒，且上次选择内容是新选择内容的子集，那么删除上次选择记录
 
-**附加属性：**`context`
+**附加属性：**`context`、`refernence`
 
 **示例数据：**
 
 ```json
 {
-    "id": 17,
-    "timeStamp": "2024-11-13 22:04:27.317",
+    "id": 31,
+    "timeStamp": "2024-11-20 21:52:09.495",
     "eventType": "SelectText",
     "artifact": {
-      "name": "Student",
-      "type": "Class",
+      "name": "next",
+      "type": "Field",
       "hierarchy": [
         {
-          "name": "c:\\Users\\hiron\\Desktop\\Code\\testplus.cpp",
+          "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
           "type": "File"
         },
         {
-          "name": "Student",
-          "type": "Class"
+          "name": "Node",
+          "type": "Struct"
+        },
+        {
+          "name": "next",
+          "type": "Field"
         }
       ]
     },
     "context": {
       "type": "Select",
       "content": {
-        "before": "class Course{\r\n    private:\r\n        int course_id;\r\n        char course_name[20];\r\n    };",
-        "after": "class Course{\r\n    private:\r\n        int course_id;\r\n        char course_name[20];\r\n    };"
+        "before": "struct Node *next;",
+        "after": ""
       },
       "start": {
-        "line": 7,
+        "line": 5,
         "character": 5
       },
       "end": {
-        "line": 11,
-        "character": 7
+        "line": 5,
+        "character": 23
       }
+    },
+    "reference": {
+      "definitionsMap": [
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "Node",
+              "type": "Struct"
+            }
+          ],
+          "reference": []
+        },
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "Node",
+              "type": "Struct"
+            },
+            {
+              "name": "next",
+              "type": "Field"
+            }
+          ],
+          "reference": [
+            {
+              "hierarchy": [
+                {
+                  "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+                  "type": "File"
+                },
+                {
+                  "name": "Node",
+                  "type": "Struct"
+                }
+              ],
+              "reference": []
+            }
+          ]
+        }
+      ],
+      "usagesMap": [
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "Node",
+              "type": "Struct"
+            }
+          ],
+          "reference": []
+        },
+        {
+          "hierarchy": [
+            {
+              "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+              "type": "File"
+            },
+            {
+              "name": "Node",
+              "type": "Struct"
+            },
+            {
+              "name": "next",
+              "type": "Field"
+            }
+          ],
+          "reference": []
+        }
+      ]
     }
   }
 ```
@@ -282,16 +577,18 @@
 
 ### 文件命名
 
-`日期 时间 仓库名称.json`
+> 时间日期时保存记录时的事件日期
+
+`日期 时间.json`
 
 ```
-2024-10-29 14-16-15 VirtualMe.json
+2024-10-29 14.16.15.json
 ```
 
-### log
+### res/log
 
 一个文件夹用于保存自己测试生成的数据（该文件夹放到 gitignore 中）
 
-### dataset
+### res/dataset
 
 一个文件夹用于专门保存有用的数据（数据集）

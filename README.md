@@ -1,6 +1,8 @@
-# <img src="./res/img/icon.png" alt="icon" style="zoom:20%;" /> VirtualMe
+# VirtualMe
 
-**A VS Code plugin for collecting and predicting developer action sequences in the IDE.**
+![](./res/img/icon-s.png)
+
+<center>A VS Code plugin for collecting and predicting developer action sequences in the IDE.</center>
 
 <p align="center">
 | <a href="./res/docs/contributing.md"><b>Contributing</b></a> | <a href="./res/docs/plugin-architecture.md"><b>Architecture</b></a> |

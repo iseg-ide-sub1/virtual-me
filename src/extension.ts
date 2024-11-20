@@ -7,7 +7,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as path from 'path'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = false // 是否处在开发环境
+let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -26,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 		saved = true;
         common.saveLog(common.logsToString(logs), isDev);
         vscode.window.showInformationMessage('Log file has been saved!');
+        logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
 
