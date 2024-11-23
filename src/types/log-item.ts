@@ -92,7 +92,7 @@ export class Artifact {
         public name: string,
         public type: ArtifactType,
         public hierarchy?: Artifact[],
-        public reference?: Reference
+        public references?: Reference[]
     ) {
     }
 
@@ -113,21 +113,9 @@ export class Context {
     }
 }
 
-// 引用链节点，展开后是树形
-export class RefNode {
-    constructor(
-        public hierarchy: Artifact[],
-        public reference: RefNode[],
-    ) {
-    }
-}
-
-// 依赖关系，递归存储hierarchy中每个符号的所有声明位置和被引用位置（深度为depth，单边图不记录引用）
-// 为节省重构成本，将它加入artifact字段
 export class Reference {
     constructor(
-        public definitionsMap: RefNode[], // length = hierarchy.length
-        public usagesMap: RefNode[] // length = hierarchy.length
+        public hierarchy: Artifact[],
     ) {
     }
 }
@@ -139,15 +127,15 @@ export class LogItem {
     eventType: EventType
     artifact: Artifact
     context?: Context
-    reference?: Reference
+    references?: Reference[]
 
-    constructor(eventType: EventType, artifact: Artifact, context?: Context, reference?: Reference) {
+    constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Reference[]) {
         this.id = LogItem.#nextId++
         this.timeStamp = getFormattedTime()
         this.eventType = eventType
         this.artifact = artifact
         this.context = context
-        this.reference = reference
+        this.references = references
     }
 
     toString(): string {

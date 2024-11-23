@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
 import * as refUtils from "./ref-process"
+import {isCalculatingArtifact} from '../extension'
 
 /**
  * 将 SymbolKind 枚举值转换为对应的 ArtifactType 枚举描述。
@@ -80,46 +81,29 @@ export async function getArtifactFromSelectedText(
     end: vscode.Position,
     getRef: boolean = true
 ): Promise<logItem.Artifact> {
+
     let hierarchy: logItem.Artifact[] = [
         new logItem.Artifact(uri.toString(), logItem.ArtifactType.File)
     ]
-    let reference: logItem.Reference = {
-        definitionsMap: [],
-        usagesMap: []
-    }
-
+    isCalculatingArtifact.value = true // 标记正在计算引用信息, 防止API内的文件开关行为被记录
     // 获取该文件的符号表
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', uri
     )
-    // console.log('symbols =',symbols)
+    // console.log('hierarchy symbols =',symbols)
     if (!symbols) return hierarchy[0] // 没有符号，直接返回
     let curSymbols = symbols // 当前层级的符号表
+    let symbolSelf = undefined
     while (curSymbols.length > 0) {
         let isFind: boolean = false
         for (const symbol of curSymbols) {
             if (symbol.range.contains(start) && symbol.range.contains(end)) {
-
+                symbolSelf = symbol
                 // 构造hierarchy
                 hierarchy.push(new logItem.Artifact(
                     symbol.name,
                     getArtifactTypeFromSymbolKind(symbol.kind)
                 ))
-
-                // 构造reference
-                if (getRef) {
-                    const start = symbol.selectionRange.start
-                    const end = symbol.selectionRange.end
-                    const depth = 1 // 层级为1,只看一层依赖，不递归，递归目前会超时和没判断回环依赖
-                    const definitionRoot = await refUtils.getDefinitionsFromSymbol(uri, start, end, depth);
-                    // console.log('definitionRoot = ', definitionRoot)
-
-                    const referenceRoot = await refUtils.getUsagesFromSymbol(uri, start, end, depth);
-                    // console.log('referenceRoot = ', referenceRoot)
-                    reference.definitionsMap.push(definitionRoot);
-                    reference.usagesMap.push(referenceRoot);
-                }
-
                 // 继续查找下一层级
                 curSymbols = symbol.children
                 isFind = true
@@ -130,11 +114,22 @@ export async function getArtifactFromSelectedText(
     }
     // console.log('hierarchy =',hierarchy)
     const artifactSelf = hierarchy[hierarchy.length - 1]
+
+    // 构造reference
+    let references: logItem.Reference[] = []
+    if (getRef && symbolSelf) {
+        // const st = new Date().getTime()
+        const start = symbolSelf.selectionRange.start
+        references = await refUtils.getUsagesFromSymbol(uri, start);
+        // const et = new Date().getTime()
+        // console.log('getRef time(ms) = ', et - st)
+    }
+    isCalculatingArtifact.value = false // 标记计算引用信息结束
     return new logItem.Artifact(
         artifactSelf.name,
         artifactSelf.type,
         hierarchy,
-        reference
+        references
     )
 }
 

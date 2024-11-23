@@ -12,6 +12,8 @@ let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile : boolean = false // 是否打开了文件
+export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
+
 export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：virtual-me.activate */
@@ -34,14 +36,18 @@ export function activate(context: vscode.ExtensionContext) {
 	const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
         openFile = true
         const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.toString())
-		logs.push(log)
+        if (!isCalculatingArtifact.value){
+            logs.push(log)
+        }
 	})
 	context.subscriptions.push(openTextDocumentWatcher)
 
 	/** 关闭文件 */
 	const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
         const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
-        logs.push(log)
+        if (!isCalculatingArtifact.value){
+            logs.push(log)
+        }
 	})
 	context.subscriptions.push(closeTextDocumentWatcher)
 

@@ -37,9 +37,9 @@ export function getFormattedTime() {
  */
 export function logsToString(logs: logItem.LogItem[]): string {
     for(let i = 0; i < logs.length; i++){
-        if(logs[i]?.artifact?.reference){
-            logs[i].reference = JSON.parse(JSON.stringify(logs[i].artifact.reference)) // 深拷贝
-            delete logs[i].artifact.reference // 删除 artifact.reference 属性，减少层级
+        if(logs[i]?.artifact?.references){
+            logs[i].references = JSON.parse(JSON.stringify(logs[i].artifact.references)) // 深拷贝
+            delete logs[i].artifact.references // 删除 artifact.reference 属性，减少层级
         }
     }
     return JSON.stringify(logs, (key, value) => {
