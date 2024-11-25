@@ -57,3 +57,16 @@
 
 - 完成文件部分的移植
   - 待讨论：重命名或移动文件时，若文件已被打开，需不需要记录对应的打开和关闭事件
+
+### 20241123-Katock-Cricket
+
+优化ref计算延迟
+
+1. `export let isCalculatingArtifact = {value: false}` // 防止调用相关API时的vs内部的文件开关事件被记录
+2. 改用call hiecrachy的API避免全局字符串匹配耗时
+3. 取消在hiecrachy每层都算ref，只算最小那级的ref，取消递归，优化延迟，目前延迟小于1s
+
+### 20241125-HiMeditator
+
+- 将文本内容处理的常用函数 `getArtifactFromSelectedText` 重命名为 `getArtifactFromRange`
+- 实现鼠标悬停事件 `MouseHover`

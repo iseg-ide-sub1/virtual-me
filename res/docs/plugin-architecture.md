@@ -14,22 +14,24 @@
 | 1-6  | 保存文件       | `SaveFile`           |          | Y        |
 | 1-7  | 重命名文件     | `RenameFile`         |          | Y        |
 | 1-8  | 移动文件       | `MoveFile`           |          | Y        |
-| 1-9  | 粘贴文件       | `PasteFile`          |          | X        |
+|      | 粘贴文件       | `PasteFile`          |          | X        |
 
 ### 文本内容相关事件
 
-| 编号 | 名称         | 符号                   | 开发人员 | 是否实现 |
-| ---- | ------------ | ---------------------- | -------- | -------- |
-| 2-1  | 添加文件内容 | `AddTextDocument`    | PZP      | Y        |
-| 2-2  | 删除文件内容 | `DeleteTextDocument` |          | Y        |
-| 2-3  | 修改文件内容 | `EditTextDocument`   |          | Y        |
-| 2-4  | 重做文件内容 | `RedoTextDocument`   |          | Y        |
-| 2-5  | 撤销文件内容 | `UndoTextDocument`   |          | Y        |
-| 2-6  | 选中文本     | `SelectText`         |          | Y        |
-| 2-7  | 查找文件内容 |                        |          | X        |
-| 2-8  | 替换文件内容 |                        |          | X        |
-| 2-9  | 重命名符号   |                        |          | X        |
-| 2-10 | 文本跳转     |                        |          | X        |
+| 编号 | 名称           | 符号                 | 开发人员  | 是否实现 |
+| ---- | -------------- | -------------------- | --------- | -------- |
+| 2-1  | 添加文件内容   | `AddTextDocument`    | PZP & LYH | Y        |
+| 2-2  | 删除文件内容   | `DeleteTextDocument` |           | Y        |
+| 2-3  | 修改文件内容   | `EditTextDocument`   |           | Y        |
+| 2-4  | 重做文件内容   | `RedoTextDocument`   |           | Y        |
+| 2-5  | 撤销文件内容   | `UndoTextDocument`   |           | Y        |
+| 2-6  | 选中文本       | `SelectText`         |           | Y        |
+| 2-7  | 鼠标在文件悬停 | `MouseHover`         |           | Y        |
+|      | 鼠标点击跳转   | `MouseJump`          |           | X        |
+|      | 查找文件内容   |                      |           | X        |
+|      | 替换文件内容   |                      |           | X        |
+|      | 重命名符号     |                      |           | X        |
+|      | 文本跳转       |                      |           | X        |
 
 ### 终端事件
 
@@ -38,8 +40,8 @@
 | 3-1  | 打开终端     | `OpenTerminal`         | LSW      | Y        |
 | 3-2  | 关闭终端     | `CloseTerminal`        | LSW      | Y        |
 | 3-3  | 切换终端     | `ChangeActiveTerminal` | LSW      | Y        |
-| 3-4  | 执行终端命令 |                          |          | X        |
-| 3-5  | 终端输出内容 |                          |          | X        |
+|      | 执行终端命令 |                          |          | X        |
+|      | 终端输出内容 |                          |          | X        |
 
 ### 其他事件
 
@@ -51,6 +53,12 @@
 ## 事件属性
 
 [log-item.xmind](../raw/log-item.xmind)
+
+输出结构：
+
+![](../raw/log-item-surface.png)
+
+实际结构：
 
 ![](../raw/log-item.png)
 
@@ -359,7 +367,7 @@ filesWatcher.onDidChange(uri => {...})
 
 ### 2-6 `SelectText`
 
-**实现API：**
+**实现API：**`vscode.window.onDidChangeTextEditorSelection`
 
 **触发条件：**鼠标、键盘、命令都可能触发该事件，仅仅移动光标，也会触发此事件
 
@@ -367,7 +375,7 @@ filesWatcher.onDidChange(uri => {...})
 
 1. 插件进行了处理，只有选择的文本内容不为空时才记录
 2. 如果选择的内容横跨多个工件，按整体进行计算（也就是层级中的工件需要同时包含选择内容的开始位置和结束位置）
-3. 为节省空间 `artifact.conext.after` 一定为空
+3. **为节省空间 `artifact.conext.before` 一定为空**
 4. 在使用鼠标或键盘进行选择时，选择区域每扩大一次就会记录一次选中，这使得记录内容暴增，优化（**已废弃**）：当连续选择时，如果两次选择操作间隔小于1000毫秒，且上次选择内容是新选择内容的子集，那么删除上次选择记录
 
 **附加属性：**`context`、`refernence`
@@ -400,8 +408,8 @@ filesWatcher.onDidChange(uri => {...})
     "context": {
       "type": "Select",
       "content": {
-        "before": "struct Node *next;",
-        "after": ""
+        "before": "",
+        "after": "struct Node *next;"
       },
       "start": {
         "line": 5,
@@ -492,6 +500,64 @@ filesWatcher.onDidChange(uri => {...})
         }
       ]
     }
+  }
+```
+
+### 2-7 `MouseHover`
+
+**实现技术：**
+
+```typescript
+    const hoverCollector = vscode.languages.registerHoverProvider('*', {
+        async provideHover(document, position, token) {...}
+    })
+```
+
+**触发条件：**鼠标悬停在文本上，触发 VS Code 的悬停内容显示
+
+**注意：**
+
+1. **为节省空间 `artifact.conext.before` 一定为空**
+
+**附加属性：**`context`、`refernence`
+
+**示例数据：**
+
+```json
+  {
+    "id": 11,
+    "timeStamp": "2024-11-25 17:08:20.901",
+    "eventType": "MouseHover",
+    "artifact": {
+      "name": "main()",
+      "type": "Function",
+      "hierarchy": [
+        {
+          "name": "file:///c%3A/Users/hiron/Desktop/Code/algorithmCheck.c",
+          "type": "File"
+        },
+        {
+          "name": "main()",
+          "type": "Function"
+        }
+      ]
+    },
+    "context": {
+      "type": "Hover",
+      "content": {
+        "before": "",
+        "after": "reverseSingleLinkedList"
+      },
+      "start": {
+        "line": 33,
+        "character": 16
+      },
+      "end": {
+        "line": 33,
+        "character": 39
+      }
+    },
+    "references": []
   }
 ```
 

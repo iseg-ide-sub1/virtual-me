@@ -1,36 +1,36 @@
-# VirtualMe
+<h1 align="center">VirtualMe</h1>
 
-![](./res/img/icon-s.png)
+<div align="center" >
+<img src="./res/img/banner1.png"/>
+</div>
 
-<center>A VS Code plugin for collecting and predicting developer action sequences in the IDE.</center>
-
-<p align="center">
-| <a href="./res/docs/contributing.md"><b>Contributing</b></a> | <a href="./res/docs/plugin-architecture.md"><b>Architecture</b></a> |
+<div align="center" >
+<p>A VS Code plugin for collecting and predicting developer action sequences in the IDE.</p></div>
+<div align="center" >
+<p>
+| <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/contributing.md"><b>Contributing</b></a> | <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/plugin-architecture.md"><b>Architecture</b></a> |
 </p>
+</div>
 
 ## 安装和使用
 
 1. 打开扩展，选择“从VSIX安装...”
 
    ![img01](./res/img/guide/01.png)
-
 2. 选择本插件 `.vsix` 文件打开，安装完成
 
    ![img02](./res/img/guide/02.png)
-
 3. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.activate` 启动插件
 
    ![img03](./res/img/guide/03.png)
-
 4. 此时即可开始在 IDE 进行工作
-
 5. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.savelog` 保存操作记录
 
    ![img04](./res/img/guide/04.png)
-
 6. 操作记录被保存在当前工作目录下的 `./log` 文件夹
 
    > 注意：只要启动了插件，如果没保存操作记录，插件会在 IDE 退出时自动保存
+   >
 
    ![img05](./res/img/guide/05.png)
 
@@ -46,8 +46,8 @@
 
 #### 文件操作
 
-| 编号 | 名称           | 符号                 |
-| ---- | -------------- | -------------------- |
+| 编号 | 名称           | 符号                   |
+| ---- | -------------- | ---------------------- |
 | 1-1  | 打开文本文件   | `OpenTextDocument`   |
 | 1-2  | 关闭文本文件   | `CloseTextDocument`  |
 | 1-3  | 切换文本编辑器 | `ChangeTextDocument` |
@@ -59,8 +59,8 @@
 
 #### 文本内容操作
 
-| 编号 | 名称         | 符号                 |
-| ---- | ------------ | -------------------- |
+| 编号 | 名称         | 符号                   |
+| ---- | ------------ | ---------------------- |
 | 2-1  | 添加文件内容 | `AddTextDocument`    |
 | 2-2  | 删除文件内容 | `DeleteTextDocument` |
 | 2-3  | 修改文件内容 | `EditTextDocument`   |
@@ -70,8 +70,8 @@
 
 #### 终端操作
 
-| 编号 | 名称     | 符号                   |
-| ---- | -------- | ---------------------- |
+| 编号 | 名称     | 符号                     |
+| ---- | -------- | ------------------------ |
 | 3-1  | 打开终端 | `OpenTerminal`         |
 | 3-2  | 关闭终端 | `CloseTerminal`        |
 | 3-3  | 切换终端 | `ChangeActiveTerminal` |

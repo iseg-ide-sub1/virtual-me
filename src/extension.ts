@@ -137,6 +137,16 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 	context.subscriptions.push(changeTextDocumentWatcher)
     
+    /** 鼠标悬停触发hover事件 */
+    const hoverCollector = vscode.languages.registerHoverProvider('*', {
+        async provideHover(document, position, token) {
+            const log = await conextProcess.getLogItemsFromHoverCollector(document, position)
+            logs.push(log)
+            // console.log(log)
+            return null;
+        }
+    })
+
     /** 打开终端 */
     const terminalOpenWatcher = vscode.window.onDidOpenTerminal(async (terminal: vscode.Terminal) => {
         const log = await terminalProcess.getLogItemFromOpenTerminal(terminal)

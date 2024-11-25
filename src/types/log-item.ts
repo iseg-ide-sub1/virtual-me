@@ -37,6 +37,10 @@ export enum EventType {
     UndoTextDocument = "UndoTextDocument",
     /** 选中文本 */
     SelectText = "SelectText",
+    /** 鼠标在文件悬停 */
+    MouseHover = "MouseHover",
+    /** 鼠标点击跳转 */
+    MouseClick = "MouseJump",
 
     /** 打开终端 */
     OpenTerminal = "OpenTerminal",
@@ -84,6 +88,7 @@ export enum ContextType {
     Redo = "Redo",
     Undo = "Undo",
     Select = "Select",
+    Hover = "Hover",
     Unknown = "Unknown"
 }
 

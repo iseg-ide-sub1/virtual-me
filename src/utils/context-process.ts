@@ -68,14 +68,14 @@ function getArtifactTypeFromSymbolKind(kind: vscode.SymbolKind): logItem.Artifac
 }
 
 /**
- * 获取文件的对于范围的工件信息（包含当前位置的工件信息和当前位置的工件层级）
+ * 获取文件的对于给定范围的工件信息（包含当前位置的工件信息和当前位置的工件层级）
  * @param uri 给定文件的uri即路径
  * @param start 给定范围开始位置
  * @param end 给定范围结束位置
  * @param getRef 是否获取引用信息
  * @returns 给定范围的工件信息
  */
-export async function getArtifactFromSelectedText(
+export async function getArtifactFromRange(
     uri: vscode.Uri,
     start: vscode.Position,
     end: vscode.Position,
@@ -146,12 +146,12 @@ export async function getLogItemFromSelectedText(
     end: vscode.Position
 ): Promise<logItem.LogItem> {
     const eventType = logItem.EventType.SelectText
-    const artifact = await getArtifactFromSelectedText(document.uri, start, end)
+    const artifact = await getArtifactFromRange(document.uri, start, end)
     const context = new logItem.Context(
         logItem.ContextType.Select,
         {
-            before: document.getText(new vscode.Range(start, end)),
-            after: ''
+            before: '',
+            after: document.getText(new vscode.Range(start, end))
         },
         {
             line: start.line + 1,
@@ -165,7 +165,12 @@ export async function getLogItemFromSelectedText(
     return new logItem.LogItem(eventType, artifact, context);
 }
 
-
+/**
+ * 从文本内容改变事件中获取 LogItem 对象
+ * @param event 文本内容改变事件
+ * @param lastText 文本内容改变之前的内容
+ * @returns 返回 LogItem 对象
+ */
 export async function getLogItemsFromChangedText(
     event: vscode.TextDocumentChangeEvent,
     lastText: string
@@ -204,7 +209,7 @@ export async function getLogItemsFromChangedText(
         }
 
         // console.log('before',before,'after',after)
-        const artifact = await getArtifactFromSelectedText(document.uri, start, end)
+        const artifact = await getArtifactFromRange(document.uri, start, end)
         const context = new logItem.Context(
             contextType,
             {
@@ -223,4 +228,36 @@ export async function getLogItemsFromChangedText(
         logItems.push(new logItem.LogItem(eventType, artifact, context))
     }
     return logItems
+}
+
+/**
+ * 从光标悬停事件中获取 LogItem 对象
+ * @param document 鼠标悬停对于的文档 
+ * @param position  鼠标悬停的位置
+ * @returns 返回 LogItem 对象
+ */
+export async function getLogItemsFromHoverCollector(
+    document: vscode.TextDocument,
+    position: vscode.Position
+): Promise<logItem.LogItem> {
+    let range = document.getWordRangeAtPosition(position)
+    if(!range) range = new vscode.Range(position, position.translate(0,1))
+    const eventType = logItem.EventType.MouseHover
+    const artifact = await getArtifactFromRange(document.uri, range.start, range.end)
+    const context = new logItem.Context(
+        logItem.ContextType.Hover,
+        {
+            before: '',
+            after: document.getText(range)
+        },
+        {
+            line: range.start.line + 1,
+            character: range.start.character + 1
+        },
+        {
+            line: range.end.line + 1,
+            character: range.end.character + 1
+        }
+    )
+    return new logItem.LogItem(eventType, artifact, context);
 }

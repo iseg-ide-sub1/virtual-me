@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
-import {getArtifactFromSelectedText} from "./context-process";
+import {getArtifactFromRange} from "./context-process";
 
 
 export async function getUsagesFromSymbol(
@@ -29,7 +29,7 @@ export async function getUsagesFromSymbol(
 
     for (const call of incomingCalls) {
         // console.log('incoming call: ', call)
-        const artifact = await getArtifactFromSelectedText(
+        const artifact = await getArtifactFromRange(
             call.from.uri,
             call.from.selectionRange.start,
             call.from.selectionRange.end,
