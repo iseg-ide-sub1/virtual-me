@@ -15,12 +15,18 @@ A VS Code plugin for collecting and predicting developer action sequences in the
 ## 开发前准备
 
 1. 将仓库克隆到本地
-
 2. 执行 `npm install` 安装项目依赖
-
 3. 在编辑器中，打开 `src/extension.ts` 文件，然后按 `F5` 或者从命令面板运行 `Debug: Start Debugging`，这将编译并运行扩展程序在一个新的扩展开发主机窗口中
 
    > 如果发现修改了代码而没在插件中生效，可以先在控制台执行 `npm run watch` 再尝试运行
+   >
+
+## 插件打包
+
+```bash
+npm install vsce
+vsce package
+```
 
 ## 开发记录
 
@@ -70,4 +76,3 @@ A VS Code plugin for collecting and predicting developer action sequences in the
 - [context-process.ts](./src/utils/context-process.ts) 文本内容相关的处理函数
 - [file-process.ts](./src/utils/file-process.ts) 文件相关的处理函数
 - [terminal-process.ts](./src/utils/terminal-process.ts) 终端相关的处理函数
-

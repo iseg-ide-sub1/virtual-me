@@ -24,6 +24,12 @@
         "command": "virtualme.savelog",
         "title": "VirtualMe Save Log"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "virtualme.activate",
+        "key": "ctrl+alt+v"
+      }
     ]
   },
   "scripts": {

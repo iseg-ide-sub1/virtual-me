@@ -1,11 +1,11 @@
-<h1 align="center">VirtualMe</h1>
-
 <div align="center" >
 <img src="./res/img/banner1.png"/>
 </div>
 
+<h1 align="center">VirtualMe</h1>
+
 <div align="center" >
-<p>A VS Code plugin for collecting and predicting developer action sequences in the IDE.</p></div>
+<p>VirtualMe is a VS Code plugin <i>under development</i> for collecting developer action sequences and providing developer intention prediction in the IDE.</p></div>
 <div align="center" >
 <p>
 | <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/contributing.md"><b>Contributing</b></a> | <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/plugin-architecture.md"><b>Architecture</b></a> |
@@ -42,7 +42,7 @@
 
 ### 数据收集类型
 
-收集数据的详细格式见 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
+收集数据的触发条件和详细格式见 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
 
 #### 文件操作
 
@@ -59,14 +59,15 @@
 
 #### 文本内容操作
 
-| 编号 | 名称         | 符号                   |
-| ---- | ------------ | ---------------------- |
+| 编号 | 名称         | 符号                 |
+| ---- | ------------ | -------------------- |
 | 2-1  | 添加文件内容 | `AddTextDocument`    |
 | 2-2  | 删除文件内容 | `DeleteTextDocument` |
 | 2-3  | 修改文件内容 | `EditTextDocument`   |
 | 2-4  | 重做文件内容 | `RedoTextDocument`   |
 | 2-5  | 撤销文件内容 | `UndoTextDocument`   |
 | 2-6  | 选中文本     | `SelectText`         |
+| 2-7  | 鼠标悬停     | `MouseHover`         |
 
 #### 终端操作
 
