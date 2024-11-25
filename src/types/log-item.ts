@@ -44,6 +44,9 @@ export enum EventType {
     CloseTerminal = "CloseTerminal",
     /** 切换终端 */
     ChangeActiveTerminal = "ChangeActiveTerminal",
+
+    /** Debug Console 输出 */
+    DebugConsoleOutput = "DebugConsoleOutput",
 }
 
 export enum ArtifactType {

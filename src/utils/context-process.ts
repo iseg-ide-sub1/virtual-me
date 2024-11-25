@@ -224,3 +224,53 @@ export async function getLogItemsFromChangedText(
     }
     return logItems
 }
+
+/**
+ * 从 Debug Console 输出中获取 LogItem 对象
+ * @param output Debug Console 输出对象
+ * @returns LogItem 对象
+ */
+export async function getLogItemFromDebugConsole(
+    output: { output: string, category?: string, line?: number }
+): Promise<logItem.LogItem> {
+    const eventType = logItem.EventType.DebugConsoleOutput
+    
+    // 获取当前活动的编辑器和文档
+    const editor = vscode.window.activeTextEditor
+    let artifact: logItem.Artifact
+    
+    if (editor) {
+        // 如果有活动的编辑器，获取当前文件的工件信息
+        artifact = await getArtifactFromSelectedText(
+            editor.document.uri,
+            editor.selection.start,
+            editor.selection.end,
+            false // 不获取引用信息
+        )
+    } else {
+        // 如果没有活动的编辑器，创建一个基础的工件信息
+        artifact = new logItem.Artifact(
+            'Debug Console',
+            logItem.ArtifactType.Unknown
+        )
+    }
+    
+    // 创建上下文信息
+    const context = new logItem.Context(
+        logItem.ContextType.Unknown,
+        {
+            before: '',
+            after: output.output
+        },
+        {
+            line: output.line || 0,
+            character: 0
+        },
+        {
+            line: output.line || 0,
+            character: output.output.length
+        }
+    )
+    
+    return new logItem.LogItem(eventType, artifact, context)
+}

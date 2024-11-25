@@ -555,6 +555,46 @@ filesWatcher.onDidChange(uri => {...})
   }
 ```
 
+### 4-1 `getLogItemFromDebugConsole`
+
+**实现 API**：`vscode.debug.registerDebugAdapterTrackerFactory`
+
+**触发条件**：使用 Vs Code 进行代码调试，过程中 debug console 输出的所有内容都将被捕获
+
+```json
+  {
+    "id": 56,
+    "timeStamp": "2024-11-25 19:18:31.554",
+    "eventType": "DebugConsoleOutput",
+    "artifact": {
+      "name": "file:///Users/Documents/test.js",
+      "type": "File",
+      "hierarchy": [
+        {
+          "name": "file:///Users/Documents/test.js",
+          "type": "File"
+        }
+      ]
+    },
+    "context": {
+      "type": "Unknown",
+      "content": {
+        "before": "",
+        "after": "Uncaught TypeError TypeError: Cannot read properties of null (reading 'property')\n    at <anonymous> (/Users/Documents/test.js:7:17)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1550:14)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1702:10)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1307:32)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1121:12)\n    at traceSync (<node_internals>/diagnostics_channel:322:14)\n    at wrapModuleLoad (<node_internals>/internal/modules/cjs/loader:219:24)\n    at executeUserEntryPoint (<node_internals>/internal/modules/run_main:170:5)\n    at <anonymous> (<node_internals>/internal/main/run_main_module:36:49)\n"
+      },
+      "start": {
+        "line": 7,
+        "character": 0
+      },
+      "end": {
+        "line": 7,
+        "character": 765
+      }
+    },
+    "references": []
+  },
+```
+
 ## 插件代码组织结构
 
 ### `extension.ts`

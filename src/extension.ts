@@ -159,6 +159,29 @@ export function activate(context: vscode.ExtensionContext) {
         logs.push(log)
     })
     context.subscriptions.push(terminalChangeWatcher)
+
+    /** Debug Console 输出监听 */
+    const debugConsoleTracker = vscode.debug.registerDebugAdapterTrackerFactory('*', {
+        createDebugAdapterTracker(session: vscode.DebugSession) {
+            return {
+                onDidSendMessage: async (message: any) => {
+                    // 检查是否是输出事件
+                    if (message.type === 'event' && message.event === 'output') {
+                        const output = message.body
+                        if (output) {
+                            const log = await conextProcess.getLogItemFromDebugConsole({
+                                output: output.output || '',
+                                category: output.category,
+                                line: output.line
+                            })
+                            logs.push(log)
+                        }
+                    }
+                }
+            }
+        }
+    })
+    context.subscriptions.push(debugConsoleTracker)
 }
 
 export function deactivate() {
