@@ -174,11 +174,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalChangeWatcher)
 
     /** 执行菜单项 */
-    const commands = generateCommands()
-    commands.forEach(({ command, callback }) => {
-        const disposable = vscode.commands.registerCommand(command, callback);
-        context.subscriptions.push(disposable);
-    })
+    // const commands = generateCommands()
+    // commands.forEach(({ command, callback }) => {
+    //     const menuItemWatcher = vscode.commands.registerCommand(command, callback);
+    //     context.subscriptions.push(menuItemWatcher)
+    // })
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -202,20 +202,20 @@ export function deactivate() {
 	}
 }
 
-type CommandKey = keyof typeof menuProcess.commandDescriptions
-function generateCommands(): { command: string, callback: () => void }[] {
-    return Object.keys(menuProcess.commandDescriptions).map<{ command: string, callback: () => void }>((command) => {
-        const key = command as CommandKey
-        return {
-            command: key,
-            callback: () => handleCommand(menuProcess.commandDescriptions[key].description, menuProcess.commandDescriptions[key].artifactType)
-        }
-    })
-}
+// type CommandKey = keyof typeof menuProcess.commandDescriptions
+// function generateCommands(): { command: string, callback: () => void }[] {
+//     return Object.keys(menuProcess.commandDescriptions).map<{ command: string, callback: () => void }>((command) => {
+//         const key = command as CommandKey
+//         return {
+//             command: key,
+//             callback: () => handleCommand(menuProcess.commandDescriptions[key].description, menuProcess.commandDescriptions[key].artifactType)
+//         }
+//     })
+// }
 
-function handleCommand(commandName: string, artifactType: logItem.ArtifactType): void {
-    const artifact = new logItem.Artifact(commandName, artifactType)
-    const eventType = logItem.EventType.ExecuteMenuItem
-    const log = new logItem.LogItem(eventType, artifact)
-    logs.push(log)
-}
+// function handleCommand(commandName: string, artifactType: logItem.ArtifactType): void {
+//     const artifact = new logItem.Artifact(commandName, artifactType)
+//     const eventType = logItem.EventType.ExecuteMenuItem
+//     const log = new logItem.LogItem(eventType, artifact)
+//     logs.push(log)
+// }

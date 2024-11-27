@@ -57,7 +57,7 @@
 
 | 命令字符串                                                    | 英文描述                              | 中文描述            |
 |:---------------------------------------------------------|:----------------------------------|:----------------|
-| `editor.action.clipboardCutAction`                       | Cut Line (Empty Selection)        | 剪切行（空选择）        |
+| `editor.action.clipboardCutAction`                       | Cut Line (Empty Selection)        | 剪切行（空选择）        | 
 | `editor.action.clipboardCopyAction`                      | Copy Line (Empty Selection)       | 复制行（空选择）        |
 | `editor.action.deleteLines`                              | Delete Line                       | 删除行             |
 | `editor.action.insertLineAfter`                          | Insert Line Below                 | 在下方插入行          |
