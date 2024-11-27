@@ -4,17 +4,17 @@
 
 ### 文件级事件
 
-| 编号 | 名称           | 符号                   | 开发人员 | 是否实现 |
-| ---- | -------------- | ---------------------- | -------- | -------- |
-| 1-1  | 打开文本文件   | `OpenTextDocument`   | SYH      | Y        |
-| 1-2  | 关闭文本文件   | `CloseTextDocument`  |          | Y        |
-| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |          | Y        |
-| 1-4  | 新建文件       | `CreateFile`         |          | Y        |
-| 1-5  | 删除文件       | `DeleteFile`         |          | Y        |
-| 1-6  | 保存文件       | `SaveFile`           |          | Y        |
-| 1-7  | 重命名文件     | `RenameFile`         |          | Y        |
-| 1-8  | 移动文件       | `MoveFile`           |          | Y        |
-|      | 粘贴文件       | `PasteFile`          |          | X        |
+| 编号  | 名称      | 符号                   | 开发人员 | 是否实现 |
+|-----|---------|----------------------|------|------|
+| 1-1 | 打开文本文件  | `OpenTextDocument`   | SYH  | Y    |
+| 1-2 | 关闭文本文件  | `CloseTextDocument`  |      | Y    |
+| 1-3 | 切换文本编辑器 | `ChangeTextDocument` |      | Y    |
+| 1-4 | 新建文件    | `CreateFile`         |      | Y    |
+| 1-5 | 删除文件    | `DeleteFile`         |      | Y    |
+| 1-6 | 保存文件    | `SaveFile`           |      | Y    |
+| 1-7 | 重命名文件   | `RenameFile`         |      | Y    |
+| 1-8 | 移动文件    | `MoveFile`           |      | Y    |
+|     | 粘贴文件    | `PasteFile`          |      | X    |
 
 ### 文本内容相关事件
 
@@ -54,6 +54,174 @@
 
 **说明**  
 目前能够收集到的菜单项如下表所示。  
+下面是一个Markdown表格，列出了代码中收集到的菜单项，包括它们的命令字符串、英文描述和中文描述：
+
+| 命令字符串                                                    | 英文描述                              | 中文描述            |
+|:---------------------------------------------------------|:----------------------------------|:----------------|
+| `editor.action.clipboardCutAction`                       | Cut Line (Empty Selection)        | 剪切行（空选择）        |
+| `editor.action.clipboardCopyAction`                      | Copy Line (Empty Selection)       | 复制行（空选择）        |
+| `editor.action.deleteLines`                              | Delete Line                       | 删除行             |
+| `editor.action.insertLineAfter`                          | Insert Line Below                 | 在下方插入行          |
+| `editor.action.insertLineBefore`                         | Insert Line Above                 | 在上方插入行          |
+| `editor.action.moveLinesDownAction`                      | Move Lines Down                   | 向下移动行           |
+| `editor.action.moveLinesUpAction`                        | Move Lines Up                     | 向上移动行           |
+| `editor.action.copyLinesDownAction`                      | Copy Line Down                    | 向下复制行           |
+| `editor.action.copyLinesUpAction`                        | Copy Line Up                      | 向上复制行           |
+| `editor.action.addSelectionToNextFindMatch`              | Add Selection To Next Match       | 添加选择到下一个匹配项     |
+| `editor.action.moveSelectionToNextFindMatch`             | Move Selection To Next Match      | 移动选择到下一个匹配项     |
+| `cursorUndo`                                             | Undo                              | 撤销              |
+| `editor.action.insertCursorAtEndOfEachLineSelected`      | Insert Cursor At End Of Each Line | 在每行末尾插入光标       |
+| `editor.action.selectHighlights`                         | Select All Occurrences            | 选择所有出现项         |
+| `editor.action.changeAll`                                | Select All Occurrences            | 全部替换            |
+| `expandLineSelection`                                    | Expand Line Selection             | 扩展行选择           |
+| `editor.action.insertCursorBelow`                        | Insert Cursor Below               | 在下方插入光标         |
+| `editor.action.insertCursorAbove`                        | Insert Cursor Above               | 在上方插入光标         |
+| `editor.action.jumpToBracket`                            | Jump To Bracket                   | 跳转到括号           |
+| `editor.action.indentLines`                              | Indent Line                       | 缩进行             |
+| `editor.action.outdentLines`                             | Outdent Line                      | 取消缩进行           |
+| `cursorHome`                                             | Move to Line Start                | 移动到行首           |
+| `cursorEnd`                                              | Move to Line End                  | 移动到行尾           |
+| `cursorBottom`                                           | Move to File End                  | 移动到文件末尾         |
+| `cursorTop`                                              | Move to File Start                | 移动到文件开头         |
+| `scrollLineDown`                                         | Scroll Line Down                  | 滚动行下            |
+| `scrollLineUp`                                           | Scroll Line Up                    | 滚动行上            |
+| `scrollPageDown`                                         | Scroll Page Down                  | 滚动页面下           |
+| `scrollPageUp`                                           | Scroll Page Up                    | 滚动页面上           |
+| `editor.fold`                                            | Fold Region                       | 折叠区域            |
+| `editor.unfoldRecursively`                               | Unfold Region                     | 展开区域            |
+| `editor.foldAll`                                         | Fold All Regions                  | 折叠所有区域          |
+| `editor.unfoldAll`                                       | Unfold All Regions                | 展开所有区域          |
+| `editor.action.addCommentLine`                           | Add Line Comment                  | 添加行注释           |
+| `editor.action.removeCommentLine`                        | Remove Line Comment               | 移除行注释           |
+| `editor.action.commentLine`                              | Toggle Line Comment               | 切换行注释           |
+| `editor.action.blockComment`                             | Toggle Block Comment              | 切换块注释           |
+| `actions.find`                                           | Find                              | 查找              |
+| `editor.action.startFindReplaceAction`                   | Replace                           | 替换              |
+| `editor.action.nextMatchFindAction`                      | Find Next                         | 查找下一个           |
+| `editor.action.previousMatchFindAction`                  | Find Previous                     | 查找上一个           |
+| `editor.action.selectAllMatches`                         | Select All Matches                | 选择所有匹配项         |
+| `toggleFindCaseSensitive`                                | Toggle Find Case Sensitive        | 切换查找大小写敏感       |
+| `toggleFindRegex`                                        | Toggle Find Regex                 | 切换查找正则表达式       |
+| `toggleFindWholeWord`                                    | Toggle Find Whole Word            | 切换查找全字匹配        |
+| `editor.action.toggleTabFocusMode`                       | Toggle Tab Focus Mode             | 切换标签焦点模式        |
+| `toggleRenderWhitespace`                                 | Toggle Render Whitespace          | 切换渲染空白字符        |
+| `editor.action.toggleWordWrap`                           | Toggle Word Wrap                  | 切换自动换行          |
+| `editor.action.triggerSuggest`                           | Trigger Suggestion                | 触发建议            |
+| `editor.action.triggerParameterHints`                    | Trigger Parameter Hints           | 触发参数提示          |
+| `editor.action.formatDocument`                           | Format Document                   | 格式化文档           |
+| `editor.action.formatSelection`                          | Format Selection                  | 格式化选择区域         |
+| `editor.action.revealDefinition`                         | Go to Definition                  | 跳转到定义           |
+| `editor.action.showHover`                                | Show Hover                        | 显示悬浮提示          |
+| `editor.action.peekDefinition`                           | Peek Definition                   | 预览定义            |
+| `editor.action.revealDefinitionAside`                    | Reveal Definition Aside           | 在旁边显示定义         |
+| `editor.action.quickFix`                                 | Quick Fix                         | 快速修复            |
+| `editor.action.referenceSearch.trigger`                  | Reference Search                  | 引用搜索            |
+| `editor.action.rename`                                   | Rename Symbol                     | 重命名符号           |
+| `editor.action.inPlaceReplace.down`                      | Replace with Next Value           | 替换为下一个值         |
+| `editor.action.inPlaceReplace.up`                        | Replace with Previous Value       | 替换为上一个值         |
+| `editor.action.smartSelect.grow`                         | Expand AST Selection              | 扩展AST选择区域       |
+| `editor.action.smartSelect.shrink`                       | Shrink AST Selection              | 缩小AST选择区域       |
+| `editor.action.trimTrailingWhitespace`                   | Trim Trailing Whitespace          | 修剪尾随空白字符        |
+| `workbench.action.editor.changeLanguageMode`             | Change Language Mode              | 更改语言模式          |
+| `workbench.action.showAllSymbols`                        | Show All Symbols                  | 显示所有符号          |
+| `workbench.action.gotoLine`                              | Go to Line                        | 跳转到行            |
+| `workbench.action.quickOpen`                             | Quick Open                        | 快速打开            |
+| `workbench.action.gotoSymbol`                            | Go to Symbol                      | 跳转到符号           |
+| `workbench.actions.view.problems`                        | View Problems                     | 查看问题            |
+| `editor.action.marker.nextInFiles`                       | Next Error or Warning             | 下一个错误或警告        |
+| `editor.action.marker.prevInFiles`                       | Previous Error or Warning         | 上一个错误或警告        |
+| `workbench.action.showCommands`                          | Show Commands                     | 显示命令            |
+| `workbench.action.openPreviousRecentlyUsedEditorInGroup` | Open Previous Editor in Group     | 在组中打开上一个编辑器     |
+| `workbench.action.navigateBack`                          | Navigate Back                     | 后退              |
+| `workbench.action.quickInputBack`                        | Quick Input Back                  | 快速输入后退          |
+| `workbench.action.navigateForward`                       | Navigate Forward                  | 前进              |
+| `workbench.action.newWindow`                             | New Window                        | 新建窗口            |
+| `workbench.action.closeWindow`                           | Close Window                      | 关闭窗口            |
+| `workbench.action.closeActiveEditor`                     | Close Editor                      | 关闭编辑器           |
+| `workbench.action.closeFolder`                           | Close Folder                      | 关闭文件夹           |
+| `workbench.action.navigateEditorGroups`                  | Navigate Editor Groups            | 导航编辑器组          |
+| `workbench.action.splitEditor`                           | Split Editor                      | 分割编辑器           |
+| `workbench.action.focusFirstEditorGroup`                 | Focus First Editor Group          | 聚焦第一个编辑器组       |
+| `workbench.action.focusSecondEditorGroup`                | Focus Second Editor Group         | 聚焦第二个编辑器组       |
+| `workbench.action.focusThirdEditorGroup`                 | Focus Third Editor Group          | 聚焦第三个编辑器组       |
+| `workbench.action.focusPreviousGroup`                    | Focus Previous Group              | 聚焦上一个组          |
+| `workbench.action.focusNextGroup`                        | Focus Next Group                  | 聚焦下一组           |
+| `workbench.action.moveEditorLeftInGroup`                 | Move Editor Left                  | 将编辑器向左移动        |
+| `workbench.action.moveEditorRightInGroup`                | Move Editor Right                 | 将编辑器向右移动        |
+| `workbench.action.moveActiveEditorGroupLeft`             | Move Active Editor Group Left     | 将当前编辑器组向左移动     |
+| `workbench.action.moveActiveEditorGroupRight`            | Move Active Editor Group Right    | 将当前编辑器组向右移动     |
+| `workbench.action.moveEditorToNextGroup`                 | Move Editor to Next Group         | 将编辑器移动到下一组      |
+| `workbench.action.moveEditorToPreviousGroup`             | Move Editor to Previous Group     | 将编辑器移动到上一组      |
+| `workbench.action.files.newUntitledFile`                 | New File                          | 新建文件            |
+| `workbench.action.files.openFile`                        | Open File...                      | 打开文件...         |
+| `workbench.action.files.save`                            | Save                              | 保存              |
+| `workbench.action.files.saveAll`                         | Save All                          | 保存全部            |
+| `workbench.action.files.saveAs`                          | Save As...                        | 另存为...          |
+| `workbench.action.closeOtherEditors`                     | Close Other Editors               | 关闭其他编辑器         |
+| `workbench.action.closeEditorsInGroup`                   | Close Editors In Group            | 关闭组中的编辑器        |
+| `workbench.action.closeEditorsInOtherGroups`             | Close Editors In Other Groups     | 关闭其他组中的编辑器      |
+| `workbench.action.closeEditorsToTheLeft`                 | Close Editors To The Left         | 关闭左侧的编辑器        |
+| `workbench.action.closeEditorsToTheRight`                | Close Editors To The Right        | 关闭右侧的编辑器        |
+| `workbench.action.closeAllEditors`                       | Close All Editors                 | 关闭所有编辑器         |
+| `workbench.action.reopenClosedEditor`                    | Reopen Closed Editor              | 重新打开已关闭的编辑器     |
+| `workbench.action.keepEditor`                            | Keep Editor                       | 保持编辑器           |
+| `workbench.action.openNextRecentlyUsedEditorInGroup`     | Open Next Editor                  | 在组中打开下一个编辑器     |
+| `workbench.action.files.copyPathOfActiveFile`            | Copy Path Of Active File          | 复制活动文件的路径       |
+| `workbench.action.files.revealActiveFileInWindows`       | Reveal Active File In Windows     | 在Windows中显示活动文件 |
+| `workbench.action.files.showOpenedFileInNewWindow`       | Show Opened File In New Window    | 在新窗口中显示已打开的文件   |
+| `workbench.files.action.compareFileWith`                 | Compare File With...              | 比较文件...         |
+| `workbench.action.toggleFullScreen`                      | Toggle Full Screen                | 切换全屏模式          |
+| `workbench.action.toggleZenMode`                         | Toggle Zen Mode                   | 切换禅模式           |
+| `workbench.action.exitZenMode`                           | Exit Zen Mode                     | 退出禅模式           |
+| `workbench.action.zoomIn`                                | Zoom In                           | 放大              |
+| `workbench.action.zoomOut`                               | Zoom Out                          | 缩小              |
+| `workbench.action.zoomReset`                             | Reset Zoom                        | 重置缩放            |
+| `workbench.action.toggleSidebarVisibility`               | Toggle Sidebar Visibility         | 切换侧边栏可见性        |
+| `workbench.view.explorer`                                | Show Explorer                     | 显示资源管理器         |
+| `workbench.view.scm`                                     | Show SCM                          | 显示源代码管理         |
+| `workbench.view.debug`                                   | Show Debug                        | 显示调试            |
+| `workbench.view.extensions`                              | Show Extensions                   | 显示扩展            |
+| `workbench.action.output.toggleOutput`                   | Toggle Output                     | 切换输出面板          |
+| `workbench.action.quickOpenView`                         | Quick Open View                   | 快速打开视图          |
+| `workbench.action.terminal.openNativeConsole`            | Open Native Console               | 打开原生控制台         |
+| `markdown.showPreview`                                   | Toggle Markdown Preview           | 切换Markdown预览    |
+| `markdown.showPreviewToSide`                             | Markdown Preview To Side          | 侧边Markdown预览    |
+| `workbench.action.terminal.toggleTerminal`               | Toggle Terminal                   | 切换终端面板          |
+| `workbench.view.search`                                  | Show Search                       | 显示搜索            |
+| `workbench.action.replaceInFiles`                        | Replace in Files                  | 在文件中替换          |
+| `toggleSearchCaseSensitive`                              | Toggle Match Case                 | 切换匹配大小写         |
+| `toggleSearchWholeWord`                                  | Toggle Match Whole Word           | 切换匹配整个单词        |
+| `toggleSearchRegex`                                      | Toggle Search Regex               | 切换搜索正则表达式       |
+| `workbench.action.search.toggleQueryDetails`             | Toggle Search Details             | 切换搜索详情          |
+| `search.action.focusNextSearchResult`                    | Focus Next Search Result          | 聚焦下一个搜索结果       |
+| `search.action.focusPreviousSearchResult`                | Focus Previous Search Result      | 聚焦上一个搜索结果       |
+| `history.showNext`                                       | Show Next Search Term             | 显示下一个搜索词        |
+| `history.showPrevious`                                   | Show Previous Search Term         | 显示上一个搜索词        |
+| `workbench.action.openSettings`                          | Open Settings                     | 打开设置            |
+| `workbench.action.openWorkspaceSettings`                 | Open Workspace Settings           | 打开工作区设置         |
+| `workbench.action.openGlobalKeybindings`                 | Open Keyboard Shortcuts           | 打开键盘快捷键         |
+| `workbench.action.openSnippets`                          | Open User Snippets                | 打开用户代码片段        |
+| `workbench.action.selectTheme`                           | Select Color Theme                | 选择主题            |
+| `workbench.action.configureLocale`                       | Configure Display Language        | 配置显示语言          |
+| `editor.debug.action.toggleBreakpoint`                   | Toggle Breakpoint                 | 切换断点            |
+| `workbench.action.debug.start`                           | Start Debugging                   | 开始调试            |
+| `workbench.action.debug.continue`                        | Continue                          | 继续              |
+| `workbench.action.debug.run`                             | Start Without Debugging           | 无调试模式启动         |
+| `workbench.action.debug.pause`                           | Pause                             | 暂停              |
+| `workbench.action.debug.stepInto`                        | Step Into                         | 步入              |
+| `workbench.action.debug.stepOut`                         | Step Out                          | 步出              |
+| `workbench.action.debug.stepOver`                        | Step Over                         | 步过              |
+| `workbench.action.debug.stop`                            | Stop                              | 停止              |
+| `editor.debug.action.showDebugHover`                     | Show Debug Hover                  | 显示调试悬浮提示        |
+| `workbench.action.tasks.build`                           | Run Build Task                    | 运行构建任务          |
+| `workbench.action.tasks.test`                            | Run Test Task                     | 运行测试任务          |
+| `workbench.extensions.action.installExtension`           | Install Extension                 | 安装扩展            |
+| `workbench.extensions.action.showInstalledExtensions`    | Show Installed Extensions         | 显示已安装的扩展        |
+| `workbench.extensions.action.listOutdatedExtensions`     | List Outdated Extensions          | 列出过时的扩展         |
+| `workbench.extensions.action.showRecommendedExtensions`  | Show Recommended Extensions       | 显示推荐的扩展         |
+| `workbench.extensions.action.showPopularExtensions`      | Show Popular Extensions           | 显示流行的扩展         |
+| `workbench.extensions.action.updateAllExtensions`        | Update All Extensions             | 更新所有扩展          |
+
 
 
 ### 其他事件
