@@ -4,10 +4,11 @@ import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
 import * as conextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
+import * as menuProcess from './utils/menu-process'
 import * as path from 'path'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
+let isDev: boolean = true // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -18,14 +19,14 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
-		logs = [] // 执行该命令会清空日志
+        logs = [] // 执行该命令会清空日志
         vscode.window.showInformationMessage('Recording starts. Thanks for using VirtualMe!');
     });
     context.subscriptions.push(disposable);
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
-		saved = true;
+        saved = true;
         common.saveLog(common.logsToString(logs), isDev);
         vscode.window.showInformationMessage('Log file has been saved!');
         logs = [] // 清空保存的记录
@@ -33,26 +34,26 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(saveLogCommand);
 
     /** 打开文件 */
-	const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
+    const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
         openFile = true
         const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.toString())
         if (!isCalculatingArtifact.value){
             logs.push(log)
         }
-	})
-	context.subscriptions.push(openTextDocumentWatcher)
+    })
+    context.subscriptions.push(openTextDocumentWatcher)
 
-	/** 关闭文件 */
-	const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
+    /** 关闭文件 */
+    const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
         const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
         if (!isCalculatingArtifact.value){
             logs.push(log)
         }
-	})
-	context.subscriptions.push(closeTextDocumentWatcher)
+    })
+    context.subscriptions.push(closeTextDocumentWatcher)
 
-	/** 切换当前文件 */
-	const changeActiveTextDocumentWatcher = vscode.window.onDidChangeActiveTextEditor(editor => {
+    /** 切换当前文件 */
+    const changeActiveTextDocumentWatcher = vscode.window.onDidChangeActiveTextEditor(editor => {
         // 若当前关闭所有编辑视图，editor 值为 undefined
         // 切换编辑视图，会触发两次此事件，第一次 editor 值为 undefined
         if (editor === undefined || openFile) {
@@ -62,29 +63,29 @@ export function activate(context: vscode.ExtensionContext) {
         openFile = false
         const log = fileProcess.getLogItemFromChangeTextDocument(editor.document.uri.toString())
         logs.push(log)
-	})
-	context.subscriptions.push(changeActiveTextDocumentWatcher)
+    })
+    context.subscriptions.push(changeActiveTextDocumentWatcher)
 
     if (vscode.workspace.workspaceFolders) {
-		const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
-		/** 文件保存 */
+        const filesWatcher = vscode.workspace.createFileSystemWatcher('**/*')
+        /** 文件保存 */
         filesWatcher.onDidChange(uri => {
             const log = fileProcess.getLogItemFromSaveFile(uri.toString())
             logs.push(log)
         })
-		/** 文件创建 */
+        /** 文件创建 */
         filesWatcher.onDidCreate(uri => {
             const log = fileProcess.getLogItemFromCreateFile(uri.toString())
             logs.push(log)
         })
-		/** 文件删除 */
+        /** 文件删除 */
         filesWatcher.onDidDelete(uri => {
             const log = fileProcess.getLogItemFromDeleteFile(uri.toString())
             logs.push(log)
         })
-	} else {
-		vscode.window.showInformationMessage('No workspace folders are open.')
-	}
+    } else {
+        vscode.window.showInformationMessage('No workspace folders are open.')
+    }
     /** 文件重命名或移动 */
     const renameFileWatcher = vscode.workspace.onDidRenameFiles((event) => {
         for (const rename of event.files) {
@@ -105,9 +106,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(renameFileWatcher)
 
     /** 用光标选择文本内容 */
-	const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
-		const selection = event.selections[0] // 只考虑有一个选区的情况
-		if (selection.isEmpty) return // 只有选择内容不为空才记录
+    const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
+        const selection = event.selections[0] // 只考虑有一个选区的情况
+        if (selection.isEmpty) return // 只有选择内容不为空才记录
         if(event.textEditor.document.uri.scheme !== 'file') return // 非文件不记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
@@ -117,11 +118,11 @@ export function activate(context: vscode.ExtensionContext) {
         logs.push(log)
         // console.log(event)
         // console.log(log)
-	})
-	context.subscriptions.push(selectTextWatcher)
+    })
+    context.subscriptions.push(selectTextWatcher)
 
     /** 修改文件内容(新增、删除、修改、Redo、Undo) */
-	const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
+    const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
         if(event.contentChanges.length === 0){ // 脏状态改变
             lastText = event.document.getText()
             // console.log(lastText)
@@ -134,9 +135,9 @@ export function activate(context: vscode.ExtensionContext) {
         lastText = event.document.getText()
         // console.log(event)
         // console.log(changeLogs)
-	})
-	context.subscriptions.push(changeTextDocumentWatcher)
-    
+    })
+    context.subscriptions.push(changeTextDocumentWatcher)
+
     /** 鼠标悬停触发hover事件 */
     const hoverCollector = vscode.languages.registerHoverProvider('*', {
         async provideHover(document, position, token) {
@@ -169,10 +170,34 @@ export function activate(context: vscode.ExtensionContext) {
         logs.push(log)
     })
     context.subscriptions.push(terminalChangeWatcher)
+
+    const commands = generateCommands()
+    commands.forEach(({ command, callback }) => {
+        const disposable = vscode.commands.registerCommand(command, callback);
+        context.subscriptions.push(disposable);
+    })
 }
 
 export function deactivate() {
-	if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
-		common.saveLog(common.logsToString(logs), isDev);
-	}
+    if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
+        common.saveLog(common.logsToString(logs), isDev);
+    }
+}
+
+type CommandKey = keyof typeof menuProcess.commandDescriptions
+function generateCommands(): { command: string, callback: () => void }[] {
+    return Object.keys(menuProcess.commandDescriptions).map<{ command: string, callback: () => void }>((command) => {
+        const key = command as CommandKey
+        return {
+            command: key,
+            callback: () => handleCommand(menuProcess.commandDescriptions[key].description, menuProcess.commandDescriptions[key].artifactType)
+        }
+    })
+}
+
+function handleCommand(commandName: string, artifactType: logItem.ArtifactType): void {
+    const artifact = new logItem.Artifact(commandName, artifactType)
+    const eventType = logItem.EventType.ExecuteMenuItem
+    const log = new logItem.LogItem(eventType, artifact)
+    logs.push(log)
 }

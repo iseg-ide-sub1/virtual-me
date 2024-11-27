@@ -70,3 +70,7 @@
 
 - 将文本内容处理的常用函数 `getArtifactFromSelectedText` 重命名为 `getArtifactFromRange`
 - 实现鼠标悬停事件 `MouseHover`
+
+### 20241125-suyunhe
+- 完成对vscode内所有菜单项命令的收集
+- 完善`plugin-architecture.md`文档

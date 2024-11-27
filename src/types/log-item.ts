@@ -48,6 +48,9 @@ export enum EventType {
     CloseTerminal = "CloseTerminal",
     /** 切换终端 */
     ChangeActiveTerminal = "ChangeActiveTerminal",
+
+    /** 执行菜单项 */
+    ExecuteMenuItem = "ExecuteMenuItem",
 }
 
 export enum ArtifactType {
@@ -77,7 +80,8 @@ export enum ArtifactType {
     Event = "Event",
     Operator = "Operator",
     TypeParameter = "TypeParameter",
-    Terminal = "Terminal", // 自定义工件类型
+    Terminal = "Terminal",
+    MenuItem = "MenuItem",
     Unknown = "Unknown"
 }
 
