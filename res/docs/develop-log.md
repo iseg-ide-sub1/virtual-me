@@ -74,3 +74,6 @@
 ### 20241125-suyunhe
 - 完成对vscode内所有菜单项命令的收集
 - 完善`plugin-architecture.md`文档
+
+### 20241127-suyunhe
+- 修复文档路径不统一的Bug
