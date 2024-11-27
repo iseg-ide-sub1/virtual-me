@@ -48,6 +48,8 @@ export enum EventType {
     CloseTerminal = "CloseTerminal",
     /** 切换终端 */
     ChangeActiveTerminal = "ChangeActiveTerminal",
+    /** 终端执行 */
+    ExecuteTerminalCommand = "ExecuteTerminalCommand",
 
     /** 执行菜单项 */
     ExecuteMenuItem = "ExecuteMenuItem",
@@ -93,6 +95,7 @@ export enum ContextType {
     Undo = "Undo",
     Select = "Select",
     Hover = "Hover",
+    Terminal = "Terminal",
     Unknown = "Unknown"
 }
 

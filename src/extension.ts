@@ -179,12 +179,27 @@ export function activate(context: vscode.ExtensionContext) {
         const disposable = vscode.commands.registerCommand(command, callback);
         context.subscriptions.push(disposable);
     })
+
+    /** 终端执行 */
+    const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
+        const terminal = event.terminal;
+        const execution = event.execution;
+        const cmd = execution.commandLine.value;
+        const stream = execution.read();
+        let output = '';
+        for await (const data of stream) {
+            output += data.toString();
+        }
+        const log = await terminalProcess.getLogItemFromTerminalExecute(terminal, cmd, output)
+        logs.push(log)
+    })
+    context.subscriptions.push(terminalExecuteWatcher)
 }
 
 export function deactivate() {
-    if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
-        common.saveLog(common.logsToString(logs), isDev);
-    }
+	if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
+		common.saveLog(common.logsToString(logs), isDev);
+	}
 }
 
 type CommandKey = keyof typeof menuProcess.commandDescriptions
