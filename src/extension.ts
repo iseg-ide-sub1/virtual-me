@@ -89,16 +89,18 @@ export function activate(context: vscode.ExtensionContext) {
     /** 文件重命名或移动 */
     const renameFileWatcher = vscode.workspace.onDidRenameFiles((event) => {
         for (const rename of event.files) {
-            const oldPath = rename.oldUri.fsPath;
-            const newPath = rename.newUri.fsPath;
+            const oldPath = rename.oldUri.fsPath
+            const newPath = rename.newUri.fsPath
+            const oldUri = common.convertToFilePathUri(oldPath)
+            const newUri = common.convertToFilePathUri(newPath)
             // 检查路径是否发生变化
             if (path.dirname(oldPath) === path.dirname(newPath)) {
                 // 文件名改变了，认为是重命名
-                const log = fileProcess.getLogItemFromRenameFile(oldPath, newPath);
+                const log = fileProcess.getLogItemFromRenameFile(oldUri, newUri)
                 logs.push(log)
             } else {
                 // 路径改变了，认为是移动
-                const log = fileProcess.getLogItemFromMoveFile(oldPath, newPath);
+                const log = fileProcess.getLogItemFromMoveFile(oldUri, newUri)
                 logs.push(log)
             }
         }
@@ -171,6 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalChangeWatcher)
 
+    /** 执行菜单项 */
     const commands = generateCommands()
     commands.forEach(({ command, callback }) => {
         const disposable = vscode.commands.registerCommand(command, callback);

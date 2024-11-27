@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as url from 'url'
 import * as logItem from '../types/log-item'
 import * as vscode from 'vscode'
 /**
@@ -60,14 +61,14 @@ export function getFormattedTime1() {
     const hours = now.getHours()
     const minutes = now.getMinutes()
     const seconds = now.getSeconds()
-  
+
     // 格式化月份、日期、小时、分钟、秒和毫秒，不足两位数的前面补零
     const formattedMonth = month.toString().padStart(2, '0')
     const formattedDay = day.toString().padStart(2, '0')
     const formattedHours = hours.toString().padStart(2, '0')
     const formattedMinutes = minutes.toString().padStart(2, '0')
     const formattedSeconds = seconds.toString().padStart(2, '0')
-  
+
     // 组合成最终的字符串
     const formattedTime = `${year}-${formattedMonth}-${formattedDay} ${formattedHours}.${formattedMinutes}.${formattedSeconds}`
     return formattedTime
@@ -102,3 +103,18 @@ export function saveLog(content: string, isDev: boolean = true, fileName = ''){
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
 }
 
+
+// 辅助函数：将本地路径转换为file://格式的URL
+export function convertToFilePathUri(filePath: string) {
+    // 使用path模块规范化路径
+    const normalizedPath = path.normalize(filePath)
+    // 将路径中的反斜杠替换为正斜杠
+    const slashPath = normalizedPath.replace(/\\/g, '/')
+    // 使用url模块将路径转换为file://格式的URL
+    const fileUri = url.format({
+        protocol: 'file',
+        slashes: true,
+        pathname: slashPath
+    })
+    return fileUri
+}
