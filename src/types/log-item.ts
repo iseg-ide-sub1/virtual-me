@@ -48,9 +48,11 @@ export enum EventType {
     ChangeActiveTerminal = "ChangeActiveTerminal",
     /** 终端执行 */
     ExecuteTerminalCommand = "ExecuteTerminalCommand",
+    /** Debug Console 输出 */
+    DebugConsoleOutput = "DebugConsoleOutput",
 
     /** 执行菜单项 */
-    ExecuteMenuItem = "ExecuteMenuItem",
+    ExecuteMenuItem = "ExecuteMenuItem"
 }
 
 export enum ArtifactType {
