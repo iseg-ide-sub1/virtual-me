@@ -2,7 +2,7 @@
 
 阅读 [README.md](../../README.md)
 
-## virtual-me
+## v0.0.1
 
 ### 20241112-HiMeditator
 
@@ -77,3 +77,22 @@
 
 ### 20241127-suyunhe
 - 修复文档路径不统一的Bug
+
+### 20241127-Katock-Cricket
+
+终端命令与输出的捕获
+
+1. 添加Log类型：`ExecuteTerminalCommand`
+2. 添加Context类型：Terminal
+3. 将命令放入context.content.before；输出放入context.content.after
+4. 只用了api，理论上可以跨平台。
+5. 控制字符的过滤还不完善，有乱码
+
+## v0.0.2
+
+### 20241102-HiMeditator
+
+- 完善文档，修改文档，保证架构文档的正确性
+- 添加指令执行的快捷键（`Ctrl+Alt+V` 和 `Ctrl+Alt+S`）
+- 简单新增命令
+- **将版本由 `v0.0.1` 变更为 `v0.0.2`**

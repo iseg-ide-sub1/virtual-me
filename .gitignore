@@ -4,7 +4,7 @@ node_modules
 .vscode-test/
 *.vsix
 /res/log/*
+/log/
 .obsidian
 .idea/
 .DS_Store
-

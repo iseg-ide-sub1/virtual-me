@@ -27,7 +27,7 @@
 | 2-5  | 撤销文件内容 | `UndoTextDocument`   |           | Y        |
 | 2-6  | 选中文本     | `SelectText`         |           | Y        |
 | 2-7  | 鼠标悬停     | `MouseHover`         |           | Y        |
-|      | 鼠标点击跳转 | `MouseJump`          |           | X        |
+|      | 鼠标点击跳转 |                      |           | X        |
 |      | 查找文件内容 |                      |           | X        |
 |      | 替换文件内容 |                      |           | X        |
 |      | 重命名符号   |                      |           | X        |
@@ -39,20 +39,19 @@
 
 ### 终端事件
 
-| 编号 | 名称         | 符号                     | 开发人员 | 是否实现 |
-| ---- | ------------ | ------------------------ | -------- | -------- |
-| 3-1  | 打开终端     | `OpenTerminal`         | LSW      | Y        |
-| 3-2  | 关闭终端     | `CloseTerminal`        | LSW      | Y        |
-| 3-3  | 切换终端     | `ChangeActiveTerminal` | LSW      | Y        |
-|      | 执行终端命令 |                          |          | X        |
-|      | 终端输出内容 |                          |          | X        |
+| 编号 | 名称         | 符号                     | 开发人员 | 是否实现    |
+| ---- | ------------ | ------------------------ | -------- | ----------- |
+| 3-1  | 打开终端     | `OpenTerminal`           | LSW      | Y           |
+| 3-2  | 关闭终端     | `CloseTerminal`          | LSW      | Y           |
+| 3-3  | 切换终端     | `ChangeActiveTerminal`   | LSW      | Y           |
+| 3-4  | 执行终端命令 | `ExecuteTerminalCommand` | LYH      | Y（待优化） |
 
 ### 执行菜单项事件
 | 编号  | 名称    | 符号                     | 开发人员 | 是否实现 |
 |-----|-------| ------------------------ |------| -------- |
-| 4-1 | 执行菜单项 | `ExecuteMenuItem`         | SYH  | Y        |
+| 4-1 | 执行菜单项 | `ExecuteMenuItem`         | SYH  | （当前存在问题） |
 
-**说明**  
+**说明** 
 目前能够收集到的菜单项如下表所示。
 
 | 命令字符串                                                    | 英文描述                              | 中文描述            |
@@ -743,7 +742,7 @@ filesWatcher.onDidChange(uri => {...})
 
 ### 3-1 `OpenTerminal`
 
-**实现 API**：`vscode.window.onDidOpenTerminal`
+**实现 API**：`vscode.window.onDidStartTerminalShellExecution`
 
 **触发条件**：在 Vs Code 中打开新的终端
 
@@ -797,6 +796,46 @@ filesWatcher.onDidChange(uri => {...})
     "artifact": {
       "name": "64942->65654", // 涉及到的终端进程 id
       "type": "Terminal"
+    }
+  }
+```
+
+### 3-4 `ExecuteTerminalCommand`
+
+**实现 API**：`vscode.window.onDidChangeActiveTerminal`
+
+**触发条件**：Shell 指令被执行，只有终端的 [shell integration](https://code.visualstudio.com/docs/terminal/shell-integration) 被激活时才会执行
+
+**注意：**
+
+1. 只有显示“已激活 Shell 集成”的终端才会记录对应的信息
+2. 记录的输出信息与实际输出有所出入（编码类型不一样？）
+
+**示例数据**：
+
+```json
+  {
+    "id": 34,
+    "timeStamp": "2024-12-02 18:50:25.749",
+    "eventType": "ExecuteTerminalCommand",
+    "artifact": {
+      "name": "824",
+      "type": "Terminal"
+    },
+    "context": {
+      "type": "Terminal",
+      "content": {
+        "before": "git log",
+        "after": "d2\u0007tal: not a git repository (or any of the parent directories): .git\r\n\u001b]633;D;128\u0007"
+      },
+      "start": {
+        "line": 0,
+        "character": 0
+      },
+      "end": {
+        "line": 0,
+        "character": 0
+      }
     }
   }
 ```

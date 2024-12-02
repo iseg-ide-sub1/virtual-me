@@ -1,6 +1,7 @@
 <div align="center" >
-<img src="./res/img/banner1.png"/>
+<img src="./res/img/banner2.png"/>
 </div>
+
 
 <h1 align="center">VirtualMe</h1>
 
@@ -20,17 +21,18 @@
 2. 选择本插件 `.vsix` 文件打开，安装完成
 
    ![img02](./res/img/guide/02.png)
-3. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.activate` 启动插件
+3. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.activate` 启动插件，或者使用快捷键 `Ctrl+Alt+V` 直接执行该命令
+   > 注意：该命令不但可以用于在插件未激活时激活插件，还可以用于清空当前收集记录的缓存，因此在插件激活后谨慎执行，避免收集数据的丢失
 
    ![img03](./res/img/guide/03.png)
-4. 此时即可开始在 IDE 进行工作
-5. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.savelog` 保存操作记录
+4. 此时即可开始在 IDE 进行工作，插件会自动收集数据（数据收集类型见下文）
+5. 按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.savelog` 保存操作记录，或者使用快捷键 `Ctrl+Alt+S` 直接保存操作记录
+   > 注意：保存操作记录后，插件会清空记录数据的缓存
 
    ![img04](./res/img/guide/04.png)
 6. 操作记录被保存在当前工作目录下的 `./log` 文件夹
 
-   > 注意：只要启动了插件，如果没保存操作记录，插件会在 IDE 退出时自动保存
-   >
+   > 注意：只要启动了插件，如果没保存操作记录，插件会在 IDE 正常退出时自动保存记录
 
    ![img05](./res/img/guide/05.png)
 
@@ -44,35 +46,38 @@
 
 收集数据的触发条件和详细格式见 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
 
+注：编号中带 `*` 的操作表示该操作测试有一定问题，需要在之后的版本修复，具体问题可参考 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
+
 #### 文件操作
 
-| 编号 | 名称           | 符号                   |
-| ---- | -------------- | ---------------------- |
-| 1-1  | 打开文本文件   | `OpenTextDocument`   |
-| 1-2  | 关闭文本文件   | `CloseTextDocument`  |
-| 1-3  | 切换文本编辑器 | `ChangeTextDocument` |
-| 1-4  | 新建文件       | `CreateFile`         |
-| 1-5  | 删除文件       | `DeleteFile`         |
-| 1-6  | 保存文件       | `SaveFile`           |
-| 1-7  | 重命名文件     | `RenameFile`         |
-| 1-8  | 移动文件       | `MoveFile`           |
+| 编号 | 名称           | 符号                 | 推出版本 |
+| ---- | -------------- | -------------------- | -------- |
+| 1-1  | 打开文本文件   | `OpenTextDocument`   | v0.0.1   |
+| 1-2  | 关闭文本文件   | `CloseTextDocument`  | v0.0.1   |
+| 1-3  | 切换文本编辑器 | `ChangeTextDocument` | v0.0.1   |
+| 1-4  | 新建文件       | `CreateFile`         | v0.0.1   |
+| 1-5  | 删除文件       | `DeleteFile`         | v0.0.1   |
+| 1-6  | 保存文件       | `SaveFile`           | v0.0.1   |
+| 1-7  | 重命名文件     | `RenameFile`         | v0.0.1   |
+| 1-8  | 移动文件       | `MoveFile`           | v0.0.1   |
 
 #### 文本内容操作
 
-| 编号 | 名称         | 符号                 |
-| ---- | ------------ | -------------------- |
-| 2-1  | 添加文件内容 | `AddTextDocument`    |
-| 2-2  | 删除文件内容 | `DeleteTextDocument` |
-| 2-3  | 修改文件内容 | `EditTextDocument`   |
-| 2-4  | 重做文件内容 | `RedoTextDocument`   |
-| 2-5  | 撤销文件内容 | `UndoTextDocument`   |
-| 2-6  | 选中文本     | `SelectText`         |
-| 2-7  | 鼠标悬停     | `MouseHover`         |
+| 编号 | 名称         | 符号                 | 推出版本 |
+| ---- | ------------ | -------------------- | -------- |
+| 2-1  | 添加文件内容 | `AddTextDocument`    | v0.0.1   |
+| 2-2  | 删除文件内容 | `DeleteTextDocument` | v0.0.1   |
+| 2-3  | 修改文件内容 | `EditTextDocument`   | v0.0.1   |
+| 2-4  | 重做文件内容 | `RedoTextDocument`   | v0.0.1   |
+| 2-5  | 撤销文件内容 | `UndoTextDocument`   | v0.0.1   |
+| 2-6  | 选中文本     | `SelectText`         | v0.0.1   |
+| 2-7  | 鼠标悬停     | `MouseHover`         | v0.0.2   |
 
 #### 终端操作
 
-| 编号 | 名称     | 符号                     |
-| ---- | -------- | ------------------------ |
-| 3-1  | 打开终端 | `OpenTerminal`         |
-| 3-2  | 关闭终端 | `CloseTerminal`        |
-| 3-3  | 切换终端 | `ChangeActiveTerminal` |
+| 编号   | 名称         | 符号                     | 推出版本 |
+| ------ | ------------ | ------------------------ | -------- |
+| 3-1    | 打开终端     | `OpenTerminal`           | v0.0.1   |
+| 3-2    | 关闭终端     | `CloseTerminal`          | v0.0.1   |
+| 3-3    | 切换终端     | `ChangeActiveTerminal`   | v0.0.1   |
+| 3-4`*` | 执行终端命令 | `ExecuteTerminalCommand` | v0.0.2   |

@@ -39,8 +39,6 @@ export enum EventType {
     SelectText = "SelectText",
     /** 鼠标在文件悬停 */
     MouseHover = "MouseHover",
-    /** 鼠标点击跳转 */
-    MouseClick = "MouseJump",
 
     /** 打开终端 */
     OpenTerminal = "OpenTerminal",
