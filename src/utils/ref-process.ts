@@ -6,8 +6,9 @@ import {getArtifactFromRange} from "./context-process";
 export async function getUsagesFromSymbol(
     uri: vscode.Uri,
     position: vscode.Position,
-): Promise<logItem.Reference[]> {
-    let usages: logItem.Reference[] = []
+): Promise<logItem.Artifact[]> {
+    let usages: logItem.Artifact[] = []
+
     const callHierarchyItems = await vscode.commands.executeCommand<vscode.CallHierarchyItem[]>(
         'vscode.prepareCallHierarchy',
         uri,
@@ -35,7 +36,7 @@ export async function getUsagesFromSymbol(
             call.from.selectionRange.end,
             false)
         if (artifact.hierarchy && artifact.hierarchy.length !== 0) {
-            usages.push({hierarchy: artifact.hierarchy});
+            usages.push(artifact);
         }
     }
 

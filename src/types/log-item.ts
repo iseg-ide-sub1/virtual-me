@@ -102,7 +102,7 @@ export class Artifact {
         public name: string,
         public type: ArtifactType,
         public hierarchy?: Artifact[],
-        public references?: Reference[]
+        public references?: Artifact[]
     ) {
     }
 
@@ -123,13 +123,6 @@ export class Context {
     }
 }
 
-export class Reference {
-    constructor(
-        public hierarchy: Artifact[],
-    ) {
-    }
-}
-
 export class LogItem {
     static #nextId = 1
     id: number
@@ -137,9 +130,9 @@ export class LogItem {
     eventType: EventType
     artifact: Artifact
     context?: Context
-    references?: Reference[]
+    references?: Artifact[]
 
-    constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Reference[]) {
+    constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Artifact[]) {
         this.id = LogItem.#nextId++
         this.timeStamp = getFormattedTime()
         this.eventType = eventType

@@ -116,7 +116,7 @@ export async function getArtifactFromRange(
     const artifactSelf = hierarchy[hierarchy.length - 1]
 
     // 构造reference
-    let references: logItem.Reference[] = []
+    let references: logItem.Artifact[] = []
     if (getRef && symbolSelf) {
         // const st = new Date().getTime()
         const start = symbolSelf.selectionRange.start
