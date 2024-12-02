@@ -39,12 +39,13 @@
 
 ### 终端事件
 
-| 编号 | 名称         | 符号                     | 开发人员 | 是否实现    |
-| ---- | ------------ | ------------------------ | -------- | ----------- |
-| 3-1  | 打开终端     | `OpenTerminal`           | LSW      | Y           |
-| 3-2  | 关闭终端     | `CloseTerminal`          | LSW      | Y           |
-| 3-3  | 切换终端     | `ChangeActiveTerminal`   | LSW      | Y           |
-| 3-4  | 执行终端命令 | `ExecuteTerminalCommand` | LYH      | Y（待优化） |
+| 编号 | 名称               | 符号                     | 开发人员 | 是否实现         |
+| ---- | ------------------ | ------------------------ | -------- | ---------------- |
+| 3-1  | 打开终端           | `OpenTerminal`           | LSW      | Y                |
+| 3-2  | 关闭终端           | `CloseTerminal`          | LSW      | Y                |
+| 3-3  | 切换终端           | `ChangeActiveTerminal`   | LSW      | Y                |
+| 3-4  | 执行终端命令       | `ExecuteTerminalCommand` | LYH      | Y（待优化）      |
+| 3-5  | 获取调试控制台输出 | `DebugConsoleOutput`     | LSW      | （当前存在问题） |
 
 ### 执行菜单项事件
 | 编号  | 名称    | 符号                     | 开发人员 | 是否实现 |
@@ -837,6 +838,46 @@ filesWatcher.onDidChange(uri => {...})
         "character": 0
       }
     }
+  }
+```
+
+### 3-5 `DebugConsoleOutput`
+
+**实现 API**：`vscode.debug.registerDebugAdapterTrackerFactory`
+
+**触发条件**：使用 Vs Code 进行代码调试，过程中 debug console 输出的所有内容都将被捕获
+
+```json
+  {
+    "id": 56,
+    "timeStamp": "2024-11-25 19:18:31.554",
+    "eventType": "DebugConsoleOutput",
+    "artifact": {
+      "name": "file:///Users/Documents/test.js",
+      "type": "File",
+      "hierarchy": [
+        {
+          "name": "file:///Users/Documents/test.js",
+          "type": "File"
+        }
+      ]
+    },
+    "context": {
+      "type": "Unknown",
+      "content": {
+        "before": "",
+        "after": "Uncaught TypeError TypeError: Cannot read properties of null (reading 'property')\n    at <anonymous> (/Users/Documents/test.js:7:17)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1550:14)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1702:10)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1307:32)\n    at <anonymous> (<node_internals>/internal/modules/cjs/loader:1121:12)\n    at traceSync (<node_internals>/diagnostics_channel:322:14)\n    at wrapModuleLoad (<node_internals>/internal/modules/cjs/loader:219:24)\n    at executeUserEntryPoint (<node_internals>/internal/modules/run_main:170:5)\n    at <anonymous> (<node_internals>/internal/main/run_main_module:36:49)\n"
+      },
+      "start": {
+        "line": 7,
+        "character": 0
+      },
+      "end": {
+        "line": 7,
+        "character": 765
+      }
+    },
+    "references": []
   }
 ```
 
