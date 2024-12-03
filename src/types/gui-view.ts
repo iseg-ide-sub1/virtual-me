@@ -3,6 +3,14 @@ import * as vscode from 'vscode';
 export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'virtualme.GUIView';
     private _view?: vscode.WebviewView;
+    private _logsNum: number = 0;
+    set logsNum(newValue: number) {
+        console.log(`Setting the value of myProperty to: ${newValue}`);
+        this._logsNum = newValue;
+        if(this._view){
+            this._view.webview.postMessage({command: 'updateLogsNum', logsNum: this._logsNum})
+        }
+    }
     constructor(
         private readonly _extensionUri: vscode.Uri,
     ) { }
@@ -14,21 +22,14 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
         webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [
+            enableScripts: true, // 允许脚本
+            localResourceRoots: [ // 允许装载资源的本地路径
                 this._extensionUri
             ]
         };
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
         webviewView.webview.onDidReceiveMessage(message => {
-			switch (message.command) {
-				case 'virtualme.activate':
-					vscode.commands.executeCommand('virtualme.activate');
-                    break;
-                case 'virtualme.savelog':
-					vscode.commands.executeCommand('virtualme.savelog');
-                    break;
-			}
+            vscode.commands.executeCommand(message.command);
 		});
     }
     private _getHtmlForWebview(webview: vscode.Webview) {
@@ -47,9 +48,13 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <title>VirtualMe</title>
             </head>
             <body>
-                <button id="btn-start">Start Collecting</button>
+                <button id="btn-clear">Clear Log</button>
                 <button id="btn-save">Save Log</button>
                 <script src="${scriptUri}"></script>
+                <h2>
+                    <span>Items: </span>
+                    <b id="logs-num">${this.logsNum}</b>
+                </h2>
             </body>
             </html>`;
   }

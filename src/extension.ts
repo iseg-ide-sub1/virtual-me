@@ -18,13 +18,20 @@ let openFile : boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
 
 export function activate(context: vscode.ExtensionContext) {
+    vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
-        logs = [] // 执行该命令会清空日志
-        vscode.window.showInformationMessage('Recording starts. Thanks for using VirtualMe!');
+        // 空命令，执行可以激活插件而不产生其他影响
     });
     context.subscriptions.push(disposable);
+
+    /** 注册命令：virtual-me.activate */
+    const clearLogs = vscode.commands.registerCommand('virtualme.clear', () => {
+        logs = []
+        vscode.window.showInformationMessage('All collecting data has been cleared!');
+    });
+    context.subscriptions.push(clearLogs);
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
@@ -206,10 +213,25 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalExecuteWatcher)
 
+    /** 每隔 500ms 更新一次日志数量 */
+    function tntervalGetLogsNumTask() {
+        const interval = setInterval(() => {
+            GUIProvider.logsNum = logs.length
+        }, 500);
+        return interval;
+    }
+    const updateLogsNumIntervalId = tntervalGetLogsNumTask();
+    /** 销毁时清除定时任务 */
+    context.subscriptions.push({
+        dispose: () => {
+            clearInterval(updateLogsNumIntervalId);
+            console.log('Interval cleared.');
+        },
+    });
 }
 
 export function deactivate() {
-	if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
+	if(!saved && logs.length > 0){ // 如果之前没有手动保存过则自动保存
 		common.saveLog(common.logsToString(logs), isDev);
 	}
 }

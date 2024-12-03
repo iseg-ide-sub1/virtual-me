@@ -55,6 +55,19 @@ export enum EventType {
     ExecuteMenuItem = "ExecuteMenuItem"
 }
 
+export enum TaskType {
+    /** 环境配置 */
+    Configuration = "Configuration",
+    /** 调查阅读 */
+    View = "View",
+    /** 编写内容 */
+    Coding = "Coding",
+    /** 执行验证 */
+    Execution = "Execution",
+    /** 中性操作 */
+    Unknown = "Unknown"
+}
+
 export enum ArtifactType {
     File = "File",
     Module = "Module",

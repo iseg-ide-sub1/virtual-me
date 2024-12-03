@@ -113,5 +113,11 @@
 
 - 新增 sidebar 图标按钮
 - 创建对应的 webview 界面
-- 界面增加启动插件和保存记录的按钮
-- 数据标注功能还没有实现
+- 界面增加清空记录和保存记录的按钮
+
+### 20241204-HiMeditator
+
+- 创建 `TaskType` 数据结构，修改 log-item 架构图片（`.xmind .png`）
+- 新增 `virtualme.clear` 指令，用于清空 `logs` 数组，该指令不设快捷键
+- 修改 `virtualme.activate` 指令的执行
+- webview 界面新增记录收集记录数量的显示

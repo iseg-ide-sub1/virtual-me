@@ -55,6 +55,9 @@
         "key": "ctrl+alt+v"
       },
       {
+        "command": "virtualme.clear"
+      },
+      {
         "command": "virtualme.savelog",
         "key": "ctrl+alt+s"
       },
@@ -94,7 +97,6 @@
         "key": "ctrl+k ctrl+s",
         "mac": "cmd+k cmd+s"
       },
-
       {
         "command": "virtualme.editor.action.clipboardCutAction",
         "key": "ctrl+x",
@@ -795,7 +797,6 @@
         "key": "ctrl+shift+b",
         "mac": "cmd+shift+b"
       }
-
     ]
   },
   "scripts": {
@@ -824,7 +825,6 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "virtual-me": "file:",
-    "vsce": "^2.15.0"
+    "virtual-me": "file:"
   }
 }
