@@ -2,15 +2,21 @@
   "name": "virtual-me",
   "displayName": "virtual-me",
   "publisher": "iseg-ide-sub1",
-  "repository": "https://github.com/iseg-ide-sub1/virtual-me",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iseg-ide-sub1/virtual-me"
+  },
+  "homepage": "https://github.com/iseg-ide-sub1/virtual-me",
+  "license": "Apache-2.0",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "icon": "./res/img/icon.png",
   "version": "0.0.2",
   "engines": {
-    "vscode": "^1.94.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
-    "Other"
+    "Data Science",
+    "Education"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
@@ -25,6 +31,24 @@
         "title": "VirtualMe Save Log"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "virtualme",
+          "title": "VirtualMe",
+          "icon": "./res/img/sidebar.png"
+        }
+      ]
+    },
+    "views": {
+      "virtualme": [
+        {
+          "type": "webview",
+          "id": "virtualme.GUIView",
+          "name": ""
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "virtualme.activate",

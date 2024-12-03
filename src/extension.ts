@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import * as logItem from './types/log-item'
+import { VirtualMeGUIViewProvider } from './types/gui-view'
 import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
 import * as conextProcess from './utils/context-process'
@@ -33,6 +34,15 @@ export function activate(context: vscode.ExtensionContext) {
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
+
+    /** 提供图形化界面 */
+    const GUIProvider = new VirtualMeGUIViewProvider(context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            VirtualMeGUIViewProvider.viewType,
+            GUIProvider
+        )
+    );
 
     /** 打开文件 */
     const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
