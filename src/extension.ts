@@ -9,7 +9,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/menu-process'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = true // 是否处在开发环境，该值影响数据的保存位置
+let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端

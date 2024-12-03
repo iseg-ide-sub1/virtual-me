@@ -104,3 +104,7 @@
 - 新增事件： `DebugConsoleOutput`（by sivenlun on 20241125）
 - 合并 dev-lsw 到 develop 分支
 - 因为当前功能存在一定问题，将该事件对应的函数注释了
+
+### 20241203-suyunhe
+- 完成对vscode内菜单项命令的收集(目前仅能在使用键盘快捷键执行的情况才能收集到)
+- 完善文档
