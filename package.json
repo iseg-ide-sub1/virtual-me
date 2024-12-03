@@ -33,7 +33,45 @@
       {
         "command": "virtualme.savelog",
         "key": "ctrl+alt+s"
-      },{
+      },
+
+      {
+        "command": "virtualme.workbench.action.showCommands",
+        "key": "ctrl+shift+p",
+        "mac": "cmd+shift+p"
+      },
+      {
+        "command": "virtualme.workbench.action.showCommands",
+        "key": "f1",
+        "mac": "f1"
+      },
+      {
+        "command": "virtualme.workbench.action.quickOpen",
+        "key": "ctrl+p",
+        "mac": "cmd+p"
+      },
+      {
+        "command": "virtualme.workbench.action.newWindow",
+        "key": "ctrl+shift+n",
+        "mac": "cmd+shift+n"
+      },
+      {
+        "command": "virtualme.workbench.action.closeWindow",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w"
+      },
+      {
+        "command": "virtualme.workbench.action.openSettings",
+        "key": "ctrl+,",
+        "mac": "cmd+,"
+      },
+      {
+        "command": "virtualme.workbench.action.openGlobalKeybindings",
+        "key": "ctrl+k ctrl+s",
+        "mac": "cmd+k cmd+s"
+      },
+
+      {
         "command": "virtualme.editor.action.clipboardCutAction",
         "key": "ctrl+x",
         "mac": "cmd+x"
@@ -369,11 +407,6 @@
         "mac": "cmd+g"
       },
       {
-        "command": "virtualme.workbench.action.quickOpen",
-        "key": "ctrl+p",
-        "mac": "cmd+p"
-      },
-      {
         "command": "virtualme.workbench.action.gotoSymbol",
         "key": "ctrl+shift+o",
         "mac": "cmd+shift+o"
@@ -394,11 +427,6 @@
         "mac": "shift+f8"
       },
       {
-        "command": "virtualme.workbench.action.showCommands",
-        "key": "ctrl+shift+p",
-        "mac": "cmd+shift+p"
-      },
-      {
         "command": "virtualme.workbench.action.openPreviousRecentlyUsedEditorInGroup",
         "key": "ctrl+shift+tab",
         "mac": "ctrl+shift+tab"
@@ -417,16 +445,6 @@
         "command": "virtualme.workbench.action.navigateForward",
         "key": "alt+right",
         "mac": "alt+right"
-      },
-      {
-        "command": "virtualme.workbench.action.newWindow",
-        "key": "ctrl+shift+n",
-        "mac": "cmd+shift+n"
-      },
-      {
-        "command": "virtualme.workbench.action.closeWindow",
-        "key": "ctrl+shift+w",
-        "mac": "cmd+shift+w"
       },
       {
         "command": "virtualme.workbench.action.closeActiveEditor",
@@ -692,16 +710,6 @@
         "command": "virtualme.history.showPrevious",
         "key": "up",
         "mac": "up"
-      },
-      {
-        "command": "virtualme.workbench.action.openSettings",
-        "key": "ctrl+,",
-        "mac": "cmd+,"
-      },
-      {
-        "command": "virtualme.workbench.action.openGlobalKeybindings",
-        "key": "ctrl+k ctrl+s",
-        "mac": "cmd+k cmd+s"
       },
       {
         "command": "virtualme.workbench.action.selectTheme",

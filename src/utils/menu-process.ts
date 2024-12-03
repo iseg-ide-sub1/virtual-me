@@ -12,7 +12,13 @@ class CommandDescription {
 }
 
 export const commandDescriptions: CommandDescription[] = [
-    // editCommands
+    //1. General
+    new CommandDescription('workbench.action.showCommands', 'virtualme.workbench.action.showCommands', 'Show Command Palette'),
+    new CommandDescription('workbench.action.quickOpen', 'virtualme.workbench.action.quickOpen', 'Quick Open, Go to File…'),
+    new CommandDescription('workbench.action.newWindow', 'virtualme.workbench.action.newWindow', 'New window/instance'),
+    new CommandDescription('workbench.action.closeWindow', 'virtualme.workbench.action.closeWindow', 'Close window/instance'),
+
+    // 2. EditCommands
     new CommandDescription('editor.action.clipboardCutAction', 'virtualme.editor.action.clipboardCutAction', 'Cut Line'),
     new CommandDescription('editor.action.clipboardCopyAction', 'virtualme.editor.action.clipboardCopyAction', 'Copy Line'),
     new CommandDescription('editor.action.deleteLines', 'virtualme.editor.action.deleteLines', 'Delete Line'),
@@ -61,7 +67,7 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('toggleRenderWhitespace', 'virtualme.toggleRenderWhitespace', 'Toggle Render Whitespace'),
     new CommandDescription('editor.action.toggleWordWrap', 'virtualme.editor.action.toggleWordWrap', 'Toggle Word Wrap'),
 
-    // languageEditCommands
+    // 3. languageEditCommands
     new CommandDescription('editor.action.triggerSuggest', 'virtualme.editor.action.triggerSuggest', 'Trigger Suggestion'),
     new CommandDescription('editor.action.triggerParameterHints', 'virtualme.editor.action.triggerParameterHints', 'Trigger Parameter Hints'),
     new CommandDescription('editor.action.formatDocument', 'virtualme.editor.action.formatDocument', 'Format Document'),
@@ -80,23 +86,19 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('editor.action.trimTrailingWhitespace', 'virtualme.editor.action.trimTrailingWhitespace', 'Trim Trailing Whitespace'),
     new CommandDescription('workbench.action.editor.changeLanguageMode', 'virtualme.workbench.action.editor.changeLanguageMode', 'Change Language Mode'),
 
-    // navigationCommand
+    // 4. navigationCommand
     new CommandDescription('workbench.action.showAllSymbols', 'virtualme.workbench.action.showAllSymbols', 'Show All Symbols'),
     new CommandDescription('workbench.action.gotoLine', 'virtualme.workbench.action.gotoLine', 'Go to Line'),
-    new CommandDescription('workbench.action.quickOpen', 'virtualme.workbench.action.quickOpen', 'Quick Open'),
     new CommandDescription('workbench.action.gotoSymbol', 'virtualme.workbench.action.gotoSymbol', 'Go to Symbol'),
     new CommandDescription('workbench.actions.view.problems', 'virtualme.workbench.actions.view.problems', 'View Problems'),
     new CommandDescription('editor.action.marker.nextInFiles', 'virtualme.editor.action.marker.nextInFiles', 'Next Error or Warning'),
     new CommandDescription('editor.action.marker.prevInFiles', 'virtualme.editor.action.marker.prevInFiles', 'Previous Error or Warning'),
-    new CommandDescription('workbench.action.showCommands', 'virtualme.workbench.action.showCommands', 'Show Commands'),
     new CommandDescription('workbench.action.openPreviousRecentlyUsedEditorInGroup', 'virtualme.workbench.action.openPreviousRecentlyUsedEditorInGroup', 'Open Previous Editor in Group'),
     new CommandDescription('workbench.action.navigateBack', 'virtualme.workbench.action.navigateBack', 'Navigate Back'),
     new CommandDescription('workbench.action.quickInputBack', 'virtualme.workbench.action.quickInputBack', 'Quick Input Back'),
     new CommandDescription('workbench.action.navigateForward', 'virtualme.workbench.action.navigateForward', 'Navigate Forward'),
 
-    // editorWindowCommand
-    new CommandDescription('workbench.action.newWindow', 'virtualme.workbench.action.newWindow', 'New Window'),
-    new CommandDescription('workbench.action.closeWindow', 'virtualme.workbench.action.closeWindow', 'Close Window'),
+    // 5. editorWindowCommand
     new CommandDescription('workbench.action.closeActiveEditor', 'virtualme.workbench.action.closeActiveEditor', 'Close Editor'),
     new CommandDescription('workbench.action.closeFolder', 'virtualme.workbench.action.closeFolder', 'Close Folder'),
     new CommandDescription('workbench.action.navigateEditorGroups', 'virtualme.workbench.action.navigateEditorGroups', 'Navigate Editor Groups'),
@@ -113,7 +115,7 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('workbench.action.moveEditorToNextGroup', 'virtualme.workbench.action.moveEditorToNextGroup', 'Move Editor to Next Group'),
     new CommandDescription('workbench.action.moveEditorToPreviousGroup', 'virtualme.workbench.action.moveEditorToPreviousGroup', 'Move Editor to Previous Group'),
     
-    // fileManagementCommand
+    // 6. fileManagementCommand
     new CommandDescription('workbench.action.files.newUntitledFile', 'virtualme.workbench.action.files.newUntitledFile', 'New File'),
     new CommandDescription('workbench.action.files.openFile', 'virtualme.workbench.action.files.openFile', 'Open File...'),
     new CommandDescription('workbench.action.files.save', 'virtualme.workbench.action.files.save', 'Save'),
@@ -152,7 +154,7 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('markdown.showPreviewToSide', 'virtualme.markdown.showPreviewToSide', 'Markdown Preview To Side'),
     new CommandDescription('workbench.action.terminal.toggleTerminal', 'virtualme.workbench.action.terminal.toggleTerminal', 'Toggle Terminal'),
 
-    // searchCommands
+    // 7. searchCommands
     new CommandDescription('workbench.view.search', 'virtualme.workbench.view.search', 'Show Search'),
     new CommandDescription('workbench.action.replaceInFiles', 'virtualme.workbench.action.replaceInFiles', 'Replace in Files'),
     new CommandDescription('toggleSearchCaseSensitive', 'virtualme.toggleSearchCaseSensitive', 'Toggle Match Case'),
@@ -164,7 +166,7 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('history.showNext', 'virtualme.history.showNext', 'Show Next Search Term'),
     new CommandDescription('history.showPrevious', 'virtualme.history.showPrevious', 'Show Previous Search Term'),
 
-    // preferenceCommands
+    // 8. preferenceCommands
     new CommandDescription('workbench.action.openSettings', 'virtualme.workbench.action.openSettings', 'Open Settings'),
     new CommandDescription('workbench.action.openWorkspaceSettings', 'virtualme.workbench.action.openWorkspaceSettings', 'Open Workspace Settings'),
     new CommandDescription('workbench.action.openGlobalKeybindings', 'virtualme.workbench.action.openGlobalKeybindings', 'Open Keyboard Shortcuts'),
@@ -172,7 +174,7 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('workbench.action.selectTheme', 'virtualme.workbench.action.selectTheme', 'Select Color Theme'),
     new CommandDescription('workbench.action.configureLocale', 'virtualme.workbench.action.configureLocale', 'Configure Display Language'),
 
-    // debugCommands
+    // 9. debugCommands
     new CommandDescription('editor.debug.action.toggleBreakpoint', 'virtualme.editor.debug.action.toggleBreakpoint', 'Toggle Breakpoint'),
     new CommandDescription('workbench.action.debug.start', 'virtualme.workbench.action.debug.start', 'Start Debugging'),
     new CommandDescription('workbench.action.debug.continue', 'virtualme.workbench.action.debug.continue', 'Continue'),
@@ -184,11 +186,11 @@ export const commandDescriptions: CommandDescription[] = [
     new CommandDescription('workbench.action.debug.stop', 'virtualme.workbench.action.debug.stop', 'Stop'),
     new CommandDescription('editor.debug.action.showDebugHover', 'virtualme.editor.debug.action.showDebugHover', 'Show Debug Hover'),
 
-    // taskCommands
+    // 10. taskCommands
     new CommandDescription('workbench.action.tasks.build', 'virtualme.workbench.action.tasks.build', 'Run Build Task'),
     new CommandDescription('workbench.action.tasks.test', 'virtualme.workbench.action.tasks.test', 'Run Test Task'),
 
-    // extensionCommands
+    // 11. extensionCommands
     new CommandDescription('workbench.extensions.action.installExtension', 'virtualme.workbench.extensions.action.installExtension', 'Install Extension'),
     new CommandDescription('workbench.extensions.action.showInstalledExtensions', 'virtualme.workbench.extensions.action.showInstalledExtensions', 'Show Installed Extensions'),
     new CommandDescription('workbench.extensions.action.listOutdatedExtensions', 'virtualme.workbench.extensions.action.listOutdatedExtensions', 'List Outdated Extensions'),
