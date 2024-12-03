@@ -7,7 +7,7 @@
   "icon": "./res/img/icon.png",
   "version": "0.0.2",
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
@@ -33,7 +33,737 @@
       {
         "command": "virtualme.savelog",
         "key": "ctrl+alt+s"
+      },{
+        "command": "virtualme.editor.action.clipboardCutAction",
+        "key": "ctrl+x",
+        "mac": "cmd+x"
+      },
+      {
+        "command": "virtualme.editor.action.clipboardCopyAction",
+        "key": "ctrl+c",
+        "mac": "cmd+c"
+      },
+      {
+        "command": "virtualme.editor.action.deleteLines",
+        "key": "ctrl+shift+k",
+        "mac": "cmd+shift+k"
+      },
+      {
+        "command": "virtualme.editor.action.insertLineAfter",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter"
+      },
+      {
+        "command": "virtualme.editor.action.insertLineBefore",
+        "key": "ctrl+shift+enter",
+        "mac": "cmd+shift+enter"
+      },
+      {
+        "command": "virtualme.editor.action.moveLinesDownAction",
+        "key": "alt+down",
+        "mac": "alt+down"
+      },
+      {
+        "command": "virtualme.editor.action.moveLinesUpAction",
+        "key": "alt+up",
+        "mac": "alt+up"
+      },
+      {
+        "command": "virtualme.editor.action.copyLinesDownAction",
+        "key": "shift+alt+down",
+        "mac": "shift+alt+down"
+      },
+      {
+        "command": "virtualme.editor.action.copyLinesUpAction",
+        "key": "shift+alt+up",
+        "mac": "shift+alt+up"
+      },
+      {
+        "command": "virtualme.editor.action.addSelectionToNextFindMatch",
+        "key": "ctrl+d",
+        "mac": "cmd+d"
+      },
+      {
+        "command": "virtualme.editor.action.moveSelectionToNextFindMatch",
+        "key": "ctrl+k ctrl+d",
+        "mac": "cmd+k cmd+d"
+      },
+      {
+        "command": "virtualme.cursorUndo",
+        "key": "ctrl+u",
+        "mac": "cmd+u"
+      },
+      {
+        "command": "virtualme.editor.action.insertCursorAtEndOfEachLineSelected",
+        "key": "shift+alt+i",
+        "mac": "shift+alt+i"
+      },
+      {
+        "command": "virtualme.editor.action.selectHighlights",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l"
+      },
+      {
+        "command": "virtualme.editor.action.changeAll",
+        "key": "ctrl+f2",
+        "mac": "cmd+f2"
+      },
+      {
+        "command": "virtualme.expandLineSelection",
+        "key": "ctrl+i",
+        "mac": "cmd+i"
+      },
+      {
+        "command": "virtualme.editor.action.insertCursorBelow",
+        "key": "ctrl+alt+down",
+        "mac": "cmd+alt+down"
+      },
+      {
+        "command": "virtualme.editor.action.insertCursorAbove",
+        "key": "ctrl+alt+up",
+        "mac": "cmd+alt+up"
+      },
+      {
+        "command": "virtualme.editor.action.jumpToBracket",
+        "key": "ctrl+shift+\\",
+        "mac": "cmd+shift+\\"
+      },
+      {
+        "command": "virtualme.editor.action.indentLines",
+        "key": "ctrl+]",
+        "mac": "cmd+]"
+      },
+      {
+        "command": "virtualme.editor.action.outdentLines",
+        "key": "ctrl+[",
+        "mac": "cmd+["
+      },
+      {
+        "command": "virtualme.cursorHome",
+        "key": "home",
+        "mac": "home"
+      },
+      {
+        "command": "virtualme.cursorEnd",
+        "key": "end",
+        "mac": "end"
+      },
+      {
+        "command": "virtualme.cursorBottom",
+        "key": "ctrl+end",
+        "mac": "cmd+end"
+      },
+      {
+        "command": "virtualme.cursorTop",
+        "key": "ctrl+home",
+        "mac": "cmd+home"
+      },
+      {
+        "command": "virtualme.scrollLineDown",
+        "key": "ctrl+down",
+        "mac": "cmd+down"
+      },
+      {
+        "command": "virtualme.scrollLineUp",
+        "key": "ctrl+up",
+        "mac": "cmd+up"
+      },
+      {
+        "command": "virtualme.scrollPageDown",
+        "key": "alt+pagedown",
+        "mac": "alt+pagedown"
+      },
+      {
+        "command": "virtualme.scrollPageUp",
+        "key": "alt+pageup",
+        "mac": "alt+pageup"
+      },
+      {
+        "command": "virtualme.editor.fold",
+        "key": "ctrl+shift+[",
+        "mac": "cmd+shift+["
+      },
+      {
+        "command": "virtualme.editor.unfoldRecursively",
+        "key": "ctrl+shift+]",
+        "mac": "cmd+shift+]"
+      },
+      {
+        "command": "virtualme.editor.foldAll",
+        "key": "ctrl+k ctrl+0",
+        "mac": "cmd+k cmd+0"
+      },
+      {
+        "command": "virtualme.editor.unfoldAll",
+        "key": "ctrl+k ctrl+j",
+        "mac": "cmd+k cmd+j"
+      },
+      {
+        "command": "virtualme.editor.action.addCommentLine",
+        "key": "ctrl+k ctrl+c",
+        "mac": "cmd+k cmd+c"
+      },
+      {
+        "command": "virtualme.editor.action.removeCommentLine",
+        "key": "ctrl+k ctrl+u",
+        "mac": "cmd+k cmd+u"
+      },
+      {
+        "command": "virtualme.editor.action.commentLine",
+        "key": "ctrl+/",
+        "mac": "cmd+/"
+      },
+      {
+        "command": "virtualme.editor.action.blockComment",
+        "key": "shift+alt+a",
+        "mac": "shift+alt+a"
+      },
+      {
+        "command": "virtualme.actions.find",
+        "key": "ctrl+f",
+        "mac": "cmd+f"
+      },
+      {
+        "command": "virtualme.editor.action.startFindReplaceAction",
+        "key": "ctrl+h",
+        "mac": "cmd+h"
+      },
+      {
+        "command": "virtualme.editor.action.nextMatchFindAction",
+        "key": "f3",
+        "mac": "f3"
+      },
+      {
+        "command": "virtualme.editor.action.previousMatchFindAction",
+        "key": "shift+f3",
+        "mac": "shift+f3"
+      },
+      {
+        "command": "virtualme.editor.action.selectAllMatches",
+        "key": "alt+enter",
+        "mac": "alt+enter"
+      },
+      {
+        "command": "virtualme.toggleFindCaseSensitive",
+        "key": "alt+c",
+        "mac": "alt+c"
+      },
+      {
+        "command": "virtualme.toggleFindRegex",
+        "key": "alt+r",
+        "mac": "alt+r"
+      },
+      {
+        "command": "virtualme.toggleFindWholeWord",
+        "key": "alt+w",
+        "mac": "alt+w"
+      },
+      {
+        "command": "virtualme.editor.action.toggleTabFocusMode",
+        "key": "ctrl+m",
+        "mac": "ctrl+m"
+      },
+      {
+        "command": "virtualme.toggleRenderWhitespace",
+        "key": "unassigned",
+        "mac": "unassigned"
+      },
+      {
+        "command": "virtualme.editor.action.toggleWordWrap",
+        "key": "alt+z",
+        "mac": "alt+z"
+      },
+      {
+        "command": "virtualme.editor.action.triggerSuggest",
+        "key": "ctrl+space",
+        "mac": "cmd+space"
+      },
+      {
+        "command": "virtualme.editor.action.triggerParameterHints",
+        "key": "ctrl+shift+space",
+        "mac": "cmd+shift+space"
+      },
+      {
+        "command": "virtualme.editor.action.formatDocument",
+        "key": "shift+alt+f",
+        "mac": "shift+alt+f"
+      },
+      {
+        "command": "virtualme.editor.action.formatSelection",
+        "key": "ctrl+k ctrl+f",
+        "mac": "cmd+k cmd+f"
+      },
+      {
+        "command": "virtualme.editor.action.revealDefinition",
+        "key": "f12",
+        "mac": "f12"
+      },
+      {
+        "command": "virtualme.editor.action.showHover",
+        "key": "ctrl+k ctrl+i",
+        "mac": "cmd+k cmd+i"
+      },
+      {
+        "command": "virtualme.editor.action.peekDefinition",
+        "key": "alt+f12",
+        "mac": "alt+f12"
+      },
+      {
+        "command": "virtualme.editor.action.revealDefinitionAside",
+        "key": "ctrl+k f12",
+        "mac": "cmd+k f12"
+      },
+      {
+        "command": "virtualme.editor.action.quickFix",
+        "key": "ctrl+.",
+        "mac": "cmd+."
+      },
+      {
+        "command": "virtualme.editor.action.referenceSearch.trigger",
+        "key": "shift+f12",
+        "mac": "shift+f12"
+      },
+      {
+        "command": "virtualme.editor.action.rename",
+        "key": "f2",
+        "mac": "f2"
+      },
+      {
+        "command": "virtualme.editor.action.inPlaceReplace.down",
+        "key": "ctrl+shift+. ctrl+shift+.",
+        "mac": "cmd+shift+. cmd+shift+."
+      },
+      {
+        "command": "virtualme.editor.action.inPlaceReplace.up",
+        "key": "ctrl+shift+,",
+        "mac": "cmd+shift+,"
+      },
+      {
+        "command": "virtualme.editor.action.smartSelect.grow",
+        "key": "shift+alt+right",
+        "mac": "shift+alt+right"
+      },
+      {
+        "command": "virtualme.editor.action.smartSelect.shrink",
+        "key": "shift+alt+left",
+        "mac": "shift+alt+left"
+      },
+      {
+        "command": "virtualme.editor.action.trimTrailingWhitespace",
+        "key": "ctrl+k ctrl+x",
+        "mac": "cmd+k cmd+x"
+      },
+      {
+        "command": "virtualme.workbench.action.editor.changeLanguageMode",
+        "key": "ctrl+k m",
+        "mac": "cmd+k m"
+      },
+      {
+        "command": "virtualme.workbench.action.showAllSymbols",
+        "key": "ctrl+t",
+        "mac": "cmd+t"
+      },
+      {
+        "command": "virtualme.workbench.action.gotoLine",
+        "key": "ctrl+g",
+        "mac": "cmd+g"
+      },
+      {
+        "command": "virtualme.workbench.action.quickOpen",
+        "key": "ctrl+p",
+        "mac": "cmd+p"
+      },
+      {
+        "command": "virtualme.workbench.action.gotoSymbol",
+        "key": "ctrl+shift+o",
+        "mac": "cmd+shift+o"
+      },
+      {
+        "command": "virtualme.workbench.actions.view.problems",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m"
+      },
+      {
+        "command": "virtualme.editor.action.marker.nextInFiles",
+        "key": "f8",
+        "mac": "f8"
+      },
+      {
+        "command": "virtualme.editor.action.marker.prevInFiles",
+        "key": "shift+f8",
+        "mac": "shift+f8"
+      },
+      {
+        "command": "virtualme.workbench.action.showCommands",
+        "key": "ctrl+shift+p",
+        "mac": "cmd+shift+p"
+      },
+      {
+        "command": "virtualme.workbench.action.openPreviousRecentlyUsedEditorInGroup",
+        "key": "ctrl+shift+tab",
+        "mac": "ctrl+shift+tab"
+      },
+      {
+        "command": "virtualme.workbench.action.navigateBack",
+        "key": "alt+left",
+        "mac": "alt+left"
+      },
+      {
+        "command": "virtualme.workbench.action.quickInputBack",
+        "key": "alt+left",
+        "mac": "alt+left"
+      },
+      {
+        "command": "virtualme.workbench.action.navigateForward",
+        "key": "alt+right",
+        "mac": "alt+right"
+      },
+      {
+        "command": "virtualme.workbench.action.newWindow",
+        "key": "ctrl+shift+n",
+        "mac": "cmd+shift+n"
+      },
+      {
+        "command": "virtualme.workbench.action.closeWindow",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w"
+      },
+      {
+        "command": "virtualme.workbench.action.closeActiveEditor",
+        "key": "ctrl+f4",
+        "mac": "cmd+f4"
+      },
+      {
+        "command": "virtualme.workbench.action.closeFolder",
+        "key": "ctrl+k f",
+        "mac": "cmd+k f"
+      },
+      {
+        "command": "virtualme.workbench.action.navigateEditorGroups",
+        "key": "unassigned",
+        "mac": "unassigned"
+      },
+      {
+        "command": "virtualme.workbench.action.splitEditor",
+        "key": "ctrl+\\",
+        "mac": "cmd+\\"
+      },
+      {
+        "command": "virtualme.workbench.action.focusFirstEditorGroup",
+        "key": "ctrl+1",
+        "mac": "cmd+1"
+      },
+      {
+        "command": "virtualme.workbench.action.focusSecondEditorGroup",
+        "key": "ctrl+2",
+        "mac": "cmd+2"
+      },
+      {
+        "command": "virtualme.workbench.action.focusThirdEditorGroup",
+        "key": "ctrl+3",
+        "mac": "cmd+3"
+      },
+      {
+        "command": "virtualme.workbench.action.moveEditorLeftInGroup",
+        "key": "ctrl+shift+pageup",
+        "mac": "cmd+shift+pageup"
+      },
+      {
+        "command": "virtualme.workbench.action.moveEditorRightInGroup",
+        "key": "ctrl+shift+pagedown",
+        "mac": "cmd+shift+pagedown"
+      },
+      {
+        "command": "virtualme.workbench.action.moveActiveEditorGroupLeft",
+        "key": "ctrl+k left",
+        "mac": "cmd+k left"
+      },
+      {
+        "command": "virtualme.workbench.action.moveActiveEditorGroupRight",
+        "key": "ctrl+k right",
+        "mac": "cmd+k right"
+      },
+      {
+        "command": "virtualme.workbench.action.moveEditorToNextGroup",
+        "key": "ctrl+alt+right",
+        "mac": "cmd+alt+right"
+      },
+      {
+        "command": "virtualme.workbench.action.moveEditorToPreviousGroup",
+        "key": "ctrl+alt+left",
+        "mac": "cmd+alt+left"
+      },
+      {
+        "command": "virtualme.workbench.action.files.newUntitledFile",
+        "key": "ctrl+n",
+        "mac": "cmd+n"
+      },
+      {
+        "command": "virtualme.workbench.action.files.openFile",
+        "key": "ctrl+o",
+        "mac": "cmd+o"
+      },
+      {
+        "command": "virtualme.workbench.action.files.save",
+        "key": "ctrl+s",
+        "mac": "cmd+s"
+      },
+      {
+        "command": "virtualme.workbench.action.files.saveAll",
+        "key": "ctrl+k s",
+        "mac": "cmd+k s"
+      },
+      {
+        "command": "virtualme.workbench.action.files.saveAs",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s"
+      },
+      {
+        "command": "virtualme.workbench.action.closeEditorsInGroup",
+        "key": "ctrl+k w",
+        "mac": "cmd+k w"
+      },
+      {
+        "command": "virtualme.workbench.action.closeAllEditors",
+        "key": "ctrl+k ctrl+w",
+        "mac": "cmd+k cmd+w"
+      },
+      {
+        "command": "virtualme.workbench.action.reopenClosedEditor",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t"
+      },
+      {
+        "command": "virtualme.workbench.action.keepEditor",
+        "key": "ctrl+k enter",
+        "mac": "cmd+k enter"
+      },
+      {
+        "command": "virtualme.workbench.action.openNextRecentlyUsedEditorInGroup",
+        "key": "ctrl+tab",
+        "mac": "cmd+tab"
+      },
+      {
+        "command": "virtualme.workbench.action.files.copyPathOfActiveFile",
+        "key": "ctrl+k p",
+        "mac": "cmd+k p"
+      },
+      {
+        "command": "virtualme.workbench.action.files.revealActiveFileInWindows",
+        "key": "ctrl+k r",
+        "mac": "cmd+k r"
+      },
+      {
+        "command": "virtualme.workbench.action.files.showOpenedFileInNewWindow",
+        "key": "ctrl+k o",
+        "mac": "cmd+k o"
+      },
+      {
+        "command": "virtualme.workbench.action.toggleFullScreen",
+        "key": "f11",
+        "mac": "f11"
+      },
+      {
+        "command": "virtualme.workbench.action.toggleZenMode",
+        "key": "ctrl+k z",
+        "mac": "cmd+k z"
+      },
+      {
+        "command": "virtualme.workbench.action.exitZenMode",
+        "key": "escape",
+        "mac": "escape"
+      },
+      {
+        "command": "virtualme.workbench.action.zoomIn",
+        "key": "ctrl+=",
+        "mac": "cmd+="
+      },
+      {
+        "command": "virtualme.workbench.action.zoomOut",
+        "key": "ctrl+-",
+        "mac": "cmd+-"
+      },
+      {
+        "command": "virtualme.workbench.action.zoomReset",
+        "key": "ctrl+numpad0",
+        "mac": "cmd+numpad0"
+      },
+      {
+        "command": "virtualme.workbench.action.toggleSidebarVisibility",
+        "key": "ctrl+b",
+        "mac": "cmd+b"
+      },
+      {
+        "command": "virtualme.workbench.view.explorer",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e"
+      },
+      {
+        "command": "virtualme.workbench.view.scm",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      },
+      {
+        "command": "virtualme.workbench.view.debug",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d"
+      },
+      {
+        "command": "virtualme.workbench.view.extensions",
+        "key": "ctrl+shift+x",
+        "mac": "cmd+shift+x"
+      },
+      {
+        "command": "virtualme.workbench.action.output.toggleOutput",
+        "key": "ctrl+shift+u",
+        "mac": "cmd+shift+u"
+      },
+      {
+        "command": "virtualme.workbench.action.quickOpenView",
+        "key": "ctrl+q ctrl+q",
+        "mac": "cmd+q cmd+q"
+      },
+      {
+        "command": "virtualme.workbench.action.terminal.openNativeConsole",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c"
+      },
+      {
+        "command": "virtualme.markdown.showPreview",
+        "key": "ctrl+shitf+v",
+        "mac": "cmd+shift+v"
+      },
+      {
+        "command": "virtualme.markdown.showPreviewToSide",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v"
+      },
+      {
+        "command": "virtualme.workbench.action.terminal.toggleTerminal",
+        "key": "ctrl+`",
+        "mac": "cmd+`"
+      },
+      {
+        "command": "virtualme.workbench.view.search",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f"
+      },
+      {
+        "command": "virtualme.workbench.action.replaceInFiles",
+        "key": "ctrl+shift+h",
+        "mac": "cmd+shift+h"
+      },
+      {
+        "command": "virtualme.toggleSearchCaseSensitive",
+        "key": "alt+c",
+        "mac": "alt+c"
+      },
+      {
+        "command": "virtualme.toggleSearchWholeWord",
+        "key": "alt+w",
+        "mac": "alt+w"
+      },
+      {
+        "command": "virtualme.toggleSearchRegex",
+        "key": "alt+r",
+        "mac": "alt+r"
+      },
+      {
+        "command": "virtualme.workbench.action.search.toggleQueryDetails",
+        "key": "ctrl+shift+j",
+        "mac": "cmd+shift+j"
+      },
+      {
+        "command": "virtualme.search.action.focusNextSearchResult",
+        "key": "f4",
+        "mac": "f4"
+      },
+      {
+        "command": "virtualme.search.action.focusPreviousSearchResult",
+        "key": "shift+f4",
+        "mac": "shift+f4"
+      },
+      {
+        "command": "virtualme.history.showNext",
+        "key": "down",
+        "mac": "down"
+      },
+      {
+        "command": "virtualme.history.showPrevious",
+        "key": "up",
+        "mac": "up"
+      },
+      {
+        "command": "virtualme.workbench.action.openSettings",
+        "key": "ctrl+,",
+        "mac": "cmd+,"
+      },
+      {
+        "command": "virtualme.workbench.action.openGlobalKeybindings",
+        "key": "ctrl+k ctrl+s",
+        "mac": "cmd+k cmd+s"
+      },
+      {
+        "command": "virtualme.workbench.action.selectTheme",
+        "key": "ctrl+k ctrl+t",
+        "mac": "cmd+k cmd+t"
+      },
+      {
+        "command": "virtualme.editor.debug.action.toggleBreakpoint",
+        "key": "f9",
+        "mac": "f9"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.start",
+        "key": "f5",
+        "mac": "f5"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.continue",
+        "key": "f5",
+        "mac": "f5"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.run",
+        "key": "ctrl+f5",
+        "mac": "cmd+f5"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.pause",
+        "key": "f6",
+        "mac": "f6"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.stepInto",
+        "key": "f11",
+        "mac": "f11"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.stepOut",
+        "key": "shift+f11",
+        "mac": "shift+f11"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.stepOver",
+        "key": "f10",
+        "mac": "f10"
+      },
+      {
+        "command": "virtualme.workbench.action.debug.stop",
+        "key": "shift+f5",
+        "mac": "shift+f5"
+      },
+      {
+        "command": "virtualme.editor.debug.action.showDebugHover",
+        "key": "ctrl+k ctrl+i",
+        "mac": "cmd+k cmd+i"
+      },
+      {
+        "command": "virtualme.workbench.action.tasks.build",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b"
       }
+
     ]
   },
   "scripts": {

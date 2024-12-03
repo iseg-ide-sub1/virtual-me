@@ -9,7 +9,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/menu-process'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
+let isDev: boolean = true // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -175,11 +175,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalChangeWatcher)
 
     /** 执行菜单项 */
-    // const commands = generateCommands()
-    // commands.forEach(({ command, callback }) => {
-    //     const menuItemWatcher = vscode.commands.registerCommand(command, callback);
-    //     context.subscriptions.push(menuItemWatcher)
-    // })
+    const menuItemCommands = generateCommands()
+    menuItemCommands.forEach(({ command, callback }) => {
+        const menuItemWatcher = vscode.commands.registerCommand(command, callback)
+        context.subscriptions.push(menuItemWatcher)
+    })
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -196,28 +196,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalExecuteWatcher)
 
-    /** Debug Console 输出监听 */
-    // const debugConsoleTracker = vscode.debug.registerDebugAdapterTrackerFactory('*', {
-    //     createDebugAdapterTracker(session: vscode.DebugSession) {
-    //         return {
-    //             onDidSendMessage: async (message: any) => {
-    //                 // 检查是否是输出事件
-    //                 if (message.type === 'event' && message.event === 'output') {
-    //                     const output = message.body
-    //                     if (output) {
-    //                         const log = await conextProcess.getLogItemFromDebugConsole({
-    //                             output: output.output || '',
-    //                             category: output.category,
-    //                             line: output.line
-    //                         })
-    //                         logs.push(log)
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // })
-    // context.subscriptions.push(debugConsoleTracker)
 }
 
 export function deactivate() {
@@ -226,20 +204,19 @@ export function deactivate() {
 	}
 }
 
-// type CommandKey = keyof typeof menuProcess.commandDescriptions
-// function generateCommands(): { command: string, callback: () => void }[] {
-//     return Object.keys(menuProcess.commandDescriptions).map<{ command: string, callback: () => void }>((command) => {
-//         const key = command as CommandKey
-//         return {
-//             command: key,
-//             callback: () => handleCommand(menuProcess.commandDescriptions[key].description, menuProcess.commandDescriptions[key].artifactType)
-//         }
-//     })
-// }
+function generateCommands(): { command: string, callback: () => void }[] {
+    return menuProcess.commandDescriptions.map<{ command: string, callback: () => void }>((commandDesc) => {
+        return {
+            command: commandDesc.newCommand,
+            callback: () => handleCommand(commandDesc.description, commandDesc.oldCommand) 
+        }
+    });
+}
 
-// function handleCommand(commandName: string, artifactType: logItem.ArtifactType): void {
-//     const artifact = new logItem.Artifact(commandName, artifactType)
-//     const eventType = logItem.EventType.ExecuteMenuItem
-//     const log = new logItem.LogItem(eventType, artifact)
-//     logs.push(log)
-// }
+function handleCommand(commandName: string, oldCommand: string): void {
+    const artifact = new logItem.Artifact(commandName, logItem.ArtifactType.MenuItem)
+    const eventType = logItem.EventType.ExecuteMenuItem
+    const log = new logItem.LogItem(eventType, artifact)
+    logs.push(log)
+    vscode.commands.executeCommand(oldCommand)
+}
