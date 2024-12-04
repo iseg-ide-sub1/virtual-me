@@ -121,3 +121,4 @@
 - 新增 `virtualme.clear` 指令，用于清空 `logs` 数组，该指令不设快捷键
 - 修改 `virtualme.activate` 指令的执行
 - webview 界面新增记录收集记录数量的显示
+- 实现标注当前所处任务的功能

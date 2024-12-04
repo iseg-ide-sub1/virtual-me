@@ -1,0 +1,9 @@
+#task-box {
+    border: 8px solid var(--vscode-button-background);
+    margin: 10px auto;
+}
+
+button {
+    width: 80%;
+    margin: 10px 10%;
+}

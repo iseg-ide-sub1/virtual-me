@@ -13,6 +13,7 @@ let logs: logItem.LogItem[] = []
 let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
+
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile : boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
@@ -41,6 +42,16 @@ export function activate(context: vscode.ExtensionContext) {
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
+
+    /** 注册用于标记当前任务的命令 */
+    for (const task of Object.values(logItem.TaskType)) {
+        const commandName = 'virtualme.settask.' + task.toLowerCase();
+        const taskSetCommand = vscode.commands.registerCommand(commandName , () => {
+            logItem.LogItem.currentTaskType = task;
+            // console.log('Current task is set to:', task)
+        })
+        context.subscriptions.push(taskSetCommand);
+    }
 
     /** 提供图形化界面 */
     const GUIProvider = new VirtualMeGUIViewProvider(context.extensionUri);

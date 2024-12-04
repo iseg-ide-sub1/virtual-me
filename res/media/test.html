@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link href="${styleResetUri}" rel="stylesheet">
+    <link href="${styleVSCodeUri}" rel="stylesheet">
+    <link href="${styleMainUri}" rel="stylesheet"> -->
+    <title>VirtualMe</title>
+</head>
+<body>
+    <button id="btn-clear">Clear Log</button>
+    <button id="btn-save">Save Log</button>
+    <!-- <script src="${scriptUri}"></script> -->
+    <h2>
+        <span>Items: </span>
+        <b id="logs-num">${this.logsNum}</b>
+    </h2>
+    <form id="optionsForm">
+        <input type="radio" name="task" value="conf" onchange="onTaskChanged()">Configuration<br>
+        <input type="radio" name="task" value="view" onchange="onTaskChanged()">View<br>
+        <input type="radio" name="task" value="codi" onchange="onTaskChanged()">Coding<br>
+        <input type="radio" name="task" value="exec" onchange="onTaskChanged()">Execution<br>
+        <input type="radio" name="task" value="unkn" onchange="onTaskChanged()">Unknown<br>
+    </form>
+</body>
+</html>

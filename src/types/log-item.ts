@@ -140,15 +140,18 @@ export class Context {
 
 export class LogItem {
     static #nextId = 1
+    static currentTaskType = TaskType.Unknown
     id: number
     timeStamp: string
     eventType: EventType
+    taskType: TaskType
     artifact: Artifact
     context?: Context
     references?: Artifact[]
 
     constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Artifact[]) {
         this.id = LogItem.#nextId++
+        this.taskType = LogItem.currentTaskType
         this.timeStamp = getFormattedTime()
         this.eventType = eventType
         this.artifact = artifact

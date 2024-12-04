@@ -5,7 +5,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private _logsNum: number = 0;
     set logsNum(newValue: number) {
-        console.log(`Setting the value of myProperty to: ${newValue}`);
+        // console.log(`Setting the value of myProperty to: ${newValue}`);
         this._logsNum = newValue;
         if(this._view){
             this._view.webview.postMessage({command: 'updateLogsNum', logsNum: this._logsNum})
@@ -29,6 +29,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
         };
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
         webviewView.webview.onDidReceiveMessage(message => {
+            // console.log("Msg form webview:", message);
             vscode.commands.executeCommand(message.command);
 		});
     }
@@ -51,6 +52,15 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <button id="btn-clear">Clear Log</button>
                 <button id="btn-save">Save Log</button>
                 <script src="${scriptUri}"></script>
+                <div id="task-box">
+                    <form id="task-form">
+                        <input type="radio" name="task" value="configuration" onchange="onTaskChanged()">Configuration<br>
+                        <input type="radio" name="task" value="view" onchange="onTaskChanged()">View<br>
+                        <input type="radio" name="task" value="coding" onchange="onTaskChanged()">Coding<br>
+                        <input type="radio" name="task" value="execution" onchange="onTaskChanged()">Execution<br>
+                        <input type="radio" name="task" value="unknown" onchange="onTaskChanged()" checked>Unknown<br>
+                    </form>
+                </div>
                 <h2>
                     <span>Items: </span>
                     <b id="logs-num">${this.logsNum}</b>

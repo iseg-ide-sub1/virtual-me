@@ -9,8 +9,13 @@ window.addEventListener('message', event => {
     }
 });
 
-const btn_start = document.getElementById('btn-clear');
-btn_start.addEventListener('click', () => {
+function updateLogsNum(logsNum) {
+    target =  document.getElementById('logs-num');
+    target.innerText = logsNum;
+}
+
+const btn_clear = document.getElementById('btn-clear');
+btn_clear.addEventListener('click', () => {
     vscode.postMessage({ command: 'virtualme.clear' });
 });
 
@@ -19,7 +24,8 @@ btn_save.addEventListener('click', () => {
     vscode.postMessage({ command: 'virtualme.savelog' });
 });
 
-function updateLogsNum(logsNum) {
-    target =  document.getElementById('logs-num');
-    target.innerText = logsNum;
+function onTaskChanged() {
+    const selectedValue = document.querySelector('input[name="task"]:checked').value;
+    const taskCommand = 'virtualme.settask.' + selectedValue;
+    vscode.postMessage({ command: taskCommand });
 }
