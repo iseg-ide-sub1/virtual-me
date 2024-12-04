@@ -48,9 +48,24 @@ export enum EventType {
     ChangeActiveTerminal = "ChangeActiveTerminal",
     /** 终端执行 */
     ExecuteTerminalCommand = "ExecuteTerminalCommand",
+    /** Debug Console 输出 */
+    DebugConsoleOutput = "DebugConsoleOutput",
 
     /** 执行菜单项 */
-    ExecuteMenuItem = "ExecuteMenuItem",
+    ExecuteMenuItem = "ExecuteMenuItem"
+}
+
+export enum TaskType {
+    /** 环境配置 */
+    Configuration = "Configuration",
+    /** 调查阅读 */
+    View = "View",
+    /** 编写内容 */
+    Coding = "Coding",
+    /** 执行验证 */
+    Execution = "Execution",
+    /** 中性操作 */
+    Unknown = "Unknown"
 }
 
 export enum ArtifactType {
@@ -102,7 +117,7 @@ export class Artifact {
         public name: string,
         public type: ArtifactType,
         public hierarchy?: Artifact[],
-        public references?: Reference[]
+        public references?: Artifact[]
     ) {
     }
 
@@ -123,24 +138,20 @@ export class Context {
     }
 }
 
-export class Reference {
-    constructor(
-        public hierarchy: Artifact[],
-    ) {
-    }
-}
-
 export class LogItem {
     static #nextId = 1
+    static currentTaskType = TaskType.Unknown
     id: number
     timeStamp: string
     eventType: EventType
+    taskType: TaskType
     artifact: Artifact
     context?: Context
-    references?: Reference[]
+    references?: Artifact[]
 
-    constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Reference[]) {
+    constructor(eventType: EventType, artifact: Artifact, context?: Context, references?: Artifact[]) {
         this.id = LogItem.#nextId++
+        this.taskType = LogItem.currentTaskType
         this.timeStamp = getFormattedTime()
         this.eventType = eventType
         this.artifact = artifact

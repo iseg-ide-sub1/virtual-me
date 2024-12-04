@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import * as logItem from './types/log-item'
+import { VirtualMeGUIViewProvider } from './types/gui-view'
 import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
 import * as conextProcess from './utils/context-process'
@@ -12,18 +13,26 @@ let logs: logItem.LogItem[] = []
 let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
+
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile : boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
 
 export function activate(context: vscode.ExtensionContext) {
+    vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
-        logs = [] // 执行该命令会清空日志
-        vscode.window.showInformationMessage('Recording starts. Thanks for using VirtualMe!');
+        // 空命令，执行可以激活插件而不产生其他影响
     });
     context.subscriptions.push(disposable);
+
+    /** 注册命令：virtual-me.activate */
+    const clearLogs = vscode.commands.registerCommand('virtualme.clear', () => {
+        logs = []
+        vscode.window.showInformationMessage('All collecting data has been cleared!');
+    });
+    context.subscriptions.push(clearLogs);
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
@@ -33,6 +42,26 @@ export function activate(context: vscode.ExtensionContext) {
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
+
+    /** 注册用于标记当前任务的命令 */
+    for (const task of Object.values(logItem.TaskType)) {
+        const commandName = 'virtualme.settask.' + task.toLowerCase();
+        const taskSetCommand = vscode.commands.registerCommand(commandName , () => {
+            logItem.LogItem.currentTaskType = task;
+            // console.log('Current task is set to:', task)
+        })
+        context.subscriptions.push(taskSetCommand);
+    }
+
+    /** 提供图形化界面 */
+    const GUIProvider = new VirtualMeGUIViewProvider(context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            VirtualMeGUIViewProvider.viewType,
+            GUIProvider,
+            { webviewOptions: { retainContextWhenHidden: true } }
+        )
+    );
 
     /** 打开文件 */
     const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
@@ -175,11 +204,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalChangeWatcher)
 
     /** 执行菜单项 */
-    // const commands = generateCommands()
-    // commands.forEach(({ command, callback }) => {
-    //     const menuItemWatcher = vscode.commands.registerCommand(command, callback);
-    //     context.subscriptions.push(menuItemWatcher)
-    // })
+    const menuItemCommands = generateCommands()
+    menuItemCommands.forEach(({ command, callback }) => {
+        const menuItemWatcher = vscode.commands.registerCommand(command, callback)
+        context.subscriptions.push(menuItemWatcher)
+    })
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -195,28 +224,43 @@ export function activate(context: vscode.ExtensionContext) {
         logs.push(log)
     })
     context.subscriptions.push(terminalExecuteWatcher)
+
+    /** 每隔 500ms 更新一次日志数量 */
+    function tntervalGetLogsNumTask() {
+        const interval = setInterval(() => {
+            GUIProvider.logsNum = logs.length
+        }, 500);
+        return interval;
+    }
+    const updateLogsNumIntervalId = tntervalGetLogsNumTask();
+    /** 销毁时清除定时任务 */
+    context.subscriptions.push({
+        dispose: () => {
+            clearInterval(updateLogsNumIntervalId);
+            console.log('Interval cleared.');
+        },
+    });
 }
 
 export function deactivate() {
-	if(!saved && logs.length){ // 如果之前没有手动保存过则自动保存
+	if(!saved && logs.length > 0){ // 如果之前没有手动保存过则自动保存
 		common.saveLog(common.logsToString(logs), isDev);
 	}
 }
 
-// type CommandKey = keyof typeof menuProcess.commandDescriptions
-// function generateCommands(): { command: string, callback: () => void }[] {
-//     return Object.keys(menuProcess.commandDescriptions).map<{ command: string, callback: () => void }>((command) => {
-//         const key = command as CommandKey
-//         return {
-//             command: key,
-//             callback: () => handleCommand(menuProcess.commandDescriptions[key].description, menuProcess.commandDescriptions[key].artifactType)
-//         }
-//     })
-// }
+function generateCommands(): { command: string, callback: () => void }[] {
+    return menuProcess.commandDescriptions.map<{ command: string, callback: () => void }>((commandDesc) => {
+        return {
+            command: commandDesc.newCommand,
+            callback: () => handleCommand(commandDesc.description, commandDesc.oldCommand) 
+        }
+    });
+}
 
-// function handleCommand(commandName: string, artifactType: logItem.ArtifactType): void {
-//     const artifact = new logItem.Artifact(commandName, artifactType)
-//     const eventType = logItem.EventType.ExecuteMenuItem
-//     const log = new logItem.LogItem(eventType, artifact)
-//     logs.push(log)
-// }
+function handleCommand(commandName: string, oldCommand: string): void {
+    const artifact = new logItem.Artifact(commandName, logItem.ArtifactType.MenuItem)
+    const eventType = logItem.EventType.ExecuteMenuItem
+    const log = new logItem.LogItem(eventType, artifact)
+    logs.push(log)
+    vscode.commands.executeCommand(oldCommand)
+}

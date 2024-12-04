@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>纯CSS3单选框复选框美化样式代码</title>
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.js"></script> -->
+    <style>
+        .clear{
+            clear:both;
+        }
+        /* 将原来的单选框隐藏,注意display:none 只是不显示该标签，该标签仍然存在于DOM树中 */
+        /* 虽然input框已经隐藏了，但是应为label和对应的input框是通过id关联的，所以我们仍然可以通过选择label来选中input框 */
+        .radio-style input{
+            display:none;
+        }
+        .radio-style span{
+            display:none;
+        }
+        .radio-style label{
+            float:left;
+            border:1px solid  #337ab7;
+            border-radius:5px;
+            padding:2px 10px 2px 10px;
+            /* 从上边开始，顺时针顺序:上 右 下 左 */
+            margin:5px;
+            line-height:20px;
+            min-width:80px;
+            text-align:center;
+            font-weight:lighter;
+            cursor:pointer;
+        }
+        /* 设置radio-style中的当input被选中时的紧接在其后的label的样式 */
+        .radio-style input:checked+label{
+            color:#fff;
+            background:#337ab7;
+        }
+        .radio-style input:checked+label span{
+            display:inline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>纯CSS3单选框复选框美化样式代码</h1>
+                </div>
+            </div>
+            <p>
+                你最喜欢哪个季节（radio单选）</p>
+            <div class="radio-style">
+                    <input type="radio" name='season' id='spring' >
+                    <label for="spring">春季     </label>
+                    <input type="radio" name='season' id='summer' >
+                    <label for="summer">夏季    </label>
+                    <input type="radio" name='season' id='autumn' >
+                    <label for="autumn">秋季     </label>
+                    <input type="radio" name='season' id='winter' >
+                    <label for="winter">冬季     </label>
+            </div>
+            <div class='clear'></div>
+            <hr>
+            <p>
+                    你最喜欢吃那些水果(checkbox多选框)
+            </p>
+            <div class="radio-style">
+                    <input type="checkbox" name='fruit' id='banana'>
+                    <label for="banana">香蕉 <span class='glyphicon glyphicon-ok'></span></label>
+                    <input type="checkbox" name='fruit' id='apple'>
+                    <label for="apple">苹果 <span class='glyphicon glyphicon-ok'></span></label>
+                    <input type="checkbox" name='fruit' id='watermelon'>
+                    <label for="watermelon">西瓜 <span class='glyphicon glyphicon-ok'></span></label>
+                    <input type="checkbox" name='fruit' id='orange'>
+                    <label for="orange">桔子 <span class='glyphicon glyphicon-ok'></span></label>
+            </div>
+ 
+    </div>
+ 
+</body>
+</html>
