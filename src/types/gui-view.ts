@@ -62,7 +62,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <button id="btn-save">保存记录</button>
                 <p>若要了解插件的更多信息。请参阅<a href="https://github.com/iseg-ide-sub1/virtual-me">我们的项目</a>。</p>
                 <hr style="margin: 20px 10%;">
-                <p>下面是您当前所处开发状态的标记，为了我们项目的模型训练，需要您在处于选择对应状态。</p>
+                <p>下面表示的是您当前所处的开发状态，需要您手动选择当前所处于的状态。这相当于对收集数据进行标注，将为我们的模型训练提供依据。</p>
                 <div class="task-div">
                     <input type="radio" name="task" onchange="onTaskChanged()" id="configuration" >
                     <label for="configuration">环境配置</label>
