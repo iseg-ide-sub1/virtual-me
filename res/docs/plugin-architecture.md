@@ -882,6 +882,33 @@ filesWatcher.onDidChange(uri => {...})
   }
 ```
 
+### 4-1 `ExecuteMenuItem`
+
+**实现 API**：
+
+```typescript
+    const menuItemCommands = generateCommands()
+    menuItemCommands.forEach(({ command, callback }) => {
+        const menuItemWatcher = vscode.commands.registerCommand(command, callback)
+        context.subscriptions.push(menuItemWatcher)
+    })
+```
+
+**触发条件**：按下了对应的快捷键（快捷键列表见 `package.json`）
+
+```json
+  {
+    "id": 168,
+    "timeStamp": "2024-12-04 20:49:02.190",
+    "eventType": "ExecuteMenuItem",
+    "taskType": "Unknown",
+    "artifact": {
+      "name": "Show Command Palette",
+      "type": "MenuItem"
+    }
+  }
+```
+
 ## 插件代码组织结构
 
 ### `extension.ts`
