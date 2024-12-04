@@ -1,9 +1,42 @@
-#task-box {
-    border: 8px solid var(--vscode-button-background);
-    margin: 10px auto;
+button {
+    width: 72%;
+    margin: 10px 14%;
 }
 
-button {
-    width: 80%;
-    margin: 10px 10%;
+.confirm-btn {
+    display: inline-block;
+    width:30%;
+    margin: 10px 8%;
+}
+
+.task-div {
+    margin: 10px auto;
+    overflow: hidden;
+}
+.task-div input{
+    display: none;
+}
+.task-div span{
+    display: none;
+}
+.task-div label{
+    float: left;
+    border: 2px solid  var(--vscode-button-background);
+    border-radius: 5px;
+    padding: 2px 10px 2px 10px;
+    margin: 5px;
+    line-height: 20px;
+    min-width: 80px;
+    text-align: center;
+    font-weight: 500;
+    cursor: pointer;
+}
+.task-div input:checked+label{
+    color: #FFF;
+    background: var(--vscode-button-background);
+}
+
+#logs-num {
+    font-size: 24px;
+    color: var(--vscode-button-background);
 }

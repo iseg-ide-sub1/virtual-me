@@ -58,7 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
             VirtualMeGUIViewProvider.viewType,
-            GUIProvider
+            GUIProvider,
+            { webviewOptions: { retainContextWhenHidden: true } }
         )
     );
 

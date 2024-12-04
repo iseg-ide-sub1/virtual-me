@@ -122,3 +122,5 @@
 - 修改 `virtualme.activate` 指令的执行
 - webview 界面新增记录收集记录数量的显示
 - 实现标注当前所处任务的功能
+- 优化界面样式，修复 webview 单选框 bug
+- 更新 README 文档

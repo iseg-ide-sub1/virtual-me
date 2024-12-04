@@ -10,13 +10,13 @@ window.addEventListener('message', event => {
 });
 
 function updateLogsNum(logsNum) {
-    target =  document.getElementById('logs-num');
+    const target =  document.getElementById('logs-num');
     target.innerText = logsNum;
 }
 
 const btn_clear = document.getElementById('btn-clear');
 btn_clear.addEventListener('click', () => {
-    vscode.postMessage({ command: 'virtualme.clear' });
+    showConfirmDialog();
 });
 
 const btn_save = document.getElementById('btn-save');
@@ -25,7 +25,20 @@ btn_save.addEventListener('click', () => {
 });
 
 function onTaskChanged() {
-    const selectedValue = document.querySelector('input[name="task"]:checked').value;
+    const selectedValue = document.querySelector('input[type="radio"]:checked').id;
     const taskCommand = 'virtualme.settask.' + selectedValue;
     vscode.postMessage({ command: taskCommand });
+}
+
+document.getElementById('confirm-yes').onclick = () => {
+    vscode.postMessage({ command: 'virtualme.clear' });
+    document.getElementById('confirm-dialog').style.display = 'none';
+};
+
+document.getElementById('confirm-no').onclick = () => {
+    document.getElementById('confirm-dialog').style.display = 'none';
+};
+
+function showConfirmDialog() {
+    document.getElementById('confirm-dialog').style.display = 'block';
 }
