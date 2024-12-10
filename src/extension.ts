@@ -10,7 +10,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/menu-process'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
+let isDev: boolean = true // 是否处在开发环境，该值影响数据的保存位置
 let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 
@@ -43,14 +43,20 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(saveLogCommand);
 
-    /** 注册用于标记当前任务的命令 */
-    for (const task of Object.values(logItem.TaskType)) {
-        const commandName = 'virtualme.settask.' + task.toLowerCase();
+    /** 注册命令：注册状态类型 */
+    const registerTaskCommand = vscode.commands.registerCommand('virtualme.register.tasktype', (taskType: string) => {
+        console.log('Register Task Type:', taskType)
+        const commandName = 'virtualme.settask.' + taskType.toLowerCase();
         const taskSetCommand = vscode.commands.registerCommand(commandName , () => {
-            logItem.LogItem.currentTaskType = task;
-            // console.log('Current task is set to:', task)
+            logItem.LogItem.currentTaskType = taskType;
         })
         context.subscriptions.push(taskSetCommand);
+    })
+    context.subscriptions.push(registerTaskCommand);
+
+    /** 注册用于标记当前任务的命令 */
+    for (const task of Object.values(logItem.TaskType)) {
+        vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
     /** 提供图形化界面 */

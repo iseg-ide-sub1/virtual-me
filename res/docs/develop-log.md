@@ -124,3 +124,11 @@
 - 实现标注当前所处任务的功能
 - 优化界面样式，修复 webview 单选框 bug
 - 更新 README 文档
+
+## v0.0.4
+
+### 20241210-HiMeditator
+
+- 新增注册状态的指令 `virtualme.register.tasktype`
+- `LogItem` 类的 `taskType` 属性类型由 `TaskType` 改为 `string`
+- webview 界面新增添加状态的选项，并实现了对应功能

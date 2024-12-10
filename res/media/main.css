@@ -3,10 +3,34 @@ button {
     margin: 10px 14%;
 }
 
-.confirm-btn {
+.confirm-btn-l {
     display: inline-block;
-    width:30%;
-    margin: 10px 8%;
+    width:20%;
+    margin: 10px 8% 10px 20%;
+}
+.confirm-btn-r {
+    display: inline-block;
+    width:20%;
+    margin: 10px 20% 10px 8%;
+}
+
+.task-input {
+	display: block;
+	width: 90%;
+    margin-left: 5%;
+    margin-top: 10px;
+	border: none;
+	font-family: var(--vscode-font-family);
+	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+	color: var(--vscode-input-foreground);
+	outline-color: var(--vscode-input-border);
+	background-color: var(--vscode-input-background);
+}
+
+.input-error {
+    width: 80%;
+    margin-left: 10%;
+    color: red;
 }
 
 .task-div {
