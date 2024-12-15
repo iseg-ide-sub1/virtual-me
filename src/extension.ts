@@ -10,8 +10,7 @@ import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/menu-process'
 
 let logs: logItem.LogItem[] = []
-let isDev: boolean = true // 是否处在开发环境，该值影响数据的保存位置
-let saved: boolean = false // 是否执行过保存指令
+let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
 let lastText: string // 保存上一次编辑后的代码
 
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -36,7 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
-        saved = true;
         common.saveLog(common.logsToString(logs), isDev);
         vscode.window.showInformationMessage('Log file has been saved!');
         logs = [] // 清空保存的记录
@@ -234,6 +232,10 @@ export function activate(context: vscode.ExtensionContext) {
     /** 每隔 500ms 更新一次日志数量 */
     function tntervalGetLogsNumTask() {
         const interval = setInterval(() => {
+            if(logs.length >= 100){
+                common.saveLog(common.logsToString(logs), isDev);
+                logs = [];
+            }
             GUIProvider.logsNum = logs.length
         }, 500);
         return interval;
@@ -249,7 +251,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	if(!saved && logs.length > 0){ // 如果之前没有手动保存过则自动保存
+	if(logs.length > 0){ // 如果还有没有保存的内容则自动保存
 		common.saveLog(common.logsToString(logs), isDev);
 	}
 }
