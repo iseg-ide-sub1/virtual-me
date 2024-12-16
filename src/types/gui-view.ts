@@ -62,7 +62,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 </div>
                 <p>插件会在 VS Code 关闭时自动保存缓存的记录，也可以通过下面的按钮手动保存记录。每次保存记录后将清空缓存的记录。</p>
                 <button id="btn-save">保存记录</button>
-                <p>若要了解插件的更多信息。请参阅<a href="https://github.com/iseg-ide-sub1/virtual-me">我们的项目</a>。</p>
+                <p>当前插件版本：v0.1.0</p>
                 <hr style="margin: 20px 10%;">
                 <p>下面表示的是您当前所处的开发状态，需要您手动选择当前所处于的状态。这相当于对收集数据进行标注，将为我们的模型训练提供依据。</p>
                 <div class="task-div">

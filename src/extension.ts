@@ -17,6 +17,14 @@ let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile : boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
 
+// 用于合并选择操作
+let lastSelectStamp: number = 0;
+let lastSelectStart: vscode.Position;
+let lastSelectEnd: vscode.Position;
+let lastSelectLog: logItem.LogItem;
+
+// 用于合并文本内容修改操作（*TextDocument）
+// let lastChangeLogs: logItem.LogItem[] = [];
 export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
@@ -143,17 +151,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 用光标选择文本内容 */
     const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
-        const selection = event.selections[0] // 只考虑有一个选区的情况
+        const selection = event.selections[0] // 只考虑第一个选区
         if (selection.isEmpty) return // 只有选择内容不为空才记录
         if(event.textEditor.document.uri.scheme !== 'file') return // 非文件不记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
         const document = event.textEditor.document // 当前编辑的文件
-        // console.log(document.uri.scheme)
         const log = await conextProcess.getLogItemFromSelectedText(document, start, end)
-        logs.push(log)
-        // console.log(event)
+        if(lastSelectStamp !== 0){
+            if(new Date().getTime() - lastSelectStamp > 2000 || start.compareTo(lastSelectStart) > 0 || end.compareTo(lastSelectEnd) < 0){
+                // 不满足合并条件
+                logs.push(lastSelectLog)
+            }
+        }
         // console.log(log)
+        lastSelectLog = log
+        lastSelectStamp = new Date().getTime()
+        lastSelectStart = start
+        lastSelectEnd = end
     })
     context.subscriptions.push(selectTextWatcher)
 
@@ -167,6 +182,25 @@ export function activate(context: vscode.ExtensionContext) {
         if(event.document.uri.scheme !== 'file') return // 非文件不记录
         // console.log(event.document.uri.scheme)
         let changeLogs = await conextProcess.getLogItemsFromChangedText(event,lastText)
+        // lastChangeLogs = lastChangeLogs.concat(changeLogs)
+        // while(lastChangeLogs.length > 1){
+        //     let log1 = lastChangeLogs[0]
+        //     let log2 = lastChangeLogs[1]
+        //     if(
+        //         log1.eventType != log2.eventType ||
+        //         log1.artifact.name !== log2.artifact.name ||
+        //         log1.artifact.type !== log2.artifact.type ||
+        //         (log1.eventType != logItem.EventType.AddTextDocument && log1.eventType != logItem.EventType.DeleteTextDocument)
+        //     ){
+        //         // 如果两个操作不能合并那么将前者放入缓存
+        //         // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
+        //         const log = lastChangeLogs.shift()
+        //         if(log) logs.push(log)
+        //     }
+        //     else{
+
+        //     }
+        // }
         logs = logs.concat(changeLogs)
         lastText = event.document.getText()
         // console.log(event)
@@ -252,6 +286,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
 	if(logs.length > 0){ // 如果还有没有保存的内容则自动保存
+        if(lastSelectLog) logs.push(lastSelectLog);
 		common.saveLog(common.logsToString(logs), isDev);
 	}
 }
