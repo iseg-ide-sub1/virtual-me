@@ -28,6 +28,9 @@ let lastSelectLog: logItem.LogItem;
 export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
+    // 设置上下文变量，表示扩展已激活
+    vscode.commands.executeCommand('setContext', 'myExtension.active', true)
+
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
         // 空命令，执行可以激活插件而不产生其他影响
@@ -289,6 +292,8 @@ export function deactivate() {
         if(lastSelectLog) logs.push(lastSelectLog);
 		common.saveLog(common.logsToString(logs), isDev);
 	}
+    // 清除上下文变量
+    vscode.commands.executeCommand('setContext', 'myExtension.active', false)
 }
 
 function generateCommands(): { command: string, callback: () => void }[] {
