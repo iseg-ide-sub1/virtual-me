@@ -12,7 +12,7 @@
   "icon": "./res/img/icon.png",
   "version": "0.1.0",
   "engines": {
-    "vscode": "^1.93.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Data Science",
@@ -315,7 +315,7 @@
       },
       {
         "command": "virtualme.editor.action.removeCommentLine",
-        "key": "ctrl+k ctrl+u", 
+        "key": "ctrl+k ctrl+u",
         "mac": "cmd+k cmd+u",
         "when": "myExtension.active"
       },
@@ -947,7 +947,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
-    "@types/vscode": "^1.93.0",
+    "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
     "@vscode/test-cli": "^0.0.10",
@@ -959,6 +959,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "virtual-me": "file:"
+    "virtual-me": "file:",
+    "vsce": "^2.15.0"
   }
 }
