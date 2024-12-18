@@ -11,15 +11,25 @@ import * as menuProcess from './utils/menu-process'
 
 let logs: logItem.LogItem[] = []
 let isDev: boolean = false // 是否处在开发环境，该值影响数据的保存位置
-let saved: boolean = false // 是否执行过保存指令
 let lastText: string // 保存上一次编辑后的代码
 
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile : boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
 
+// 用于合并选择操作
+let lastSelectStamp: number = 0;
+let lastSelectStart: vscode.Position;
+let lastSelectEnd: vscode.Position;
+let lastSelectLog: logItem.LogItem;
+
+// 用于合并文本内容修改操作（*TextDocument）
+// let lastChangeLogs: logItem.LogItem[] = [];
 export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
+
+    // 设置上下文变量，表示扩展已激活
+    vscode.commands.executeCommand('setContext', 'myExtension.active', true)
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
@@ -36,21 +46,26 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
-        saved = true;
         common.saveLog(common.logsToString(logs), isDev);
         vscode.window.showInformationMessage('Log file has been saved!');
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
 
-    /** 注册用于标记当前任务的命令 */
-    for (const task of Object.values(logItem.TaskType)) {
-        const commandName = 'virtualme.settask.' + task.toLowerCase();
+    /** 注册命令：注册状态类型 */
+    const registerTaskCommand = vscode.commands.registerCommand('virtualme.register.tasktype', (taskType: string) => {
+        console.log('Register Task Type:', taskType)
+        const commandName = 'virtualme.settask.' + taskType.toLowerCase();
         const taskSetCommand = vscode.commands.registerCommand(commandName , () => {
-            logItem.LogItem.currentTaskType = task;
-            // console.log('Current task is set to:', task)
+            logItem.LogItem.currentTaskType = taskType;
         })
         context.subscriptions.push(taskSetCommand);
+    })
+    context.subscriptions.push(registerTaskCommand);
+
+    /** 注册用于标记当前任务的命令 */
+    for (const task of Object.values(logItem.TaskType)) {
+        vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
     /** 提供图形化界面 */
@@ -139,17 +154,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 用光标选择文本内容 */
     const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
-        const selection = event.selections[0] // 只考虑有一个选区的情况
+        const selection = event.selections[0] // 只考虑第一个选区
         if (selection.isEmpty) return // 只有选择内容不为空才记录
         if(event.textEditor.document.uri.scheme !== 'file') return // 非文件不记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
         const document = event.textEditor.document // 当前编辑的文件
-        // console.log(document.uri.scheme)
         const log = await conextProcess.getLogItemFromSelectedText(document, start, end)
-        logs.push(log)
-        // console.log(event)
+        if(lastSelectStamp !== 0){
+            if(new Date().getTime() - lastSelectStamp > 2000 || start.compareTo(lastSelectStart) > 0 || end.compareTo(lastSelectEnd) < 0){
+                // 不满足合并条件
+                logs.push(lastSelectLog)
+            }
+        }
         // console.log(log)
+        lastSelectLog = log
+        lastSelectStamp = new Date().getTime()
+        lastSelectStart = start
+        lastSelectEnd = end
     })
     context.subscriptions.push(selectTextWatcher)
 
@@ -163,6 +185,25 @@ export function activate(context: vscode.ExtensionContext) {
         if(event.document.uri.scheme !== 'file') return // 非文件不记录
         // console.log(event.document.uri.scheme)
         let changeLogs = await conextProcess.getLogItemsFromChangedText(event,lastText)
+        // lastChangeLogs = lastChangeLogs.concat(changeLogs)
+        // while(lastChangeLogs.length > 1){
+        //     let log1 = lastChangeLogs[0]
+        //     let log2 = lastChangeLogs[1]
+        //     if(
+        //         log1.eventType != log2.eventType ||
+        //         log1.artifact.name !== log2.artifact.name ||
+        //         log1.artifact.type !== log2.artifact.type ||
+        //         (log1.eventType != logItem.EventType.AddTextDocument && log1.eventType != logItem.EventType.DeleteTextDocument)
+        //     ){
+        //         // 如果两个操作不能合并那么将前者放入缓存
+        //         // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
+        //         const log = lastChangeLogs.shift()
+        //         if(log) logs.push(log)
+        //     }
+        //     else{
+
+        //     }
+        // }
         logs = logs.concat(changeLogs)
         lastText = event.document.getText()
         // console.log(event)
@@ -228,6 +269,10 @@ export function activate(context: vscode.ExtensionContext) {
     /** 每隔 500ms 更新一次日志数量 */
     function tntervalGetLogsNumTask() {
         const interval = setInterval(() => {
+            if(logs.length >= 100){
+                common.saveLog(common.logsToString(logs), isDev);
+                logs = [];
+            }
             GUIProvider.logsNum = logs.length
         }, 500);
         return interval;
@@ -243,9 +288,12 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	if(!saved && logs.length > 0){ // 如果之前没有手动保存过则自动保存
+	if(logs.length > 0){ // 如果还有没有保存的内容则自动保存
+        if(lastSelectLog) logs.push(lastSelectLog);
 		common.saveLog(common.logsToString(logs), isDev);
 	}
+    // 清除上下文变量
+    vscode.commands.executeCommand('setContext', 'myExtension.active', false)
 }
 
 function generateCommands(): { command: string, callback: () => void }[] {

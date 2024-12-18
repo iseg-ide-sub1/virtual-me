@@ -9,10 +9,10 @@
   "homepage": "https://github.com/iseg-ide-sub1/virtual-me",
   "license": "Apache-2.0",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
-  "icon": "./res/img/icon.png",
-  "version": "0.0.3",
+  "icon": "res/img/icon.png",
+  "version": "0.1.0",
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Data Science",
@@ -33,6 +33,10 @@
       {
         "command": "virtualme.savelog",
         "title": "VirtualMe Save Log"
+      },
+      {
+        "command": "virtualme.register.tasktype",
+        "title": "Resister Task Type"
       }
     ],
     "viewsContainers": {
@@ -60,743 +64,872 @@
       },
       {
         "command": "virtualme.savelog",
-        "key": "ctrl+alt+s"
+        "key": "ctrl+alt+s",
+        "when": "myExtension.active"
       },
-
       {
         "command": "virtualme.workbench.action.showCommands",
         "key": "ctrl+shift+p",
-        "mac": "cmd+shift+p"
+        "mac": "cmd+shift+p",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.showCommands",
         "key": "f1",
-        "mac": "f1"
+        "mac": "f1",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.quickOpen",
         "key": "ctrl+p",
-        "mac": "cmd+p"
+        "mac": "cmd+p",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.newWindow",
         "key": "ctrl+shift+n",
-        "mac": "cmd+shift+n"
+        "mac": "cmd+shift+n",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.closeWindow",
         "key": "ctrl+shift+w",
-        "mac": "cmd+shift+w"
+        "mac": "cmd+shift+w",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.openSettings",
         "key": "ctrl+,",
-        "mac": "cmd+,"
+        "mac": "cmd,",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.openGlobalKeybindings",
         "key": "ctrl+k ctrl+s",
-        "mac": "cmd+k cmd+s"
+        "mac": "cmd+k cmd+s",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.clipboardCutAction",
         "key": "ctrl+x",
-        "mac": "cmd+x"
+        "mac": "cmd+x",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.clipboardCopyAction",
         "key": "ctrl+c",
-        "mac": "cmd+c"
+        "mac": "cmd+c",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.deleteLines",
         "key": "ctrl+shift+k",
-        "mac": "cmd+shift+k"
+        "mac": "cmd+shift+k",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.insertLineAfter",
         "key": "ctrl+enter",
-        "mac": "cmd+enter"
+        "mac": "cmd+enter",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.insertLineBefore",
         "key": "ctrl+shift+enter",
-        "mac": "cmd+shift+enter"
+        "mac": "cmd+shift+enter",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.moveLinesDownAction",
         "key": "alt+down",
-        "mac": "alt+down"
+        "mac": "alt+down",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.moveLinesUpAction",
         "key": "alt+up",
-        "mac": "alt+up"
+        "mac": "alt+up",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.copyLinesDownAction",
         "key": "shift+alt+down",
-        "mac": "shift+alt+down"
+        "mac": "shift+alt+down",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.copyLinesUpAction",
         "key": "shift+alt+up",
-        "mac": "shift+alt+up"
+        "mac": "shift+alt+up",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.addSelectionToNextFindMatch",
         "key": "ctrl+d",
-        "mac": "cmd+d"
+        "mac": "cmd+d",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.moveSelectionToNextFindMatch",
         "key": "ctrl+k ctrl+d",
-        "mac": "cmd+k cmd+d"
+        "mac": "cmd+k cmd+d",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.cursorUndo",
         "key": "ctrl+u",
-        "mac": "cmd+u"
+        "mac": "cmd+u",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.insertCursorAtEndOfEachLineSelected",
         "key": "shift+alt+i",
-        "mac": "shift+alt+i"
+        "mac": "shift+alt+i",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.selectHighlights",
         "key": "ctrl+shift+l",
-        "mac": "cmd+shift+l"
+        "mac": "cmd+shift+l",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.changeAll",
         "key": "ctrl+f2",
-        "mac": "cmd+f2"
+        "mac": "cmd+f2",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.expandLineSelection",
         "key": "ctrl+i",
-        "mac": "cmd+i"
+        "mac": "cmd+i",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.insertCursorBelow",
         "key": "ctrl+alt+down",
-        "mac": "cmd+alt+down"
+        "mac": "cmd+alt+down",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.insertCursorAbove",
         "key": "ctrl+alt+up",
-        "mac": "cmd+alt+up"
+        "mac": "cmd+alt+up",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.jumpToBracket",
         "key": "ctrl+shift+\\",
-        "mac": "cmd+shift+\\"
+        "mac": "cmd+shift+\\",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.indentLines",
         "key": "ctrl+]",
-        "mac": "cmd+]"
+        "mac": "cmd+]",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.outdentLines",
         "key": "ctrl+[",
-        "mac": "cmd+["
+        "mac": "cmd+[",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.cursorHome",
         "key": "home",
-        "mac": "home"
+        "mac": "home",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.cursorEnd",
         "key": "end",
-        "mac": "end"
+        "mac": "end",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.cursorBottom",
         "key": "ctrl+end",
-        "mac": "cmd+end"
+        "mac": "cmd+end",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.cursorTop",
         "key": "ctrl+home",
-        "mac": "cmd+home"
+        "mac": "cmd+home",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.scrollLineDown",
         "key": "ctrl+down",
-        "mac": "cmd+down"
+        "mac": "cmd+down",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.scrollLineUp",
         "key": "ctrl+up",
-        "mac": "cmd+up"
+        "mac": "cmd+up",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.scrollPageDown",
         "key": "alt+pagedown",
-        "mac": "alt+pagedown"
+        "mac": "alt+pagedown",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.scrollPageUp",
         "key": "alt+pageup",
-        "mac": "alt+pageup"
+        "mac": "alt+pageup",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.fold",
         "key": "ctrl+shift+[",
-        "mac": "cmd+shift+["
+        "mac": "cmd+shift+[",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.unfoldRecursively",
         "key": "ctrl+shift+]",
-        "mac": "cmd+shift+]"
+        "mac": "cmd+shift+]",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.foldAll",
         "key": "ctrl+k ctrl+0",
-        "mac": "cmd+k cmd+0"
+        "mac": "cmd+k cmd+0",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.unfoldAll",
         "key": "ctrl+k ctrl+j",
-        "mac": "cmd+k cmd+j"
+        "mac": "cmd+k cmd+j",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.addCommentLine",
         "key": "ctrl+k ctrl+c",
-        "mac": "cmd+k cmd+c"
+        "mac": "cmd+k cmd+c",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.removeCommentLine",
         "key": "ctrl+k ctrl+u",
-        "mac": "cmd+k cmd+u"
+        "mac": "cmd+k cmd+u",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.commentLine",
         "key": "ctrl+/",
-        "mac": "cmd+/"
+        "mac": "cmd+/",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.blockComment",
         "key": "shift+alt+a",
-        "mac": "shift+alt+a"
+        "mac": "shift+alt+a",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.actions.find",
         "key": "ctrl+f",
-        "mac": "cmd+f"
+        "mac": "cmd+f",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.startFindReplaceAction",
         "key": "ctrl+h",
-        "mac": "cmd+h"
+        "mac": "cmd+h",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.nextMatchFindAction",
         "key": "f3",
-        "mac": "f3"
+        "mac": "f3",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.previousMatchFindAction",
         "key": "shift+f3",
-        "mac": "shift+f3"
+        "mac": "shift+f3",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.selectAllMatches",
         "key": "alt+enter",
-        "mac": "alt+enter"
+        "mac": "alt+enter",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleFindCaseSensitive",
         "key": "alt+c",
-        "mac": "alt+c"
+        "mac": "alt+c",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleFindRegex",
         "key": "alt+r",
-        "mac": "alt+r"
+        "mac": "alt+r",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleFindWholeWord",
         "key": "alt+w",
-        "mac": "alt+w"
+        "mac": "alt+w",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.toggleTabFocusMode",
         "key": "ctrl+m",
-        "mac": "ctrl+m"
+        "mac": "ctrl+m",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleRenderWhitespace",
         "key": "unassigned",
-        "mac": "unassigned"
+        "mac": "unassigned",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.toggleWordWrap",
         "key": "alt+z",
-        "mac": "alt+z"
+        "mac": "alt+z",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.triggerSuggest",
         "key": "ctrl+space",
-        "mac": "cmd+space"
+        "mac": "cmd+space",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.triggerParameterHints",
         "key": "ctrl+shift+space",
-        "mac": "cmd+shift+space"
+        "mac": "cmd+shift+space",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.formatDocument",
         "key": "shift+alt+f",
-        "mac": "shift+alt+f"
+        "mac": "shift+alt+f",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.formatSelection",
         "key": "ctrl+k ctrl+f",
-        "mac": "cmd+k cmd+f"
+        "mac": "cmd+k cmd+f",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.revealDefinition",
         "key": "f12",
-        "mac": "f12"
+        "mac": "f12",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.showHover",
         "key": "ctrl+k ctrl+i",
-        "mac": "cmd+k cmd+i"
+        "mac": "cmd+k cmd+i",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.peekDefinition",
         "key": "alt+f12",
-        "mac": "alt+f12"
+        "mac": "alt+f12",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.revealDefinitionAside",
         "key": "ctrl+k f12",
-        "mac": "cmd+k f12"
+        "mac": "cmd+k f12",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.quickFix",
         "key": "ctrl+.",
-        "mac": "cmd+."
+        "mac": "cmd+.",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.referenceSearch.trigger",
         "key": "shift+f12",
-        "mac": "shift+f12"
+        "mac": "shift+f12",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.rename",
         "key": "f2",
-        "mac": "f2"
+        "mac": "f2",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.inPlaceReplace.down",
         "key": "ctrl+shift+. ctrl+shift+.",
-        "mac": "cmd+shift+. cmd+shift+."
+        "mac": "cmd+shift+. cmd+shift+.",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.inPlaceReplace.up",
         "key": "ctrl+shift+,",
-        "mac": "cmd+shift+,"
+        "mac": "cmd+shift+,",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.smartSelect.grow",
         "key": "shift+alt+right",
-        "mac": "shift+alt+right"
+        "mac": "shift+alt+right",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.smartSelect.shrink",
         "key": "shift+alt+left",
-        "mac": "shift+alt+left"
+        "mac": "shift+alt+left",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.trimTrailingWhitespace",
         "key": "ctrl+k ctrl+x",
-        "mac": "cmd+k cmd+x"
+        "mac": "cmd+k cmd+x",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.editor.changeLanguageMode",
         "key": "ctrl+k m",
-        "mac": "cmd+k m"
+        "mac": "cmd+k m",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.showAllSymbols",
         "key": "ctrl+t",
-        "mac": "cmd+t"
+        "mac": "cmd+t",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.gotoLine",
         "key": "ctrl+g",
-        "mac": "cmd+g"
+        "mac": "cmd+g",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.gotoSymbol",
         "key": "ctrl+shift+o",
-        "mac": "cmd+shift+o"
+        "mac": "cmd+shift+o",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.actions.view.problems",
         "key": "ctrl+shift+m",
-        "mac": "cmd+shift+m"
+        "mac": "cmd+shift+m",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.marker.nextInFiles",
         "key": "f8",
-        "mac": "f8"
+        "mac": "f8",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.action.marker.prevInFiles",
         "key": "shift+f8",
-        "mac": "shift+f8"
+        "mac": "shift+f8",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.openPreviousRecentlyUsedEditorInGroup",
         "key": "ctrl+shift+tab",
-        "mac": "ctrl+shift+tab"
+        "mac": "ctrl+shift+tab",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.navigateBack",
         "key": "alt+left",
-        "mac": "alt+left"
+        "mac": "alt+left",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.quickInputBack",
         "key": "alt+left",
-        "mac": "alt+left"
+        "mac": "alt+left",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.navigateForward",
         "key": "alt+right",
-        "mac": "alt+right"
+        "mac": "alt+right",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.closeActiveEditor",
         "key": "ctrl+f4",
-        "mac": "cmd+f4"
+        "mac": "cmd+f4",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.closeFolder",
         "key": "ctrl+k f",
-        "mac": "cmd+k f"
+        "mac": "cmd+k f",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.navigateEditorGroups",
         "key": "unassigned",
-        "mac": "unassigned"
+        "mac": "unassigned",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.splitEditor",
         "key": "ctrl+\\",
-        "mac": "cmd+\\"
+        "mac": "cmd+\\",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.focusFirstEditorGroup",
         "key": "ctrl+1",
-        "mac": "cmd+1"
+        "mac": "cmd+1",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.focusSecondEditorGroup",
         "key": "ctrl+2",
-        "mac": "cmd+2"
+        "mac": "cmd+2",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.focusThirdEditorGroup",
         "key": "ctrl+3",
-        "mac": "cmd+3"
+        "mac": "cmd+3",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveEditorLeftInGroup",
         "key": "ctrl+shift+pageup",
-        "mac": "cmd+shift+pageup"
+        "mac": "cmd+shift+pageup",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveEditorRightInGroup",
         "key": "ctrl+shift+pagedown",
-        "mac": "cmd+shift+pagedown"
+        "mac": "cmd+shift+pagedown",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveActiveEditorGroupLeft",
         "key": "ctrl+k left",
-        "mac": "cmd+k left"
+        "mac": "cmd+k left",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveActiveEditorGroupRight",
         "key": "ctrl+k right",
-        "mac": "cmd+k right"
+        "mac": "cmd+k right",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveEditorToNextGroup",
         "key": "ctrl+alt+right",
-        "mac": "cmd+alt+right"
+        "mac": "cmd+alt+right",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.moveEditorToPreviousGroup",
         "key": "ctrl+alt+left",
-        "mac": "cmd+alt+left"
+        "mac": "cmd+alt+left",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.newUntitledFile",
         "key": "ctrl+n",
-        "mac": "cmd+n"
+        "mac": "cmd+n",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.openFile",
         "key": "ctrl+o",
-        "mac": "cmd+o"
+        "mac": "cmd+o",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.save",
         "key": "ctrl+s",
-        "mac": "cmd+s"
+        "mac": "cmd+s",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.saveAll",
         "key": "ctrl+k s",
-        "mac": "cmd+k s"
+        "mac": "cmd+k s",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.saveAs",
         "key": "ctrl+shift+s",
-        "mac": "cmd+shift+s"
+        "mac": "cmd+shift+s",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.closeEditorsInGroup",
         "key": "ctrl+k w",
-        "mac": "cmd+k w"
+        "mac": "cmd+k w",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.closeAllEditors",
         "key": "ctrl+k ctrl+w",
-        "mac": "cmd+k cmd+w"
+        "mac": "cmd+k cmd+w",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.reopenClosedEditor",
         "key": "ctrl+shift+t",
-        "mac": "cmd+shift+t"
+        "mac": "cmd+shift+t",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.keepEditor",
         "key": "ctrl+k enter",
-        "mac": "cmd+k enter"
+        "mac": "cmd+k enter",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.openNextRecentlyUsedEditorInGroup",
         "key": "ctrl+tab",
-        "mac": "cmd+tab"
+        "mac": "cmd+tab",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.copyPathOfActiveFile",
         "key": "ctrl+k p",
-        "mac": "cmd+k p"
+        "mac": "cmd+k p",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.revealActiveFileInWindows",
         "key": "ctrl+k r",
-        "mac": "cmd+k r"
+        "mac": "cmd+k r",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.files.showOpenedFileInNewWindow",
         "key": "ctrl+k o",
-        "mac": "cmd+k o"
+        "mac": "cmd+k o",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.toggleFullScreen",
         "key": "f11",
-        "mac": "f11"
+        "mac": "f11",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.toggleZenMode",
         "key": "ctrl+k z",
-        "mac": "cmd+k z"
+        "mac": "cmd+k z",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.exitZenMode",
         "key": "escape",
-        "mac": "escape"
+        "mac": "escape",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.zoomIn",
         "key": "ctrl+=",
-        "mac": "cmd+="
+        "mac": "cmd+=",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.zoomOut",
         "key": "ctrl+-",
-        "mac": "cmd+-"
+        "mac": "cmd+-",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.zoomReset",
         "key": "ctrl+numpad0",
-        "mac": "cmd+numpad0"
+        "mac": "cmd+numpad0",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.toggleSidebarVisibility",
         "key": "ctrl+b",
-        "mac": "cmd+b"
+        "mac": "cmd+b",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.view.explorer",
         "key": "ctrl+shift+e",
-        "mac": "cmd+shift+e"
+        "mac": "cmd+shift+e",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.view.scm",
         "key": "ctrl+shift+g",
-        "mac": "cmd+shift+g"
+        "mac": "cmd+shift+g",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.view.debug",
         "key": "ctrl+shift+d",
-        "mac": "cmd+shift+d"
+        "mac": "cmd+shift+d",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.view.extensions",
         "key": "ctrl+shift+x",
-        "mac": "cmd+shift+x"
+        "mac": "cmd+shift+x",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.output.toggleOutput",
         "key": "ctrl+shift+u",
-        "mac": "cmd+shift+u"
+        "mac": "cmd+shift+u",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.quickOpenView",
         "key": "ctrl+q ctrl+q",
-        "mac": "cmd+q cmd+q"
+        "mac": "cmd+q cmd+q",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.terminal.openNativeConsole",
         "key": "ctrl+shift+c",
-        "mac": "cmd+shift+c"
+        "mac": "cmd+shift+c",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.markdown.showPreview",
         "key": "ctrl+shitf+v",
-        "mac": "cmd+shift+v"
+        "mac": "cmd+shift+v",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.markdown.showPreviewToSide",
         "key": "ctrl+k v",
-        "mac": "cmd+k v"
+        "mac": "cmd+k v",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.terminal.toggleTerminal",
         "key": "ctrl+`",
-        "mac": "cmd+`"
+        "mac": "cmd+`",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.view.search",
         "key": "ctrl+shift+f",
-        "mac": "cmd+shift+f"
+        "mac": "cmd+shift+f",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.replaceInFiles",
         "key": "ctrl+shift+h",
-        "mac": "cmd+shift+h"
+        "mac": "cmd+shift+h",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleSearchCaseSensitive",
         "key": "alt+c",
-        "mac": "alt+c"
+        "mac": "alt+c",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleSearchWholeWord",
         "key": "alt+w",
-        "mac": "alt+w"
+        "mac": "alt+w",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.toggleSearchRegex",
         "key": "alt+r",
-        "mac": "alt+r"
+        "mac": "alt+r",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.search.toggleQueryDetails",
         "key": "ctrl+shift+j",
-        "mac": "cmd+shift+j"
+        "mac": "cmd+shift+j",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.search.action.focusNextSearchResult",
         "key": "f4",
-        "mac": "f4"
+        "mac": "f4",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.search.action.focusPreviousSearchResult",
         "key": "shift+f4",
-        "mac": "shift+f4"
-      },
-      {
-        "command": "virtualme.history.showNext",
-        "key": "down",
-        "mac": "down"
-      },
-      {
-        "command": "virtualme.history.showPrevious",
-        "key": "up",
-        "mac": "up"
+        "mac": "shift+f4",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.selectTheme",
         "key": "ctrl+k ctrl+t",
-        "mac": "cmd+k cmd+t"
+        "mac": "cmd+k cmd+t",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.debug.action.toggleBreakpoint",
         "key": "f9",
-        "mac": "f9"
+        "mac": "f9",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.start",
         "key": "f5",
-        "mac": "f5"
-      },
-      {
-        "command": "virtualme.workbench.action.debug.continue",
-        "key": "f5",
-        "mac": "f5"
+        "mac": "f5",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.run",
         "key": "ctrl+f5",
-        "mac": "cmd+f5"
+        "mac": "cmd+f5",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.pause",
         "key": "f6",
-        "mac": "f6"
+        "mac": "f6",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.stepInto",
         "key": "f11",
-        "mac": "f11"
+        "mac": "f11",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.stepOut",
         "key": "shift+f11",
-        "mac": "shift+f11"
+        "mac": "shift+f11",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.stepOver",
         "key": "f10",
-        "mac": "f10"
+        "mac": "f10",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.debug.stop",
         "key": "shift+f5",
-        "mac": "shift+f5"
+        "mac": "shift+f5",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.editor.debug.action.showDebugHover",
         "key": "ctrl+k ctrl+i",
-        "mac": "cmd+k cmd+i"
+        "mac": "cmd+k cmd+i",
+        "when": "myExtension.active"
       },
       {
         "command": "virtualme.workbench.action.tasks.build",
         "key": "ctrl+shift+b",
-        "mac": "cmd+shift+b"
+        "mac": "cmd+shift+b",
+        "when": "myExtension.active"
       }
     ]
   },
@@ -814,7 +947,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
-    "@types/vscode": "^1.95.0",
+    "@types/vscode": "^1.90.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
     "@vscode/test-cli": "^0.0.10",
@@ -826,6 +959,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "virtual-me": "file:"
+    "virtual-me": "file:",
+    "vsce": "^2.15.0"
   }
 }

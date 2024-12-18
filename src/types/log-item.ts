@@ -140,11 +140,11 @@ export class Context {
 
 export class LogItem {
     static #nextId = 1
-    static currentTaskType = TaskType.Unknown
+    static currentTaskType: string = TaskType.Unknown
     id: number
     timeStamp: string
     eventType: EventType
-    taskType: TaskType
+    taskType: string
     artifact: Artifact
     context?: Context
     references?: Artifact[]

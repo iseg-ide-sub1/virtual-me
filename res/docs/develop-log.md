@@ -124,3 +124,25 @@
 - 实现标注当前所处任务的功能
 - 优化界面样式，修复 webview 单选框 bug
 - 更新 README 文档
+
+## v0.1.0
+
+### 20241210-HiMeditator
+
+- 新增注册状态的指令 `virtualme.register.tasktype`
+- `LogItem` 类的 `taskType` 属性类型由 `TaskType` 改为 `string`
+- webview 界面新增添加状态的选项，并实现了对应功能
+
+### 20241215-HiMeditator
+
+- 删除 `extension.ts` 中 `saved` 全局变量
+- 新增功能：每缓存 100 条记录自动保存
+
+### 20241216-HiMeditator
+
+- 实现选择操作合并，依据：时间间隔小于 2000ms、只需要记录最大的范围
+- 文本变更合并**未实现**，原因：收集数据顺序可能错位，导致无法简单合并
+- 在 README 文档中新增数据收集规范
+
+### 20241217-suyunhe
+- 修复未启动插件时快捷键无法正常使用和插件激活部分快捷键失效的bug
