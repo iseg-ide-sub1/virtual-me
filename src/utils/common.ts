@@ -3,6 +3,42 @@ import * as path from 'path'
 import * as url from 'url'
 import * as logItem from '../types/log-item'
 import * as vscode from 'vscode'
+import * as contextProcess from "./context-process";
+
+
+export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): logItem.LogItem[] {
+    // 如果两个操作显然不能合并, 则直接返回两个操作
+    if (log1.eventType != log2.eventType ||
+        !log1.artifact.equals(log2.artifact) ||
+        !log1.context ||
+        !log2.context) {
+        return [log1, log2]
+    }
+    const eventType = log1.eventType
+
+    // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
+    if (eventType != logItem.EventType.AddTextDocument && eventType != logItem.EventType.DeleteTextDocument) {
+        return [log1, log2]
+    }
+    else {
+        let log = new logItem.LogItem(log1.eventType, log1.artifact)
+        // 如果log1.context.content.after包含以下字符，则说明上一次添加编辑有完成标志，此时不能合并，直接返回两个操作
+        if (eventType == logItem.EventType.AddTextDocument &&
+            (log1.context.content.after.includes('\n') ||
+                log1.context.content.after.includes('\r') ||
+                log1.context.content.after.includes('\t') ||
+                log1.context.content.after.includes(' '))) {
+            return [log1, log2]
+        }
+        // 合并上下文
+        else {
+            log.context = contextProcess.concatContexts(log1.context, log2.context)
+        }
+        return [log]
+    }
+}
+
+
 /**
  * 获取格式化的当前时间字符串，包括年月日时分秒和毫秒。
  * @returns {string} 格式化的当前时间。
@@ -37,15 +73,15 @@ export function getFormattedTime() {
  * @returns 日志列表的字符串
  */
 export function logsToString(logs: logItem.LogItem[]): string {
-    for(let i = 0; i < logs.length; i++){
-        if(logs[i]?.artifact?.references){
+    for (let i = 0; i < logs.length; i++) {
+        if (logs[i]?.artifact?.references) {
             logs[i].references = JSON.parse(JSON.stringify(logs[i].artifact.references)) // 深拷贝
             delete logs[i].artifact.references // 删除 artifact.reference 属性，减少层级
         }
     }
     return JSON.stringify(logs, (key, value) => {
         return value;
-    },2);
+    }, 2);
 }
 
 /**
@@ -80,13 +116,12 @@ export function getFormattedTime1() {
  * @param isDev 是否处在开发环境，如果是保存到开发环境的 ./res/log 文件夹，否则保存到工作环境的 ./log 文件夹
  * @param fileName 文件名，默认为当前日期时间
  */
-export function saveLog(content: string, isDev: boolean = true, fileName = ''){
+export function saveLog(content: string, isDev: boolean = true, fileName = '') {
     let saveDirectory: string = '';
-    if(isDev){
+    if (isDev) {
         const extensionPath = path.join(__dirname, '..')
         saveDirectory = path.join(extensionPath, '/res/log')
-    }
-    else{
+    } else {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (!workspaceFolders) {
             vscode.window.showErrorMessage('No workspace folder found.');
@@ -95,10 +130,10 @@ export function saveLog(content: string, isDev: boolean = true, fileName = ''){
         saveDirectory = path.join(workspaceFolders[0].uri.fsPath, './log');
     }
     if (!fs.existsSync(saveDirectory)) {
-        fs.mkdirSync(saveDirectory, { recursive: true })
+        fs.mkdirSync(saveDirectory, {recursive: true})
     }
     // 如果名称为空，用日期替代
-    if(fileName === '') fileName = getFormattedTime1() + '.json'
+    if (fileName === '') fileName = getFormattedTime1() + '.json'
     const filePath = path.join(saveDirectory, fileName)
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
 }

@@ -126,6 +126,27 @@ export class Artifact {
         // 如果需要，请对照 demo 重新实现一下
         return ret
     }
+
+    //定义相等性比较函数
+    equals(other: Artifact): boolean {
+        if (this.name !== other.name || this.type !== other.type)
+            return false
+        if (this.hierarchy && !other.hierarchy || !this.hierarchy && !other.hierarchy) {
+            return false
+        }
+        if (this.hierarchy && other.hierarchy) {
+            if (this.hierarchy.length !== other.hierarchy.length) {
+                return false
+            }
+            for (let i = 0; i < this.hierarchy.length; i++) {
+                if (this.hierarchy[i].name !== other.hierarchy[i].name ||
+                    this.hierarchy[i].type !== other.hierarchy[i].type) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 }
 
 export class Context {
