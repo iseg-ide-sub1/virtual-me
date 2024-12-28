@@ -1,5 +1,4 @@
 import {getFormattedTime} from '../utils/common'
-import vscode from "vscode";
 
 /**
  * 事件类型枚举

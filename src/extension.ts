@@ -252,6 +252,15 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalExecuteWatcher)
 
+    /** IDE命令执行 */
+    const CommandWatcher = vscode.commands.onDidExecuteCommand((event: vscode.Command) => {
+        console.log('------------IDE Command executed:---------------');
+        console.log(event.command)
+        
+        console.log(event.arguments)
+    })
+    context.subscriptions.push(CommandWatcher)
+
     /** 每隔 500ms 更新一次日志数量 */
     function tntervalGetLogsNumTask() {
         const interval = setInterval(() => {
