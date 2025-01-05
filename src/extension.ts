@@ -25,6 +25,7 @@ let lastSelectLog: logItem.LogItem;
 
 
 export function activate(context: vscode.ExtensionContext) {
+    console.log(1)
     vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
     // 设置上下文变量，表示扩展已激活
@@ -231,11 +232,12 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalChangeWatcher)
 
     /** 执行菜单项 */
-    const menuItemCommands = generateCommands()
-    menuItemCommands.forEach(({command, callback}) => {
-        const menuItemWatcher = vscode.commands.registerCommand(command, callback)
-        context.subscriptions.push(menuItemWatcher)
-    })
+    // const menuItemCommands = generateCommands()
+    // menuItemCommands.forEach(({command, callback}) => {
+    //     const menuItemWatcher = vscode.commands.registerCommand(command, callback)
+    //     context.subscriptions.push(menuItemWatcher)
+    // })
+    
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -254,10 +256,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** IDE命令执行 */
     const CommandWatcher = vscode.commands.onDidExecuteCommand((event: vscode.Command) => {
-        console.log('------------IDE Command executed:---------------');
-        console.log(event.command)
-        
-        console.log(event.arguments)
+        const log = menuProcess.handleCommand(event.command)
+        logs.push(log)
     })
     context.subscriptions.push(CommandWatcher)
 
@@ -290,21 +290,4 @@ export function deactivate() {
     }
     // 清除上下文变量
     vscode.commands.executeCommand('setContext', 'myExtension.active', false)
-}
-
-function generateCommands(): { command: string, callback: () => void }[] {
-    return menuProcess.commandDescriptions.map<{ command: string, callback: () => void }>((commandDesc) => {
-        return {
-            command: commandDesc.newCommand,
-            callback: () => handleCommand(commandDesc.description, commandDesc.oldCommand)
-        }
-    });
-}
-
-function handleCommand(commandName: string, oldCommand: string): void {
-    const artifact = new logItem.Artifact(commandName, logItem.ArtifactType.MenuItem)
-    const eventType = logItem.EventType.ExecuteMenuItem
-    const log = new logItem.LogItem(eventType, artifact)
-    logs.push(log)
-    vscode.commands.executeCommand(oldCommand)
 }
