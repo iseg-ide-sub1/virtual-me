@@ -165,6 +165,42 @@ export async function getLogItemFromSelectedText(
     return new logItem.LogItem(eventType, artifact, context);
 }
 
+
+export function concatContexts(
+    context1: logItem.Context,
+    context2: logItem.Context
+): logItem.Context {
+    if (context1.type !== context2.type)
+        throw new Error('Cannot concat contexts of different types')
+    const contextType = context1.type
+    let content = {before: "", after: ""}
+    const start = {
+        line: Math.min(context1.start.line, context2.start.line),
+        character: Math.min(context1.start.character, context2.start.character)
+    };
+    const end = {
+        line: Math.max(context1.end.line, context2.end.line),
+        character: Math.max(context1.end.character, context2.end.character)
+    };
+
+    if (contextType === logItem.ContextType.Add) {
+        content.before = context1.content.before
+        content.after = context1.content.after + context2.content.after
+    } else if (contextType === logItem.ContextType.Delete) {
+        content.before = context2.content.before + context1.content.before
+        content.after = context2.content.after
+    } else {
+        throw new Error('Unsupported context type')
+    }
+
+    return new logItem.Context(
+        contextType,
+        content,
+        start,
+        end
+    )
+}
+
 /**
  * 从文本内容改变事件中获取 LogItem 对象
  * @param event 文本内容改变事件
@@ -187,6 +223,7 @@ export async function getLogItemsFromChangedText(
         let after: string = change.text // 增加的内容
 
         if (change.rangeLength > 0) { // 说明有删除内容
+            // console.log('lastText: ', lastText)
             before = lastText.substring(change.rangeOffset, change.rangeOffset + change.rangeLength)
         }
         if (reason === vscode.TextDocumentChangeReason.Undo) {
@@ -232,7 +269,7 @@ export async function getLogItemsFromChangedText(
 
 /**
  * 从光标悬停事件中获取 LogItem 对象
- * @param document 鼠标悬停对于的文档 
+ * @param document 鼠标悬停对于的文档
  * @param position  鼠标悬停的位置
  * @returns 返回 LogItem 对象
  */
@@ -241,7 +278,7 @@ export async function getLogItemsFromHoverCollector(
     position: vscode.Position
 ): Promise<logItem.LogItem> {
     let range = document.getWordRangeAtPosition(position)
-    if(!range) range = new vscode.Range(position, position.translate(0,1))
+    if (!range) range = new vscode.Range(position, position.translate(0, 1))
     const eventType = logItem.EventType.MouseHover
     const artifact = await getArtifactFromRange(document.uri, range.start, range.end)
     const context = new logItem.Context(
@@ -271,11 +308,11 @@ export async function getLogItemFromDebugConsole(
     output: { output: string, category?: string, line?: number }
 ): Promise<logItem.LogItem> {
     const eventType = logItem.EventType.DebugConsoleOutput
-    
+
     // 获取当前活动的编辑器和文档
     const editor = vscode.window.activeTextEditor
     let artifact: logItem.Artifact
-    
+
     if (editor) {
         // 如果有活动的编辑器，获取当前文件的工件信息
         artifact = await getArtifactFromRange(
@@ -291,7 +328,7 @@ export async function getLogItemFromDebugConsole(
             logItem.ArtifactType.Unknown
         )
     }
-    
+
     // 创建上下文信息
     const context = new logItem.Context(
         logItem.ContextType.Unknown,
@@ -308,6 +345,6 @@ export async function getLogItemFromDebugConsole(
             character: output.output.length
         }
     )
-    
+
     return new logItem.LogItem(eventType, artifact, context)
 }

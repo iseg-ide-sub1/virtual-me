@@ -2,10 +2,10 @@ import * as vscode from 'vscode'
 import * as path from 'path'
 
 import * as logItem from './types/log-item'
-import { VirtualMeGUIViewProvider } from './types/gui-view'
+import {VirtualMeGUIViewProvider} from './types/gui-view'
 import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
-import * as conextProcess from './utils/context-process'
+import * as contextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/menu-process'
 
@@ -14,7 +14,7 @@ let isDev: boolean = false // 是否处在开发环境，该值影响数据的�
 let lastText: string // 保存上一次编辑后的代码
 
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
-let openFile : boolean = false // 是否打开了文件
+let openFile: boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: false} // 防止调用相关API时的vs内部的文件开关事件被记录
 
 // 用于合并选择操作
@@ -23,9 +23,9 @@ let lastSelectStart: vscode.Position;
 let lastSelectEnd: vscode.Position;
 let lastSelectLog: logItem.LogItem;
 
-// 用于合并文本内容修改操作（*TextDocument）
-// let lastChangeLogs: logItem.LogItem[] = [];
+
 export function activate(context: vscode.ExtensionContext) {
+    console.log(1)
     vscode.window.showInformationMessage('VirtualMe is now active! Recording starts.');
 
     // 设置上下文变量，表示扩展已激活
@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
     const registerTaskCommand = vscode.commands.registerCommand('virtualme.register.tasktype', (taskType: string) => {
         console.log('Register Task Type:', taskType)
         const commandName = 'virtualme.settask.' + taskType.toLowerCase();
-        const taskSetCommand = vscode.commands.registerCommand(commandName , () => {
+        const taskSetCommand = vscode.commands.registerCommand(commandName, () => {
             logItem.LogItem.currentTaskType = taskType;
         })
         context.subscriptions.push(taskSetCommand);
@@ -74,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider(
             VirtualMeGUIViewProvider.viewType,
             GUIProvider,
-            { webviewOptions: { retainContextWhenHidden: true } }
+            {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
 
@@ -82,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
     const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
         openFile = true
         const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.toString())
-        if (!isCalculatingArtifact.value){
+        if (!isCalculatingArtifact.value) {
             logs.push(log)
         }
     })
@@ -91,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
     /** 关闭文件 */
     const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
         const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
-        if (!isCalculatingArtifact.value){
+        if (!isCalculatingArtifact.value) {
             logs.push(log)
         }
     })
@@ -156,13 +156,13 @@ export function activate(context: vscode.ExtensionContext) {
     const selectTextWatcher = vscode.window.onDidChangeTextEditorSelection(async event => {
         const selection = event.selections[0] // 只考虑第一个选区
         if (selection.isEmpty) return // 只有选择内容不为空才记录
-        if(event.textEditor.document.uri.scheme !== 'file') return // 非文件不记录
+        if (event.textEditor.document.uri.scheme !== 'file') return // 非文件不记录
         const start = selection.start // 选择开始位置
         const end = selection.end // 选择结束位置
         const document = event.textEditor.document // 当前编辑的文件
-        const log = await conextProcess.getLogItemFromSelectedText(document, start, end)
-        if(lastSelectStamp !== 0){
-            if(new Date().getTime() - lastSelectStamp > 2000 || start.compareTo(lastSelectStart) > 0 || end.compareTo(lastSelectEnd) < 0){
+        const log = await contextProcess.getLogItemFromSelectedText(document, start, end)
+        if (lastSelectStamp !== 0) {
+            if (new Date().getTime() - lastSelectStamp > 2000 || start.compareTo(lastSelectStart) > 0 || end.compareTo(lastSelectEnd) < 0) {
                 // 不满足合并条件
                 logs.push(lastSelectLog)
             }
@@ -177,44 +177,31 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 修改文件内容(新增、删除、修改、Redo、Undo) */
     const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
-        if(event.contentChanges.length === 0){ // 脏状态改变
+        if (event.contentChanges.length === 0) { // 脏状态改变
             lastText = event.document.getText()
-            // console.log(lastText)
             return
         }
-        if(event.document.uri.scheme !== 'file') return // 非文件不记录
-        // console.log(event.document.uri.scheme)
-        let changeLogs = await conextProcess.getLogItemsFromChangedText(event,lastText)
-        // lastChangeLogs = lastChangeLogs.concat(changeLogs)
-        // while(lastChangeLogs.length > 1){
-        //     let log1 = lastChangeLogs[0]
-        //     let log2 = lastChangeLogs[1]
-        //     if(
-        //         log1.eventType != log2.eventType ||
-        //         log1.artifact.name !== log2.artifact.name ||
-        //         log1.artifact.type !== log2.artifact.type ||
-        //         (log1.eventType != logItem.EventType.AddTextDocument && log1.eventType != logItem.EventType.DeleteTextDocument)
-        //     ){
-        //         // 如果两个操作不能合并那么将前者放入缓存
-        //         // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
-        //         const log = lastChangeLogs.shift()
-        //         if(log) logs.push(log)
-        //     }
-        //     else{
-
-        //     }
-        // }
-        logs = logs.concat(changeLogs)
+        if (event.document.uri.scheme !== 'file') return // 非文件不记录
+        let changeLogs = await contextProcess.getLogItemsFromChangedText(event, lastText)
         lastText = event.document.getText()
-        // console.log(event)
-        // console.log(changeLogs)
+        // 重写合并逻辑，当用户手敲代码时，每次敲击键盘会被单独记录一次，形成长度为1的changeLogs，只检查这种情况下能否合并
+        if (changeLogs.length !== 1 || logs.length === 0) {
+            logs = logs.concat(changeLogs)
+            return
+        }
+        // 合并日志
+        let curLog = changeLogs[0]
+        let lastLog = logs[logs.length - 1]
+        const concatLogs = common.concatEditLogs(lastLog, curLog)
+        logs.pop()
+        logs = logs.concat(concatLogs)
     })
     context.subscriptions.push(changeTextDocumentWatcher)
 
     /** 鼠标悬停触发hover事件 */
     const hoverCollector = vscode.languages.registerHoverProvider('*', {
         async provideHover(document, position, token) {
-            const log = await conextProcess.getLogItemsFromHoverCollector(document, position)
+            const log = await contextProcess.getLogItemsFromHoverCollector(document, position)
             logs.push(log)
             // console.log(log)
             return null;
@@ -244,12 +231,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalChangeWatcher)
 
-    /** 执行菜单项 */
-    const menuItemCommands = generateCommands()
-    menuItemCommands.forEach(({ command, callback }) => {
-        const menuItemWatcher = vscode.commands.registerCommand(command, callback)
-        context.subscriptions.push(menuItemWatcher)
-    })
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -266,10 +247,18 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalExecuteWatcher)
 
+    /** IDE命令执行 */
+    const CommandWatcher = vscode.commands.onDidExecuteCommand((event: vscode.Command) => {
+        if (event.command === "vscode.executeDocumentSymbolProvider" || event.command === "vscode.prepareCallHierarchy") return
+        const log = menuProcess.handleCommand(event.command)
+        logs.push(log)
+    })
+    context.subscriptions.push(CommandWatcher)
+
     /** 每隔 500ms 更新一次日志数量 */
     function tntervalGetLogsNumTask() {
         const interval = setInterval(() => {
-            if(logs.length >= 100){
+            if (logs.length >= 100) {
                 common.saveLog(common.logsToString(logs), isDev);
                 logs = [];
             }
@@ -277,6 +266,7 @@ export function activate(context: vscode.ExtensionContext) {
         }, 500);
         return interval;
     }
+
     const updateLogsNumIntervalId = tntervalGetLogsNumTask();
     /** 销毁时清除定时任务 */
     context.subscriptions.push({
@@ -288,27 +278,10 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	if(logs.length > 0){ // 如果还有没有保存的内容则自动保存
-        if(lastSelectLog) logs.push(lastSelectLog);
-		common.saveLog(common.logsToString(logs), isDev);
-	}
+    if (logs.length > 0) { // 如果还有没有保存的内容则自动保存
+        if (lastSelectLog) logs.push(lastSelectLog);
+        common.saveLog(common.logsToString(logs), isDev);
+    }
     // 清除上下文变量
     vscode.commands.executeCommand('setContext', 'myExtension.active', false)
-}
-
-function generateCommands(): { command: string, callback: () => void }[] {
-    return menuProcess.commandDescriptions.map<{ command: string, callback: () => void }>((commandDesc) => {
-        return {
-            command: commandDesc.newCommand,
-            callback: () => handleCommand(commandDesc.description, commandDesc.oldCommand) 
-        }
-    });
-}
-
-function handleCommand(commandName: string, oldCommand: string): void {
-    const artifact = new logItem.Artifact(commandName, logItem.ArtifactType.MenuItem)
-    const eventType = logItem.EventType.ExecuteMenuItem
-    const log = new logItem.LogItem(eventType, artifact)
-    logs.push(log)
-    vscode.commands.executeCommand(oldCommand)
 }
