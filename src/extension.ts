@@ -231,13 +231,6 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(terminalChangeWatcher)
 
-    /** 执行菜单项 */
-    // const menuItemCommands = generateCommands()
-    // menuItemCommands.forEach(({command, callback}) => {
-    //     const menuItemWatcher = vscode.commands.registerCommand(command, callback)
-    //     context.subscriptions.push(menuItemWatcher)
-    // })
-    
 
     /** 终端执行 */
     const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
@@ -256,6 +249,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** IDE命令执行 */
     const CommandWatcher = vscode.commands.onDidExecuteCommand((event: vscode.Command) => {
+        if (event.command === "vscode.executeDocumentSymbolProvider" || event.command === "vscode.prepareCallHierarchy") return
         const log = menuProcess.handleCommand(event.command)
         logs.push(log)
     })
