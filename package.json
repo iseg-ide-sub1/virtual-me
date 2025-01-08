@@ -1,6 +1,6 @@
 {
   "name": "virtual-me",
-  "displayName": "virtual-me-v0.1.1 (under development)",
+  "displayName": "virtual-me-v0.2.0 (under development)",
   "publisher": "iseg-ide-sub1",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "icon": "res/img/icon.png",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.90.0"
   },
