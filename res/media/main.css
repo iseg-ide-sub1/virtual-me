@@ -3,6 +3,11 @@ button {
     margin: 10px 14%;
 }
 
+.btn-macro {
+    width: 45%;
+    margin: auto;
+}
+
 .confirm-btn-l {
     display: inline-block;
     width:20%;

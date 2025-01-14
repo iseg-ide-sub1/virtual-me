@@ -53,16 +53,17 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <title>VirtualMe</title>
             </head>
             <body>
+                <button id="btn-start" class="btn-macro">开始记录</button>
+                <button id="btn-stop" class="btn-macro">停止记录</button>
                 <p>如果觉得当收集的记录存在问题，可以通过下面的按钮清空当前缓存记录。</p>
-                <button id="btn-clear">清空记录</button>
+                <button id="btn-clear">清空缓存</button>
                 <div id="confirm-dialog" style="display:none;">
-                    <p>你确定要清空记录吗？</p>
+                    <p>你确定要清空缓存记录吗？</p>
                     <button id="confirm-yes" class="confirm-btn-l">是</button>
                     <button id="confirm-no" class="confirm-btn-r">否</button>
                 </div>
                 <p>插件会在 VS Code 关闭时自动保存缓存的记录，也可以通过下面的按钮手动保存记录。每次保存记录后将清空缓存的记录。</p>
                 <button id="btn-save">保存记录</button>
-                <p>当前插件版本：v0.1.0</p>
                 <hr style="margin: 20px 10%;">
                 <p>下面表示的是您当前所处的开发状态，需要您手动选择当前所处于的状态。这相当于对收集数据进行标注，将为我们的模型训练提供依据。</p>
                 <div class="task-div">
@@ -91,7 +92,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <hr style="margin: 20px 10%;">
                 <div class="num-div">
                     <span>已收集数据：</span>
-                    <b id="logs-num">${this.logsNum}</b>
+                    <b id="logs-num">${this.logsNum === undefined ? 0 : this.logsNum}</b>
                 </div>
                 <script src="${scriptUri}"></script>
             </body>

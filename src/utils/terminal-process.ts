@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
+import {EventType} from '../types/event-types'
 import * as os from 'os';
 
 const platform = os.platform();
@@ -39,7 +40,7 @@ export async function getLogItemFromTerminalExecute(
     )
 
     return new logItem.LogItem(
-        logItem.EventType.ExecuteTerminalCommand,
+        EventType.ExecuteTerminalCommand,
         artifact,
         context
     )
@@ -58,7 +59,7 @@ export async function getLogItemFromOpenTerminal(
     )
 
     return new logItem.LogItem(
-        logItem.EventType.OpenTerminal,
+        EventType.OpenTerminal,
         artifact
     )
 }
@@ -75,7 +76,7 @@ export async function getLogItemFromCloseTerminal(
     )
 
     return new logItem.LogItem(
-        logItem.EventType.CloseTerminal,
+        EventType.CloseTerminal,
         artifact
     )
 }
@@ -95,7 +96,7 @@ export async function getLogItemFromChangeTerminal(
     )
 
     return new logItem.LogItem(
-        logItem.EventType.ChangeActiveTerminal,
+        EventType.ChangeActiveTerminal,
         artifact
     )
 }

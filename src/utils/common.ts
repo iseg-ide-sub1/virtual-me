@@ -2,8 +2,10 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as url from 'url'
 import * as logItem from '../types/log-item'
+import {EventType} from '../types/event-types'
 import * as vscode from 'vscode'
 import * as contextProcess from "./context-process";
+import {deleteInnerCmdSeq} from "./cmd-process";
 
 
 export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): logItem.LogItem[] {
@@ -17,13 +19,13 @@ export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): lo
     const eventType = log1.eventType
 
     // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
-    if (eventType != logItem.EventType.AddTextDocument && eventType != logItem.EventType.DeleteTextDocument) {
+    if (eventType != EventType.AddTextDocument && eventType != EventType.DeleteTextDocument) {
         return [log1, log2]
     }
     else {
         let log = new logItem.LogItem(log1.eventType, log1.artifact)
         // 如果log1.context.content.after包含以下字符，则说明上一次添加编辑有完成标志，此时不能合并，直接返回两个操作
-        if (eventType == logItem.EventType.AddTextDocument &&
+        if (eventType == EventType.AddTextDocument &&
             (log1.context.content.after.includes('\n') ||
                 log1.context.content.after.includes('\r') ||
                 log1.context.content.after.includes('\t') ||
@@ -73,6 +75,7 @@ export function getFormattedTime() {
  * @returns 日志列表的字符串
  */
 export function logsToString(logs: logItem.LogItem[]): string {
+    deleteInnerCmdSeq(logs)
     for (let i = 0; i < logs.length; i++) {
         if (logs[i]?.artifact?.references) {
             logs[i].references = JSON.parse(JSON.stringify(logs[i].artifact.references)) // 深拷贝
@@ -111,29 +114,22 @@ export function getFormattedTime1() {
 }
 
 /**
- * 将内容保存到指定路径文件夹中，默认为 /res/log 文件夹
+ * 将内容保存到指定路径文件夹中
  * @param content 要保存的文件内容
- * @param isDev 是否处在开发环境，如果是保存到开发环境的 ./res/log 文件夹，否则保存到工作环境的 ./log 文件夹
- * @param fileName 文件名，默认为当前日期时间
+ * @param saveDirectory 保存的文件夹路径，默认为 /virtualme-log 文件夹
  */
-export function saveLog(content: string, isDev: boolean = true, fileName = '') {
-    let saveDirectory: string = '';
-    if (isDev) {
-        const extensionPath = path.join(__dirname, '..')
-        saveDirectory = path.join(extensionPath, '/res/log')
-    } else {
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders) {
-            vscode.window.showErrorMessage('No workspace folder found.');
-            return;
-        }
-        saveDirectory = path.join(workspaceFolders[0].uri.fsPath, './log');
+export function saveLog(content: string, saveDirectory = '') {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+        vscode.window.showErrorMessage('No workspace folder found.');
+        return;
     }
+    saveDirectory = path.join(workspaceFolders[0].uri.fsPath, saveDirectory);
     if (!fs.existsSync(saveDirectory)) {
         fs.mkdirSync(saveDirectory, {recursive: true})
     }
-    // 如果名称为空，用日期替代
-    if (fileName === '') fileName = getFormattedTime1() + '.json'
+    // 名称用日期
+    const fileName = getFormattedTime1() + '.json'
     const filePath = path.join(saveDirectory, fileName)
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
 }

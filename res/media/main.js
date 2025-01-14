@@ -16,6 +16,13 @@ function updateLogsNum(logsNum) {
     target.innerText = logsNum;
 }
 
+document.getElementById('btn-start').onclick = () => {
+        vscode.postMessage({ command: 'virtualme.start' });
+};
+
+document.getElementById('btn-stop').onclick = () => {
+        vscode.postMessage({ command: 'virtualme.stop' });
+};
 
 // 清空日志按钮被点击
 const btn_clear = document.getElementById('btn-clear');
