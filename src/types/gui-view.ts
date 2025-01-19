@@ -1,20 +1,29 @@
 import * as vscode from 'vscode';
-import * as logItem from '../types/log-item'
 
 export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'virtualme.GUIView';
     private _view?: vscode.WebviewView;
     private _logsNum: number = 0;
+    private _prevLog: string = "";
+
     set logsNum(newValue: number) {
-        // console.log(`Setting the value of myProperty to: ${newValue}`);
         this._logsNum = newValue;
-        if(this._view){
+        if (this._view) {
             this._view.webview.postMessage({command: 'updateLogsNum', logsNum: this._logsNum})
         }
     }
+
+    set prevLog(newValue: string) {
+        this._prevLog = newValue;
+        if (this._view) {
+            this._view.webview.postMessage({command: 'updatePrevLog', prevLog: this._prevLog})
+        }
+    }
+
     constructor(
         private readonly _extensionUri: vscode.Uri,
-    ) { }
+    ) {
+    }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -32,11 +41,12 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
         // console.log(logItem.LogItem.currentTaskType.toLowerCase())
         webviewView.webview.onDidReceiveMessage(message => {
             // console.log("Msg form webview:", message);
-            if(message?.debug) console.log("DebugInfo:", message.debug);
-            else if(message?.arg) vscode.commands.executeCommand(message.command, message.arg);
+            if (message?.debug) console.log("DebugInfo:", message.debug);
+            else if (message?.arg) vscode.commands.executeCommand(message.command, message.arg);
             else vscode.commands.executeCommand(message.command);
-		});
+        });
     }
+
     private _getHtmlForWebview(webview: vscode.Webview) {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/main.js'));
         const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/reset.css'));
@@ -94,8 +104,12 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                     <span>已收集数据：</span>
                     <b id="logs-num">${this.logsNum === undefined ? 0 : this.logsNum}</b>
                 </div>
+                <div class="num-div">
+                    <span>上一个动作：</span>
+                    <b id="logs-prev">${this.prevLog === undefined ? "" : this.prevLog}</b>
+                </div>
                 <script src="${scriptUri}"></script>
             </body>
             </html>`;
-  }
+    }
 }

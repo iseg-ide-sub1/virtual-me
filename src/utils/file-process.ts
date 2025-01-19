@@ -2,18 +2,55 @@ import * as logItem from "../types/log-item"
 import {EventType} from '../types/event-types'
 import {saveDir} from "../extension";
 
-const skippedFileTypes = [
+const skippedFileTypes = new Set([
+    saveDir,
+    '.DS_Store',
+    '.cache',
+    '.conan',
+    '.dart_tool',
+    '.eslint',
+    '.gradle',
+    '.idea',
+    '.git',
+    '.m2',
+    '.mvn',
+    '.settings',
+    '.stack-work',
+    '.vscode',
+    '.vscode-scm',
+    'bin/',
+    'build/',
+    '_build',
+    '.build',
+    'composer.lock',
+    'Cargo.lock',
+    '.cargo',
+    'Gemfile.lock',
+    'mix.lock',
+    'node_modules',
+    'package-lock.json',
+    'pnpm-lock.yaml',
+    'poetry.lock',
+    'pubspec.lock',
+    'saveDir',
+    'site-packages',
+    'vendor/',
+    'virtualenv',
+    'venv',
+    'vcpkg_installed',
     'git',
-    'vscode-scm',
-]
+    '.pyc',
+    '.csproj',
+    '.fsproj',
+    '.vbproj',
+    'packages',
+]);
+
 
 export function isFileSkipped(uri: string) {
-    // 如果uri以skippedFileTypes中的类型开头，则跳过，插件自身log文件也是
+    // 如果uri包含skippedFileTypes中的任何一个，则跳过，插件自身log文件也是
     for (const fileType of skippedFileTypes) {
-        if (uri.startsWith(fileType)) {
-            return true
-        }
-        if (uri.includes(saveDir)) {
+        if (uri.includes(fileType)) {
             return true
         }
     }

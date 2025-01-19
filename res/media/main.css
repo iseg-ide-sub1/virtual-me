@@ -69,3 +69,9 @@ button {
     font-size: 24px;
     color: var(--vscode-button-background);
 }
+#logs-prev {
+    font-size: 10px;
+    display: block;
+    margin-top: 4%;
+    color: var(--vscode-button-background);
+}

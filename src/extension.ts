@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
         isRecording.value = false;
         if (logs.length === 0) return;
         common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage('停止记录！数据已保存至工作目录', saveDir);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
         logs = [] // 清空保存的记录
     });
     context.subscriptions.push(stopCommand);
@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
         common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage('数据已保存至工作目录', saveDir);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
@@ -156,6 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
         /** 文件保存 */
         filesWatcher.onDidChange(uri => {
             if (!isRecording.value) return;
+            if (fileProcess.isFileSkipped(uri.toString())) return
 
             const log = fileProcess.getLogItemFromSaveFile(uri.toString())
             logs.push(log)
@@ -163,6 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
         /** 文件创建 */
         filesWatcher.onDidCreate(uri => {
             if (!isRecording.value) return;
+            if (fileProcess.isFileSkipped(uri.toString())) return
 
             const log = fileProcess.getLogItemFromCreateFile(uri.toString())
             logs.push(log)
@@ -170,6 +172,7 @@ export function activate(context: vscode.ExtensionContext) {
         /** 文件删除 */
         filesWatcher.onDidDelete(uri => {
             if (!isRecording.value) return;
+            if (fileProcess.isFileSkipped(uri.toString())) return
 
             const log = fileProcess.getLogItemFromDeleteFile(uri.toString())
             logs.push(log)
@@ -186,6 +189,9 @@ export function activate(context: vscode.ExtensionContext) {
             const newPath = rename.newUri.fsPath
             const oldUri = common.convertToFilePathUri(oldPath)
             const newUri = common.convertToFilePathUri(newPath)
+            if (fileProcess.isFileSkipped(oldUri.toString())) continue
+            if (fileProcess.isFileSkipped(newUri.toString())) continue
+
             // 检查路径是否发生变化
             if (path.dirname(oldPath) === path.dirname(newPath)) {
                 // 文件名改变了，认为是重命名
@@ -259,7 +265,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             // 等待2秒，为了减少hover事件的触发频率
             const hoverTimeout = new Promise<{ cancelled: boolean }>((resolve) => {
-                const timer = setTimeout(() => resolve({cancelled: false}), 1500); // 2秒延迟
+                const timer = setTimeout(() => resolve({cancelled: false}), 1000); // 2秒延迟
                 token.onCancellationRequested(() => {
                     clearTimeout(timer);
                     resolve({cancelled: true}); // 如果取消请求，则清除计时器
@@ -338,23 +344,24 @@ export function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(CommandWatcher)
 
-    /** 每隔 500ms 更新一次日志数量 */
-    function tntervalGetLogsNumTask() {
+    /** 每隔 500ms 更新一次日志数量和上一次操作的事件类型 */
+    function intervalUpdater() {
         const interval = setInterval(() => {
             if (logs.length >= 1000) {
                 common.saveLog(common.logsToString(logs), saveDir);
                 logs = [];
             }
             GUIProvider.logsNum = logs.length
+            GUIProvider.prevLog = logs.length === 0 ? "no logs" : logs[logs.length - 1].eventType.toString();
         }, 500);
         return interval;
     }
 
-    const updateLogsNumIntervalId = tntervalGetLogsNumTask();
+    const updater = intervalUpdater();
     /** 销毁时清除定时任务 */
     context.subscriptions.push({
         dispose: () => {
-            clearInterval(updateLogsNumIntervalId);
+            clearInterval(updater);
             console.log('Interval cleared.');
         },
     });
