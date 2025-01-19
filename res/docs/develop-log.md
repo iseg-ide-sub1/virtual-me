@@ -74,10 +74,12 @@
 - 实现鼠标悬停事件 `MouseHover`
 
 ### 20241125-suyunhe
+
 - 完成对vscode内所有菜单项命令的收集
-- 完善`plugin-architecture.md`文档
+- 完善 `plugin-architecture.md`文档
 
 ### 20241127-suyunhe
+
 - 修复文档路径不统一的Bug
 
 ### 20241127-Katock-Cricket
@@ -106,6 +108,7 @@
 - 因为当前功能存在一定问题，将该事件对应的函数注释了
 
 ### 20241203-suyunhe
+
 - 完成对vscode内菜单项命令的收集(目前仅能在使用键盘快捷键执行的情况才能收集到)
 - 完善文档
 
@@ -145,4 +148,58 @@
 - 在 README 文档中新增数据收集规范
 
 ### 20241217-suyunhe
+
 - 修复未启动插件时快捷键无法正常使用和插件激活部分快捷键失效的bug
+- 降低兼容版本 from 1.9.3 to 1.9.0
+
+## v0.2.0
+
+### 20241222-Katock-Cricket
+
+重写编辑操作合并逻辑
+
+1. 重写log合并办法
+2. 细化context合并规则
+
+### 20241228-Katock-Cricket
+
+适配定制内核，添加CommandWatcher
+
+1. 适配定制vscode内核，需要使用定制头文件，将定制头文件放到了./src/vscode，把vscode从npm依赖中删除
+2. 添加CommandWatcher监听，请根据log内容的格式，添加对应的收集逻辑
+3. 定制vscode的版本是1.95.3，兼容性应该OK的，但是需要进一步详细测试其功能是否完善
+
+### 20250105-suyunhe
+
+- feat:适配定制vscode，添加menucommand的收集
+- (0108) fix:错误收集了一些不是由程序员执行的command
+
+## v0.2.1
+
+### 20250114-Katock-Cricket
+
+0.2.1版本更新
+
+1. 重构IDE命令的保存方式，使用eventType保存命令名称，对应的声明文件改为event-types.ts与之前的事件类型合并了。args带有文件或工件的命令，保存在artifact字段并计算ref。
+2. 改善鼠标悬停记录逻辑，悬停超过1.5秒才记录
+3. 修改插件激活逻辑：增加“开始记录”和”停止记录“按钮，手动开始和结束记录，结束时自动保存
+4. 过滤掉一些无用IDE命令和inner命令序列，现在的数据log冗余信息减少了。
+
+## v0.2.2
+
+### 20250119-Katock-Cricket
+
+更新0.2.2
+1. GUI可见上一操作类型
+2. 鼠标悬停1秒阈值
+3. 完善文件忽略表
+
+## next version
+
+### 20240119-HiMeditator
+
+- 修改 `.gitignore`, `package.json`
+- 更新 develop-log, README
+- 新增 plugin-architecture-v2
+- 记录命名规则改为 `版本_年-月-日 时.分.秒.json`
+- 文档更新尚未完成（进度 40%）

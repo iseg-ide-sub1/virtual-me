@@ -1,4 +1,4 @@
-# Contributing to virtual-me
+# Building virtual-me
 
 A VS Code plugin for collecting and predicting developer action sequences in the IDE.
 

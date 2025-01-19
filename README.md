@@ -9,12 +9,26 @@
 <p>VirtualMe is a VS Code plugin <i>under development</i> for collecting developer action sequences and providing developer intention prediction in the IDE.</p></div>
 <div align="center" >
 <p>
-| <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/contributing.md"><b>Contributing</b></a> | <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/plugin-architecture.md"><b>Architecture</b></a> | <a href="https://github.com/iseg-ide-sub1/virtualme-backend"><b>Backend</b></a> |
+
+| <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/building.md"><b>Building</b></a> | <a href="https://github.com/iseg-ide-sub1/virtual-me/blob/main/res/docs/plugin-architecture-v2.md"><b>Architecture</b></a> | <a href="https://github.com/iseg-ide-sub1/virtualme-backend"><b>Backend</b></a> |
 </p>
 </div>
 
+<hr>
+
+This document was last updated on January 20, 2025
+文档更新于 2025.01.20
+
+This plugin is under development and is currently only available for developers and data collectors.
+该插件正在开发，当前仅供开发者和数据收集人员使用。
+
+This plugin currently works exclusively with our custom-built VS Code and cannot be used properly in the official VS Code IDE.
+该插件当前仅适用于我们自行构建的 VS Code，在官方 VS Code IDE 中无法正常使用。
+
 
 ## 安装和使用
+
+图片可能已经过时，以最新版插件界面为准，插件机制细节参考 [**plugin-architecture.md**](./res/docs/plugin-architecture-v2.md)
 
 1. 打开扩展，选择“从VSIX安装...”
 
@@ -28,11 +42,11 @@
    
    ![](./res/img/guide/03.png)
    
-3. 插件界面提供了一些功能，可进行需要的操作
+4. 插件界面提供了一些功能，可进行需要的操作
    
 5. 此时即可开始在 IDE 进行工作，插件会自动收集数据（数据收集类型见下文）
 
-5. 对于数据保存操作，也可以这样执行：按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.savelog` 保存操作记录，或者使用快捷键 `Ctrl+Alt+S` 直接保存操作记录
+6. 对于数据保存操作，也可以这样执行：按 `Ctrl+Shift+P` 打开命令面板，输入 `virtualme.savelog` 保存操作记录，或者使用快捷键 `Ctrl+Alt+S` 直接保存操作记录
    > 注意：
    >
    > - 保存操作记录后，插件会清空记录数据的缓存
@@ -40,7 +54,7 @@
    
    ![img04](./res/img/guide/04.png)
    
-6. 操作记录被保存在当前工作目录下的 `./log` 文件夹
+7. 操作记录被保存在当前工作目录下的 `virtualme-logs` 文件夹
 
    > 注意：只要启动了插件，如果没保存操作记录，插件会在 IDE 正常退出时自动保存记录
 
@@ -54,9 +68,9 @@
 
 ### 数据收集类型
 
-收集数据的触发条件和详细格式见 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
+收集数据的触发条件和详细格式见 [**plugin-architecture.md**](./res/docs/plugin-architecture-v2.md)
 
-注：编号中带 `*` 的操作表示该操作测试有一定问题，需要在之后的版本修复，具体问题可参考 [**plugin-architecture.md**](./res/docs/plugin-architecture.md)
+注：编号中带 `*` 的操作表示该操作测试有一定问题，需要在之后的版本修复，具体问题可参考 [**plugin-architecture.md**](./res/docs/plugin-architecture-v2.md)
 
 #### 文件操作
 
@@ -104,7 +118,7 @@
 
 https://bhpan.buaa.edu.cn/link/AADE8B31BF7B03487DAB3BB279534A2D47
 
-### 提交规范
+### 数据提交规范
 
 1. 请将文件夹打包成压缩包上传，一个压缩包可以放多个文件夹
 2. 对于不同的项目收集的数据请用不同的文件夹，文件夹命名建议用：项目名称_插件版本号，如：`Photo2Pixel_0.0.3`

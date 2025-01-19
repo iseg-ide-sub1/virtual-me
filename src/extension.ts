@@ -11,6 +11,7 @@ import * as menuProcess from './utils/cmd-process'
 
 let logs: logItem.LogItem[] = []
 export const saveDir = 'virtualme-logs' // 数据的保存位置
+export const vm_version = 'v0.2.3' // 插件版本
 let lastText: string // 保存上一次编辑后的代码
 
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -32,7 +33,7 @@ export function checkVersion() {
         const CommandWatcher = vscode.commands.onDidExecuteCommand((event: vscode.Command) => {
         })
     } catch (error) {
-        vscode.window.showErrorMessage('VirtualMe 无法运行，请检查 VSCode 是否为定制内核！')
+        vscode.window.showErrorMessage('VirtualMe 无法运行，请检查 VS Code 是否为定制内核！')
         return false
     }
     return true

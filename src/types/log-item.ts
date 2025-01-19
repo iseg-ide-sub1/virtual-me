@@ -1,7 +1,9 @@
 import {getFormattedTime} from '../utils/common'
 import {EventType} from './event-types'
 
-
+/**
+ * 任务类型，用于标记开发者当前正在进行的任务状态
+ */
 export enum TaskType {
     /** 环境配置 */
     Configuration = "Configuration",
