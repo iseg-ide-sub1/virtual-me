@@ -16,8 +16,8 @@
 
 <hr>
 
-This document was last updated on January 20, 2025
-文档更新于 2025.01.20
+This document was last updated on January 20, 2025.
+文档更新于 2025.01.20。
 
 This plugin is under development and is currently only available for developers and data collectors.
 该插件正在开发，当前仅供开发者和数据收集人员使用。

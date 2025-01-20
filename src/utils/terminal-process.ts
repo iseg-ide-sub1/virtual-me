@@ -22,7 +22,7 @@ export async function getLogItemFromTerminalExecute(
         logItem.ArtifactType.Terminal
     )
     output = removeAnsi(output)
-    console.log('output: ', output)
+    console.log(output)
     let context = new logItem.Context(
         logItem.ContextType.Terminal,
         {

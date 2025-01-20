@@ -9,9 +9,19 @@ import * as contextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/cmd-process'
 
-let logs: logItem.LogItem[] = []
+
+
+//*****************************************************************
+// 需要人工配置的内容，每次发布新版本前都要检查一下
 export const saveDir = 'virtualme-logs' // 数据的保存位置
 export const vm_version = 'v0.2.3' // 插件版本
+export const maxLogItemsNum = 1000 // 允许缓存的最大命令数量，超过后自动进行保存
+//*****************************************************************
+
+
+
+let logs: logItem.LogItem[] = []
+
 let lastText: string // 保存上一次编辑后的代码
 
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
@@ -220,11 +230,12 @@ export function activate(context: vscode.ExtensionContext) {
         const log = await contextProcess.getLogItemFromSelectedText(document, start, end)
         if (lastSelectStamp !== 0) {
             if (new Date().getTime() - lastSelectStamp > 2000 || start.compareTo(lastSelectStart) > 0 || end.compareTo(lastSelectEnd) < 0) {
-                // 不满足合并条件
+                // 不满足合并条件，不能合并，将上一次选区操作放入记录
                 logs.push(lastSelectLog)
             }
         }
         // console.log(log)
+        // 满足条件合并上一次选区记录
         lastSelectLog = log
         lastSelectStamp = new Date().getTime()
         lastSelectStart = start
@@ -266,20 +277,20 @@ export function activate(context: vscode.ExtensionContext) {
 
             // 等待2秒，为了减少hover事件的触发频率
             const hoverTimeout = new Promise<{ cancelled: boolean }>((resolve) => {
-                const timer = setTimeout(() => resolve({cancelled: false}), 1000); // 2秒延迟
+                const timer = setTimeout(() => resolve({cancelled: false}), 1000); // 1秒延迟
                 token.onCancellationRequested(() => {
                     clearTimeout(timer);
                     resolve({cancelled: true}); // 如果取消请求，则清除计时器
                 });
             })
 
-            // 如果2秒内被取消，返回 undefined，否则继续处理
+            // 如果1秒内被取消，返回 undefined，否则继续处理
             const timedOut = await hoverTimeout;
             if (timedOut.cancelled) {
-                return undefined; // 悬停不足2秒，退出
+                return undefined; // 悬停时间不足，退出
             }
 
-            // 2秒后继续执行逻辑
+            // 延迟后继续执行逻辑
             const log = await contextProcess.getLogItemsFromHoverCollector(document, position)
             logs.push(log)
             return undefined;
@@ -329,7 +340,18 @@ export function activate(context: vscode.ExtensionContext) {
         for await (const data of stream) {
             output += data.toString();
         }
+        
+        // 字符串过滤问题待改进
+        // let filtered = output.split('\u0007')
+        // let real_output = filtered[filtered.length - 1]
+        // console.log('++++++++++++++')
+        // console.log(output)
+        // console.log('--------------')
+        // console.log(real_output)
+        // console.log('==============')
+
         const log = await terminalProcess.getLogItemFromTerminalExecute(terminal, cmd, output)
+        // const log = await terminalProcess.getLogItemFromTerminalExecute(terminal, cmd, real_output)
         logs.push(log)
     })
     context.subscriptions.push(terminalExecuteWatcher)
@@ -348,7 +370,7 @@ export function activate(context: vscode.ExtensionContext) {
     /** 每隔 500ms 更新一次日志数量和上一次操作的事件类型 */
     function intervalUpdater() {
         const interval = setInterval(() => {
-            if (logs.length >= 1000) {
+            if (logs.length >= maxLogItemsNum) {
                 common.saveLog(common.logsToString(logs), saveDir);
                 logs = [];
             }

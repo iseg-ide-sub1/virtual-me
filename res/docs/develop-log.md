@@ -190,6 +190,7 @@
 ### 20250119-Katock-Cricket
 
 更新0.2.2
+
 1. GUI可见上一操作类型
 2. 鼠标悬停1秒阈值
 3. 完善文件忽略表
@@ -198,8 +199,12 @@
 
 ### 20240119-HiMeditator
 
-- 修改 `.gitignore`, `package.json`
+- 修改 `.gitignore`, `package.json`：忽略 `virtualme-logs` 文件夹，登记注册命令
 - 更新 develop-log, README
 - 新增 plugin-architecture-v2
 - 记录命名规则改为 `版本_年-月-日 时.分.秒.json`
-- 文档更新尚未完成（进度 40%）
+- 文档更新、功能测试和体验优化尚未完成（进度 40%）
+
+### 20240120-HiMeditator
+
+- 测试全部指令并更新到 plugin-architecture-v2

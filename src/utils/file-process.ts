@@ -48,7 +48,7 @@ const skippedFileTypes = new Set([
 
 
 export function isFileSkipped(uri: string) {
-    // 如果uri包含skippedFileTypes中的任何一个，则跳过，插件自身log文件也是
+    // 锟斤拷锟絬ri锟斤拷锟斤拷skippedFileTypes锟叫碉拷锟轿猴拷一锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絣og锟侥硷拷也锟斤拷
     for (const fileType of skippedFileTypes) {
         if (uri.includes(fileType)) {
             return true
