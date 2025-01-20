@@ -1,22 +1,10 @@
-import {extensionPath, saveDir} from "../extension";
+import {saveDir} from "../extension";
 import path from 'path';
 import vscode from "vscode";
 import * as fs from "node:fs";
 import {getFormattedTime1} from "./common";
 
-const {execFile} = require('child_process');
-
-function getGitPath(): string | undefined {
-    if (process.platform === 'win32') {
-        return path.join(extensionPath, 'res/git/win32/cmd/git.exe')
-    } else if (process.platform === 'linux') {
-        return undefined
-    } else if (process.platform === 'darwin') {
-        return undefined
-    } else {
-        return undefined
-    }
-}
+const {exec} = require('child_process');
 
 function getGitDir(): string | undefined {
     const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -42,11 +30,6 @@ function getWorkTree(): string | undefined {
 
 function runGitCommand(args: string[]): Promise<string> {
     return new Promise(async (resolve, reject) => {
-        const gitPath = getGitPath();
-        if (!gitPath) {
-            reject('unsupported platform')
-            return;
-        }
         const gitDir = getGitDir();
         if (!gitDir) {
             reject('No workspace folder found.')
@@ -60,8 +43,8 @@ function runGitCommand(args: string[]): Promise<string> {
 
         args.unshift(`--work-tree=${workTree}`)
         args.unshift(`--git-dir=${gitDir}`)
-
-        execFile(gitPath, args, (error: { message: any; }, stdout: string | PromiseLike<string>, stderr: any) => {
+        args.unshift('git')
+        exec(args.join(' '), (error: { message: any; }, stdout: string | PromiseLike<string>, stderr: any) => {
             if (error) {
                 reject(`Git Error: ${error.message}`)
             } else {
@@ -113,11 +96,12 @@ export async function init(): Promise<string> {
 }
 
 export async function snapshot(filePaths?: string[], commitMessage?: string): Promise<string> {
-    if (!filePaths){
+    if (!filePaths) {
         filePaths = ['.']
     }
     if (!commitMessage) {
-        commitMessage = getFormattedTime1()
+        // È¥µô¿Õ¸ñ
+        commitMessage = getFormattedTime1().replace(/\s+/g, '-')
     }
 
     const addRet = await runGitCommand(['add'].concat(filePaths))

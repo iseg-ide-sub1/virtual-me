@@ -74,13 +74,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：virtual-me.git-init */
     const gitCommandInit = vscode.commands.registerCommand('virtualme.git-init', async () => {
-        await git.init()
+        console.log(await git.init())
     });
     context.subscriptions.push(gitCommandInit);
 
     /** 注册命令：virtual-me.git-snapshot */
     const gitCommandSnapshot = vscode.commands.registerCommand('virtualme.git-snapshot', async () => {
-        await git.snapshot()
+        console.log(await git.snapshot())
     });
     context.subscriptions.push(gitCommandSnapshot);
 
