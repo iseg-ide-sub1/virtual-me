@@ -65,6 +65,8 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
             <body>
                 <button id="btn-start" class="btn-macro">开始记录</button>
                 <button id="btn-stop" class="btn-macro">停止记录</button>
+<!--                <button id="btn-git-init" class="btn-macro">git init</button>-->
+<!--                <button id="btn-git-snapshot" class="btn-macro">git snapshot</button>-->
                 <p>如果觉得当收集的记录存在问题，可以通过下面的按钮清空当前缓存记录。</p>
                 <button id="btn-clear">清空缓存</button>
                 <div id="confirm-dialog" style="display:none;">

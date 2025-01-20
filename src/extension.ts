@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
+import * as fs from 'fs';
 
 import * as logItem from './types/log-item'
 import {VirtualMeGUIViewProvider} from './types/gui-view'
@@ -8,6 +9,7 @@ import * as fileProcess from './utils/file-process'
 import * as contextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/cmd-process'
+import * as git from './utils/git'
 
 let logs: logItem.LogItem[] = []
 export const saveDir = 'virtualme-logs' // 数据的保存位置
@@ -24,9 +26,7 @@ let lastSelectStamp: number = 0;
 let lastSelectStart: vscode.Position;
 let lastSelectEnd: vscode.Position;
 let lastSelectLog: logItem.LogItem;
-
-// let cmdList: string[] = []
-
+export let extensionPath = '';
 
 export function checkVersion() {
     try {
@@ -43,6 +43,8 @@ export function activate(context: vscode.ExtensionContext) {
     if (!checkVersion()) {
         return
     }
+    // 保存扩展路径
+    extensionPath = context.extensionPath;
 
     // 设置上下文变量，表示扩展已激活
     vscode.commands.executeCommand('setContext', 'virtualme.active', true)
@@ -69,6 +71,18 @@ export function activate(context: vscode.ExtensionContext) {
         logs = [] // 清空保存的记录
     });
     context.subscriptions.push(stopCommand);
+
+    /** 注册命令：virtual-me.git-init */
+    const gitCommandInit = vscode.commands.registerCommand('virtualme.git-init', async () => {
+        await git.init()
+    });
+    context.subscriptions.push(gitCommandInit);
+
+    /** 注册命令：virtual-me.git-snapshot */
+    const gitCommandSnapshot = vscode.commands.registerCommand('virtualme.git-snapshot', async () => {
+        await git.snapshot()
+    });
+    context.subscriptions.push(gitCommandSnapshot);
 
     /** 注册命令：virtual-me.clear */
     const clearLogs = vscode.commands.registerCommand('virtualme.clear', () => {

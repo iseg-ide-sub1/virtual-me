@@ -34,6 +34,14 @@ document.getElementById('btn-stop').onclick = () => {
     vscode.postMessage({command: 'virtualme.stop'});
 };
 
+document.getElementById('btn-git-init').onclick = () => {
+    vscode.postMessage({command: 'virtualme.git-init'});
+}
+
+document.getElementById('btn-git-snapshot').onclick = () => {
+    vscode.postMessage({command: 'virtualme.git-snapshot'});
+}
+
 // 清空日志按钮被点击
 const btn_clear = document.getElementById('btn-clear');
 btn_clear.addEventListener('click', () => {

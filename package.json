@@ -19,6 +19,9 @@
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
+  "files": [
+    "./res/git"
+  ],
   "contributes": {
     "commands": [
       {
