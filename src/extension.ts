@@ -1,6 +1,5 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
-import * as fs from 'fs';
 
 import * as logItem from './types/log-item'
 import {VirtualMeGUIViewProvider} from './types/gui-view'
@@ -12,7 +11,7 @@ import * as menuProcess from './utils/cmd-process'
 import * as git from './utils/git'
 
 let logs: logItem.LogItem[] = []
-export const saveDir = 'virtualme-logs' // 数据的保存位置
+export const saveDir = {value: 'virtualme-logs'} // 数据的保存位置
 export const vm_version = 'v0.2.3' // 插件版本
 let lastText: string // 保存上一次编辑后的代码
 
@@ -66,8 +65,8 @@ export function activate(context: vscode.ExtensionContext) {
     const stopCommand = vscode.commands.registerCommand('virtualme.stop', () => {
         isRecording.value = false;
         if (logs.length === 0) return;
-        common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
+        common.saveLog(common.logsToString(logs), saveDir.value);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir.value}`);
         logs = [] // 清空保存的记录
     });
     context.subscriptions.push(stopCommand);
@@ -93,8 +92,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
-        common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
+        common.saveLog(common.logsToString(logs), saveDir.value);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir.value}`);
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
@@ -350,9 +349,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** IDE命令执行 */
     const CommandWatcher = vscode.commands.onDidExecuteCommand(async (event: vscode.Command) => {
-        if (isCalculatingArtifact.value) return;
-        if (!isRecording.value) return;
-        if (menuProcess.isCommandSkipped(event.command)) return
+        if (isCalculatingArtifact.value) {
+            console.warn('Calculating artifact, skip command:', event.command)
+            return
+        }
+        if (!isRecording.value) return
+        if (menuProcess.isCommandSkipped(event.command)) {
+            console.warn('Command skipped:', event.command)
+            return
+        }
 
         const log = await menuProcess.handleCommand(event.command, event.arguments)
         logs.push(log)
@@ -363,7 +368,7 @@ export function activate(context: vscode.ExtensionContext) {
     function intervalUpdater() {
         const interval = setInterval(() => {
             if (logs.length >= 1000) {
-                common.saveLog(common.logsToString(logs), saveDir);
+                common.saveLog(common.logsToString(logs), saveDir.value);
                 logs = [];
             }
             GUIProvider.logsNum = logs.length
@@ -386,7 +391,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
     if (logs.length > 0) { // 如果还有没有保存的内容则自动保存
         if (lastSelectLog) logs.push(lastSelectLog);
-        common.saveLog(common.logsToString(logs), saveDir);
+        common.saveLog(common.logsToString(logs), saveDir.value);
     }
     // 清除上下文变量
     vscode.commands.executeCommand('setContext', 'virtualme.active', false)

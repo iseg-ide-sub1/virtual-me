@@ -1,9 +1,8 @@
 import * as logItem from "../types/log-item"
 import {EventType} from '../types/event-types'
-import {saveDir} from "../extension";
 
 const skippedFileTypes = new Set([
-    saveDir,
+    'virtualme-logs',
     '.DS_Store',
     '.cache',
     '.conan',
@@ -32,7 +31,6 @@ const skippedFileTypes = new Set([
     'pnpm-lock.yaml',
     'poetry.lock',
     'pubspec.lock',
-    'saveDir',
     'site-packages',
     'vendor/',
     'virtualenv',
@@ -48,7 +46,7 @@ const skippedFileTypes = new Set([
 
 
 export function isFileSkipped(uri: string) {
-    // 如果uri包含skippedFileTypes中的任何一个，则跳过，插件自身log文件也是
+    // 濡傛灉uri鍖呭惈skippedFileTypes涓殑浠讳綍涓�涓紝鍒欒烦杩囷紝鎻掍欢鑷韩log鏂囦欢涔熸槸
     for (const fileType of skippedFileTypes) {
         if (uri.includes(fileType)) {
             return true

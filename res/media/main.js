@@ -34,19 +34,18 @@ document.getElementById('btn-stop').onclick = () => {
     vscode.postMessage({command: 'virtualme.stop'});
 };
 
-document.getElementById('btn-git-init').onclick = () => {
-    vscode.postMessage({command: 'virtualme.git-init'});
-}
-
-document.getElementById('btn-git-snapshot').onclick = () => {
-    vscode.postMessage({command: 'virtualme.git-snapshot'});
-}
+// document.getElementById('btn-git-init').onclick = () => {
+//     vscode.postMessage({command: 'virtualme.git-init'});
+// }
+//
+// document.getElementById('btn-git-snapshot').onclick = () => {
+//     vscode.postMessage({command: 'virtualme.git-snapshot'});
+// }
 
 // 清空日志按钮被点击
-const btn_clear = document.getElementById('btn-clear');
-btn_clear.addEventListener('click', () => {
+document.getElementById('btn-clear').onclick = () => {
     showConfirmDialog();
-});
+};
 
 // 显示确认清空日志的对话框
 function showConfirmDialog() {
@@ -63,12 +62,10 @@ document.getElementById('confirm-no').onclick = () => {
     document.getElementById('confirm-dialog').style.display = 'none';
 };
 
-
 // 保存日志按钮被点击
-const btn_save = document.getElementById('btn-save');
-btn_save.addEventListener('click', () => {
+document.getElementById('btn-save').onclick = () => {
     vscode.postMessage({command: 'virtualme.savelog'});
-});
+};
 
 
 // 任务状态被改变

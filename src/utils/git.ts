@@ -12,7 +12,7 @@ function getGitDir(): string | undefined {
         vscode.window.showErrorMessage('No workspace folder found.');
         return undefined;
     }
-    const gitDir = path.join(workspaceFolders[0].uri.fsPath, saveDir, '.internal-git/');
+    const gitDir = path.join(workspaceFolders[0].uri.fsPath, saveDir.value, '.internal-git/');
     if (!fs.existsSync(gitDir)) {
         fs.mkdirSync(gitDir, {recursive: true})
     }
@@ -73,14 +73,14 @@ export async function init(): Promise<string> {
         }
 
         const gitignorePath = path.join(workSpace, '.gitignore');
-        // 如果没有.gitignore文件，则创建
+        // 濡傛灉娌℃湁.gitignore鏂囦欢锛屽垯鍒涘缓
         if (!fs.existsSync(gitignorePath)) {
             fs.writeFileSync(gitignorePath, '', {
                 flag: 'a+',
                 encoding: 'utf8'
             })
         }
-        // 检查gitignorePath文件中是否有virtualme-logs/，如果没有则添加
+        // 妫�鏌itignorePath鏂囦欢涓槸鍚︽湁virtualme-logs/锛屽鏋滄病鏈夊垯娣诲姞
         const gitignoreContent = fs.readFileSync(gitignorePath, {
             encoding: 'utf8'
         })
@@ -100,7 +100,7 @@ export async function snapshot(filePaths?: string[], commitMessage?: string): Pr
         filePaths = ['.']
     }
     if (!commitMessage) {
-        // 去掉空格
+        // 鍘绘帀绌烘牸
         commitMessage = getFormattedTime1().replace(/\s+/g, '-')
     }
 
@@ -115,6 +115,5 @@ export async function getDiffFromLastSnapshot(filePaths?: string[], commitMessag
     console.log(snapshotRet)
     const lastCommitHash = await runGitCommand(['rev-parse', 'HEAD^'])
     const currentCommitHash = await runGitCommand(['rev-parse', 'HEAD'])
-    const diffRet = await runGitCommand(['diff', lastCommitHash, currentCommitHash])
-    return diffRet
+    return await runGitCommand(['diff', lastCommitHash, currentCommitHash])
 }
