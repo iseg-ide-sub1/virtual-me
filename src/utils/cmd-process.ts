@@ -44,13 +44,13 @@ function getEventTypeForCommand(commandName: string) {
 async function getArtifactFromCommand(args: any[] | undefined) {
     if (!args || args.length === 0)
         return new logItem.Artifact('null', logItem.ArtifactType.Null)
-    if (args.length === 1 && args[0]._formatted) {  // µ¥¸öÎÄ¼ş
+    if (args.length === 1 && args[0]._formatted) {  // å•ä¸ªæ–‡ä»¶
         return new logItem.Artifact(args[0]._formatted, logItem.ArtifactType.File)
     }
-    if (args.length === 1 && args[0].uri) {// µ¥¸ö¹¤¼ş
+    if (args.length === 1 && args[0].uri) {// å•ä¸ªå·¥ä»¶
         return await getArtifactFromRange(args[0].uri, args[0].range.start, args[0].range.end)
     }
-    if (args.length === 2) { // µ¥¸ö¹¤¼şµ«ÊÇuriÊÇ0, posÊÇ1
+    if (args.length === 2) { // å•ä¸ªå·¥ä»¶ä½†æ˜¯uriæ˜¯0, posæ˜¯1
         return await getArtifactFromRange(args[0], args[1], args[1])
     }
     return new logItem.Artifact('null', logItem.ArtifactType.Null)
@@ -63,10 +63,10 @@ export function deleteInnerCmdSeq(logs: logItem.LogItem[], thr = 10) {
             seqCount += 1
         }
         else {
-            if (seqCount > thr) { // É¾³ı²»ÊÇÓÉÓÃ»§´¥·¢µÄÃüÁîĞòÁĞ
-                let start = Math.min(i - seqCount + 1, 0) // seqCount¿ªÊ¼µÄÎ»ÖÃ
-                logs.splice(start, seqCount); // É¾³ı×î½üseqCountÌõÃüÁî
-                i = Math.max(start - 1, 0); // ÖØÖÃË÷Òı
+            if (seqCount > thr) { // åˆ é™¤ä¸æ˜¯ç”±ç”¨æˆ·è§¦å‘çš„å‘½ä»¤åºåˆ—
+                let start = Math.min(i - seqCount + 1, 0) // seqCountå¼€å§‹çš„ä½ç½®
+                logs.splice(start, seqCount); // åˆ é™¤æœ€è¿‘seqCountæ¡å‘½ä»¤
+                i = Math.max(start - 1, 0); // é‡ç½®ç´¢å¼•
                 console.warn('delete inner seq length: ', seqCount)
             }
             seqCount = 0

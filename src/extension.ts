@@ -8,12 +8,13 @@ import * as fileProcess from './utils/file-process'
 import * as contextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/cmd-process'
+import * as git from './utils/git'
 
 
 
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
-export const saveDir = 'virtualme-logs' // 数据的保存位置
+export const saveDir = {value: 'virtualme-logs'} // 数据的保存位置
 export const vm_version = 'v0.2.3' // 插件版本
 export const maxLogItemsNum = 1000 // 允许缓存的最大命令数量，超过后自动进行保存
 //*****************************************************************
@@ -34,9 +35,7 @@ let lastSelectStamp: number = 0;
 let lastSelectStart: vscode.Position;
 let lastSelectEnd: vscode.Position;
 let lastSelectLog: logItem.LogItem;
-
-// let cmdList: string[] = []
-
+export let extensionPath = '';
 
 export function checkVersion() {
     try {
@@ -53,6 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
     if (!checkVersion()) {
         return
     }
+    // 保存扩展路径
+    extensionPath = context.extensionPath;
 
     // 设置上下文变量，表示扩展已激活
     vscode.commands.executeCommand('setContext', 'virtualme.active', true)
@@ -74,11 +75,23 @@ export function activate(context: vscode.ExtensionContext) {
     const stopCommand = vscode.commands.registerCommand('virtualme.stop', () => {
         isRecording.value = false;
         if (logs.length === 0) return;
-        common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
+        common.saveLog(common.logsToString(logs), saveDir.value);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir.value}`);
         logs = [] // 清空保存的记录
     });
     context.subscriptions.push(stopCommand);
+
+    /** 注册命令：virtual-me.git-init */
+    const gitCommandInit = vscode.commands.registerCommand('virtualme.git-init', async () => {
+        console.log(await git.init())
+    });
+    context.subscriptions.push(gitCommandInit);
+
+    /** 注册命令：virtual-me.git-snapshot */
+    const gitCommandSnapshot = vscode.commands.registerCommand('virtualme.git-snapshot', async () => {
+        console.log(await git.snapshot())
+    });
+    context.subscriptions.push(gitCommandSnapshot);
 
     /** 注册命令：virtual-me.clear */
     const clearLogs = vscode.commands.registerCommand('virtualme.clear', () => {
@@ -89,8 +102,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：保存日志 */
     const saveLogCommand = vscode.commands.registerCommand('virtualme.savelog', () => {
-        common.saveLog(common.logsToString(logs), saveDir);
-        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir}`);
+        common.saveLog(common.logsToString(logs), saveDir.value);
+        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir.value}`);
         logs = [] // 清空保存的记录
     })
     context.subscriptions.push(saveLogCommand);
@@ -358,9 +371,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     /** IDE命令执行 */
     const CommandWatcher = vscode.commands.onDidExecuteCommand(async (event: vscode.Command) => {
-        if (isCalculatingArtifact.value) return;
-        if (!isRecording.value) return;
-        if (menuProcess.isCommandSkipped(event.command)) return
+        if (isCalculatingArtifact.value) {
+            console.warn('Calculating artifact, skip command:', event.command)
+            return
+        }
+        if (!isRecording.value) return
+        if (menuProcess.isCommandSkipped(event.command)) {
+            console.warn('Command skipped:', event.command)
+            return
+        }
 
         const log = await menuProcess.handleCommand(event.command, event.arguments)
         logs.push(log)
@@ -370,8 +389,8 @@ export function activate(context: vscode.ExtensionContext) {
     /** 每隔 500ms 更新一次日志数量和上一次操作的事件类型 */
     function intervalUpdater() {
         const interval = setInterval(() => {
-            if (logs.length >= maxLogItemsNum) {
-                common.saveLog(common.logsToString(logs), saveDir);
+            if (logs.length >= 1000) {
+                common.saveLog(common.logsToString(logs), saveDir.value);
                 logs = [];
             }
             GUIProvider.logsNum = logs.length
@@ -394,7 +413,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
     if (logs.length > 0) { // 如果还有没有保存的内容则自动保存
         if (lastSelectLog) logs.push(lastSelectLog);
-        common.saveLog(common.logsToString(logs), saveDir);
+        common.saveLog(common.logsToString(logs), saveDir.value);
     }
     // 清除上下文变量
     vscode.commands.executeCommand('setContext', 'virtualme.active', false)

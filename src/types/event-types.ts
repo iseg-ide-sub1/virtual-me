@@ -1,57 +1,57 @@
 /**
- * ÊÂ¼şÀàĞÍÃ¶¾Ù
+ * äº‹ä»¶ç±»å‹æšä¸¾
  * @note
- * - Èç¹ûµ±Ç°Ã¶¾ÙÖĞÃ»ÓĞĞèÒªµÄÊÂ¼şÀàĞÍ£¬Çë×ÔĞĞÌí¼Ó
- * - Èç¹ûÌí¼ÓµÄÊÇÖ®Ç°Ã»ÃüÃûµÄÃ¶¾ÙÖµ£¬ÇëÍ¬²½¸üĞÂ plugin-architecture.md
+ * - å¦‚æœå½“å‰æšä¸¾ä¸­æ²¡æœ‰éœ€è¦çš„äº‹ä»¶ç±»å‹ï¼Œè¯·è‡ªè¡Œæ·»åŠ 
+ * - å¦‚æœæ·»åŠ çš„æ˜¯ä¹‹å‰æ²¡å‘½åçš„æšä¸¾å€¼ï¼Œè¯·åŒæ­¥æ›´æ–° plugin-architecture.md
  */
 export enum EventType {
-    /** ´ò¿ªÎÄ±¾ÎÄ¼ş */
+    /** æ‰“å¼€æ–‡æœ¬æ–‡ä»¶ */
     OpenTextDocument = "OpenTextDocument",
-    /** ¹Ø±ÕÎÄ±¾ÎÄ¼ş */
+    /** å…³é—­æ–‡æœ¬æ–‡ä»¶ */
     CloseTextDocument = "CloseTextDocument",
-    /** ÇĞ»»ÎÄ±¾±à¼­Æ÷ */
+    /** åˆ‡æ¢æ–‡æœ¬ç¼–è¾‘å™¨ */
     ChangeTextDocument = "ChangeTextDocument",
-    /** ĞÂ½¨ÎÄ¼ş */
+    /** æ–°å»ºæ–‡ä»¶ */
     CreateFile = "CreateFile",
-    /** É¾³ıÎÄ¼ş */
+    /** åˆ é™¤æ–‡ä»¶ */
     DeleteFile = "DeleteFile",
-    /** ±£´æÎÄ¼ş */
+    /** ä¿å­˜æ–‡ä»¶ */
     SaveFile = "SaveFile",
-    /** ÖØÃüÃûÎÄ¼ş */
+    /** é‡å‘½åæ–‡ä»¶ */
     RenameFile = "RenameFile",
-    /** ÒÆ¶¯ÎÄ¼ş */
+    /** ç§»åŠ¨æ–‡ä»¶ */
     MoveFile = "MoveFile",
 
-    /** Ìí¼ÓÎÄ¼şÄÚÈİ */
+    /** æ·»åŠ æ–‡ä»¶å†…å®¹ */
     AddTextDocument = "AddTextDocument",
-    /** É¾³ıÎÄ¼şÄÚÈİ */
+    /** åˆ é™¤æ–‡ä»¶å†…å®¹ */
     DeleteTextDocument = "DeleteTextDocument",
-    /** ĞŞ¸ÄÎÄ¼şÄÚÈİ */
+    /** ä¿®æ”¹æ–‡ä»¶å†…å®¹ */
     EditTextDocument = "EditTextDocument",
-    /** RedoÎÄ¼şÄÚÈİ */
+    /** Redoæ–‡ä»¶å†…å®¹ */
     RedoTextDocument = "RedoTextDocument",
-    /** UndoÎÄ¼şÄÚÈİ */
+    /** Undoæ–‡ä»¶å†…å®¹ */
     UndoTextDocument = "UndoTextDocument",
-    /** Ñ¡ÖĞÎÄ±¾ */
+    /** é€‰ä¸­æ–‡æœ¬ */
     SelectText = "SelectText",
-    /** Êó±êÔÚÎÄ¼şĞüÍ£ */
+    /** é¼ æ ‡åœ¨æ–‡ä»¶æ‚¬åœ */
     MouseHover = "MouseHover",
 
-    /** ´ò¿ªÖÕ¶Ë */
+    /** æ‰“å¼€ç»ˆç«¯ */
     OpenTerminal = "OpenTerminal",
-    /** ¹Ø±ÕÖÕ¶Ë */
+    /** å…³é—­ç»ˆç«¯ */
     CloseTerminal = "CloseTerminal",
-    /** ÇĞ»»ÖÕ¶Ë */
+    /** åˆ‡æ¢ç»ˆç«¯ */
     ChangeActiveTerminal = "ChangeActiveTerminal",
-    /** ÖÕ¶ËÖ´ĞĞ */
+    /** ç»ˆç«¯æ‰§è¡Œ */
     ExecuteTerminalCommand = "ExecuteTerminalCommand",
-    /** Debug Console Êä³ö */
+    /** Debug Console è¾“å‡º */
     DebugConsoleOutput = "DebugConsoleOutput",
 
-    /** Î´ÖªÊÂ¼ş */
+    /** æœªçŸ¥äº‹ä»¶ */
     Unknown = "Unknown",
 
-    /** -----------------------------ÒÔÏÂÊÇvscodeÄÚ²¿ÊÂ¼şÀàĞÍ--------------------------------- */
+    /** -----------------------------ä»¥ä¸‹æ˜¯vscodeå†…éƒ¨äº‹ä»¶ç±»å‹--------------------------------- */
     workbench_view_extensions_refresh = "workbench_view_extensions_refresh",
     changeEditorIndentation72 = "changeEditorIndentation72",
     vscode_executeDocumentSymbolProvider = "vscode_executeDocumentSymbolProvider",
