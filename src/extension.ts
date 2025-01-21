@@ -120,6 +120,21 @@ export async function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(registerTaskCommand);
 
+    /** 注册命令：repo-cal */
+    const registerRepoCal = vscode.commands.registerCommand('virtualme.repocal', async () => {
+        // 获取当前工作区的路径
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+        if (workspaceFolder) {
+            // 获取排除的目录或文件列表
+            const excludeDirs = await cal.getExcludeDirs(workspaceFolder)
+            // 计算相似度
+            await cal.calculateSimilarityForAllFilesInDirectory(workspaceFolder, excludeDirs)
+        } else {
+            vscode.window.showInformationMessage(`请先打开一个工作目录!`)
+        }
+    })
+    context.subscriptions.push(registerRepoCal)
+
     /** 注册用于标记当前任务的命令 */
     for (const task of Object.values(logItem.TaskType)) {
         vscode.commands.executeCommand("virtualme.register.tasktype", task);
@@ -411,34 +426,6 @@ export async function activate(context: vscode.ExtensionContext) {
             console.log('Interval cleared.');
         },
     })
-
-
-    // 获取当前工作区的路径
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-    if (workspaceFolder) {
-        // 获取排除的目录或文件列表
-        const excludeDirs = await cal.getExcludeDirs(workspaceFolder);
-        // 计算相似度
-        await cal.calculateSimilarityForAllFilesInDirectory(workspaceFolder, excludeDirs);
-    }
-    
-
-
-
-
-    // 获取两个文件的路径
-    const file1Path = "/Users/suyunhe/code/python/ScholarSHIP-Back-master/academic/views.py"
-    const file2Path = "/Users/suyunhe/code/python/ScholarSHIP-Back-master/academic/urls.py"
-
-    // 读取文件内容并计算词汇相似度
-    // try {
-    //     console.log(111)
-    //     const lexicalSimilarity = await calculateLexicalSimilarity(file1Path, file2Path)
-    //     console.log(`两个文件的词汇相似度为: ${lexicalSimilarity.toFixed(4)}`)
-    // } catch (error) {
-    //     console.log(`计算词汇相似度时出错: ${error}`);
-    // }
     
 }
 

@@ -44,6 +44,10 @@
       {
         "command": "virtualme.register.tasktype",
         "title": "Resister Task Type"
+      },
+      {
+        "command": "virtualme.repocal",
+        "title": "Repo Cal"
       }
     ],
     "viewsContainers": {
