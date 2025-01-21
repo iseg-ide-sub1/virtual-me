@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
+import * as fs from 'fs'
 
 import * as logItem from './types/log-item'
 import {VirtualMeGUIViewProvider} from './types/gui-view'
@@ -9,6 +10,8 @@ import * as contextProcess from './utils/context-process'
 import * as terminalProcess from './utils/terminal-process'
 import * as menuProcess from './utils/cmd-process'
 import * as git from './utils/git'
+import * as cal from './utils/repo-cal'
+
 
 
 
@@ -48,15 +51,12 @@ export function checkVersion() {
     return true
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     if (!checkVersion()) {
         return
     }
     // 保存扩展路径
     extensionPath = context.extensionPath;
-
-    // 设置上下文变量，表示扩展已激活
-    vscode.commands.executeCommand('setContext', 'virtualme.active', true)
 
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
@@ -410,7 +410,36 @@ export function activate(context: vscode.ExtensionContext) {
             clearInterval(updater);
             console.log('Interval cleared.');
         },
-    });
+    })
+
+
+    // 获取当前工作区的路径
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
+    if (workspaceFolder) {
+        // 获取排除的目录或文件列表
+        const excludeDirs = await cal.getExcludeDirs(workspaceFolder);
+        // 计算相似度
+        await cal.calculateSimilarityForAllFilesInDirectory(workspaceFolder, excludeDirs);
+    }
+    
+
+
+
+
+    // 获取两个文件的路径
+    const file1Path = "/Users/suyunhe/code/python/ScholarSHIP-Back-master/academic/views.py"
+    const file2Path = "/Users/suyunhe/code/python/ScholarSHIP-Back-master/academic/urls.py"
+
+    // 读取文件内容并计算词汇相似度
+    // try {
+    //     console.log(111)
+    //     const lexicalSimilarity = await calculateLexicalSimilarity(file1Path, file2Path)
+    //     console.log(`两个文件的词汇相似度为: ${lexicalSimilarity.toFixed(4)}`)
+    // } catch (error) {
+    //     console.log(`计算词汇相似度时出错: ${error}`);
+    // }
+    
 }
 
 
@@ -419,6 +448,9 @@ export function deactivate() {
         if (lastSelectLog) logs.push(lastSelectLog);
         common.saveLog(common.logsToString(logs), saveDir.value);
     }
-    // 清除上下文变量
-    vscode.commands.executeCommand('setContext', 'virtualme.active', false)
 }
+
+
+
+
+
