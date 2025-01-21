@@ -5,18 +5,13 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private _logsNum: number = 0;
     private _prevLog: string = "";
+    private _displayInfo = {};
 
-    set logsNum(newValue: number) {
-        this._logsNum = newValue;
+    // 需要在插件界面的更新的全部信息保存到字典里，一次性全部更新
+    set displayInfo(newValue: any) {
+        this._displayInfo = newValue;
         if (this._view) {
-            this._view.webview.postMessage({command: 'updateLogsNum', logsNum: this._logsNum})
-        }
-    }
-
-    set prevLog(newValue: string) {
-        this._prevLog = newValue;
-        if (this._view) {
-            this._view.webview.postMessage({command: 'updatePrevLog', prevLog: this._prevLog})
+            this._view.webview.postMessage({command: 'updateDisplayInfo', displayInfo: this._displayInfo})
         }
     }
 
@@ -41,7 +36,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
         // console.log(logItem.LogItem.currentTaskType.toLowerCase())
         webviewView.webview.onDidReceiveMessage(message => {
             // console.log("Msg form webview:", message);
-            if (message?.debug) console.log("DebugInfo:", message.debug);
+            if (message?.debug) console.log("WebView DebugInfo:", message.debug);
             else if (message?.arg) vscode.commands.executeCommand(message.command, message.arg);
             else vscode.commands.executeCommand(message.command);
         });
@@ -63,8 +58,12 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <title>VirtualMe</title>
             </head>
             <body>
-                <button id="btn-start" class="btn-macro">开始记录</button>
-                <button id="btn-stop" class="btn-macro">停止记录</button>
+                <div class="control-div">
+                    <input type="radio" name="rec-control" onchange="onRecordingSwitch()" id="rec-start" checked>
+                    <label for="rec-start">正在记录</label>
+                    <input type="radio" name="rec-control" onchange="onRecordingSwitch()" id="rec-stop">
+                    <label for="rec-stop">暂停记录</label>
+                </div>
 <!--                <button id="btn-git-init" class="btn-macro">git init</button>-->
 <!--                <button id="btn-git-snapshot" class="btn-macro">git snapshot</button>-->
                 <p>如果觉得当收集的记录存在问题，可以通过下面的按钮清空当前缓存记录。</p>
@@ -98,17 +97,20 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                     <button id="input-yes" class="confirm-btn-l">是</button>
                     <button id="input-no" class="confirm-btn-r">否</button>
                     <div id="input-error" class="input-error" style="display:none;">
-                        <b>输入不符合要求，新任务名称只能由英文字母构成，新任务标签不能为空！</b>
+                        输入不符合要求！可能原因：
+                        <li>新任务名称不完全由英文字母构成</li>
+                        <li>新任务名称已经存在</li>
+                        <li>新任务标签为空</li>
                     </div>
                 </div>
                 <hr style="margin: 20px 10%;">
                 <div class="num-div">
                     <span>已收集数据：</span>
-                    <b id="logs-num">${this.logsNum === undefined ? 0 : this.logsNum}</b>
+                    <b id="logs-num">0</b>
                 </div>
                 <div class="num-div">
                     <span>上一个动作：</span>
-                    <b id="logs-prev">${this.prevLog === undefined ? "" : this.prevLog}</b>
+                    <b id="logs-prev">no logs</b>
                 </div>
                 <script src="${scriptUri}"></script>
             </body>

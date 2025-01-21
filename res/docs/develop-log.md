@@ -203,8 +203,35 @@
 - 更新 develop-log, README
 - 新增 plugin-architecture-v2
 - 记录命名规则改为 `版本_年-月-日 时.分.秒.json`
-- 文档更新、功能测试和体验优化尚未完成（进度 40%）
 
 ### 20240120-HiMeditator
 
 - 测试全部指令并更新到 plugin-architecture-v2
+- 更新架构图
+
+### 20250120-Katock-Cricket
+
+集成win32版的git（未启用）
+git向上提供三个接口：
+
+1. init，初始化virtualme内部的git存储，位于virtualme-logs/.internal-git
+2. snapshot(filePaths?: string[], commitMessage?: string)，将某些文件保存快照，内部是commit
+3. getDiffFromLastSnapshot(filePaths?: string[], commitMessage?: string)，获取当前情况与上一次快照的代码diff情况，内部是commit一次，与上次commit做对比。
+
+问题：保存快照的时机、需要记录当前快照前、上一次快照后变更过的文件的路径，需要讨论。如果这个git记录全仓的文件变更，项目大了会很慢。
+
+集成git
+只使用用户本地的git
+
+修复问题
+
+1. saveDir过滤失效（循环引用问题，需要单独的文件存储states才能根本解决）
+2. 按键失效（git测试按键注释掉）
+3. 修改部分文件编码：GBK到UTF8
+
+### 20240121-HiMeditator
+
+- 继续更新文档
+- 重构插件界面数据更新逻辑
+- 增加检测，防止新增状态 id 重复
+- 优化界面，插件激活后改为默认开始记录；停止记录改为暂停记录

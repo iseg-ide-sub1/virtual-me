@@ -15,7 +15,7 @@ import * as git from './utils/git'
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
 export const saveDir = {value: 'virtualme-logs'} // 数据的保存位置
-export const vm_version = 'v0.2.3' // 插件版本
+export const plugin_version = 'v0.2.3' // 插件版本
 export const maxLogItemsNum = 1000 // 允许缓存的最大命令数量，超过后自动进行保存
 //*****************************************************************
 
@@ -28,7 +28,7 @@ let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile: boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: 0} // 防止调用相关API时的vs内部的文件开关事件被记录
-let isRecording = {value: false} // 是否正在记录
+let isRecording = {value: true} // 是否正在记录，默认激活插件时开始记录
 
 // 用于合并选择操作
 let lastSelectStamp: number = 0;
@@ -74,10 +74,11 @@ export function activate(context: vscode.ExtensionContext) {
     /** 注册命令：virtual-me.stop */
     const stopCommand = vscode.commands.registerCommand('virtualme.stop', () => {
         isRecording.value = false;
-        if (logs.length === 0) return;
-        common.saveLog(common.logsToString(logs), saveDir.value);
-        vscode.window.showInformationMessage(`数据已保存至工作目录 ${saveDir.value}`);
-        logs = [] // 清空保存的记录
+        vscode.window.showInformationMessage('VirtualMe 暂停记录！');
+
+        // common.saveLog(common.logsToString(logs), saveDir.value);
+        // vscode.window.showInformationMessage(`记录停止，数据已保存至工作目录 ${saveDir.value}`);
+        // logs = [] // 清空保存的记录
     });
     context.subscriptions.push(stopCommand);
 
@@ -393,8 +394,11 @@ export function activate(context: vscode.ExtensionContext) {
                 common.saveLog(common.logsToString(logs), saveDir.value);
                 logs = [];
             }
-            GUIProvider.logsNum = logs.length
-            GUIProvider.prevLog = logs.length === 0 ? "no logs" : logs[logs.length - 1].eventType.toString();
+            let displayInfo = {
+                'logs-num': logs.length,
+                'logs-prev': logs.length === 0 ? "no logs" : logs[logs.length - 1].eventType.toString()
+            }
+            GUIProvider.displayInfo = displayInfo
         }, 500);
         return interval;
     }

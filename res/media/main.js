@@ -5,34 +5,20 @@ const vscode = acquireVsCodeApi();
 window.addEventListener('message', event => {
     const message = event.data;
     switch (message.command) {
-        case 'updateLogsNum':
-            updateLogsNum(message.logsNum);
-            break;
-        case 'updatePrevLog':
-            updatePrevLog(message.prevLog);
+        case 'updateDisplayInfo':
+            updateDisplayInfo(message.displayInfo);
             break;
     }
 });
 
-// 更新日志数量
-function updateLogsNum(logsNum) {
-    const target = document.getElementById('logs-num');
-    target.innerText = logsNum;
+function updateDisplayInfo(displayInfo) {
+    // 更新日志数量
+    const target1 = document.getElementById('logs-num');
+    target1.innerText = displayInfo['logs-num'];
+    // 更新上一次事件
+    const target2 = document.getElementById('logs-prev');
+    target2.innerText = displayInfo['logs-prev'];
 }
-
-// 更新上一次事件
-function updatePrevLog(prevLog) {
-    const target = document.getElementById('logs-prev');
-    target.innerText = prevLog;
-}
-
-document.getElementById('btn-start').onclick = () => {
-    vscode.postMessage({command: 'virtualme.start'});
-};
-
-document.getElementById('btn-stop').onclick = () => {
-    vscode.postMessage({command: 'virtualme.stop'});
-};
 
 // document.getElementById('btn-git-init').onclick = () => {
 //     vscode.postMessage({command: 'virtualme.git-init'});
@@ -68,10 +54,21 @@ document.getElementById('btn-save').onclick = () => {
 };
 
 
+// 记录状态被改变
+function onRecordingSwitch() {
+    const selectedValue = document.querySelector('.control-div input[type="radio"]:checked').id;
+    if(selectedValue == 'rec-start'){
+        vscode.postMessage({command: 'virtualme.start'});
+    }
+    else{
+        vscode.postMessage({command: 'virtualme.stop'});
+    }
+}
+
 // 任务状态被改变
 function onTaskChanged() {
     document.getElementById('confirm-input').style.display = 'none';
-    const selectedValue = document.querySelector('input[type="radio"]:checked').id;
+    const selectedValue = document.querySelector('.task-div input[type="radio"]:checked').id;
     const taskCommand = 'virtualme.settask.' + selectedValue;
     vscode.postMessage({command: taskCommand});
 }
@@ -88,6 +85,11 @@ document.getElementById('input-yes').onclick = () => {
     const newTaskName = document.getElementById('new-task').value;
     const newLabelName = document.getElementById('new-label').value;
     if (!regex.test(newTaskName) || newLabelName.length === 0) {
+        document.getElementById('input-error').style.display = 'block';
+        return;
+    }
+    const findElement = document.getElementById(newTaskName.toLowerCase());
+    if(findElement){
         document.getElementById('input-error').style.display = 'block';
         return;
     }

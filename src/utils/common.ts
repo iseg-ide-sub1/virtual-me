@@ -6,7 +6,7 @@ import {EventType} from '../types/event-types'
 import * as vscode from 'vscode'
 import * as contextProcess from "./context-process";
 import {deleteInnerCmdSeq} from "./cmd-process";
-import {vm_version} from '../extension'
+import {plugin_version} from '../extension'
 
 
 export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): logItem.LogItem[] {
@@ -130,7 +130,7 @@ export function saveLog(content: string, saveDirectory = '') {
         fs.mkdirSync(saveDirectory, {recursive: true})
     }
     // 名称用日期
-    const fileName = vm_version + '_' + getFormattedTime1() + '.json'
+    const fileName = plugin_version + '_' + getFormattedTime1() + '.json'
     const filePath = path.join(saveDirectory, fileName)
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
 }
