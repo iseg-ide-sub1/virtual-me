@@ -110,15 +110,10 @@ async function calculateLS(file1Path: string, file2Path: string): Promise<number
 async function calculateCBO(file1Path: string, file2Path: string, extname: string): Promise<number> {
     if (extname === '.py') {
         return calPythonCBO(file1Path, file2Path)
-    }
+    } 
     return 0
 }
-/**
- * 计算 Python CBO
- * @param file1 第一个 Python 文件路径
- * @param file2 第二个 Python 文件路径
- * @returns Promise<number>
- */
+
 async function calPythonCBO(file1: string, file2: string): Promise<number> {
     return new Promise((resolve, reject) => {
         const scriptPath = path.resolve(__dirname, "../src/utils/cbo_calculator.py")
@@ -154,6 +149,45 @@ async function calPythonCBO(file1: string, file2: string): Promise<number> {
         // 监听 Python 进程错误 (比如 SIGPIPE)
         pythonProcess.on("error", (err) => {
             resolve(0)
+        })
+    })
+}
+
+async function calJavaCBO(filePaths: string[]): Promise<Map<string, number>> {
+    return new Promise((resolve, reject) => {
+        const scriptPath = path.resolve(__dirname, "../src/utils/java_cbo_calculator.py")
+        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
+
+        let result = ""
+        let error = ""
+
+        // 监听标准输出
+        pythonProcess.stdout.on("data", (data) => {
+            result += data.toString();
+        })
+
+        // 监听错误输出
+        pythonProcess.stderr.on("data", (data) => {
+            error += data.toString();
+        })
+
+        // 监听 Python 进程结束
+        pythonProcess.on("close", (code) => {
+            if (code === 0) {
+                try {
+                    const parsedResult = JSON.parse(result.trim())
+                    resolve(new Map(Object.entries(parsedResult)))
+                } catch (parseError) {
+                    reject(`❌ JSON 解析错误: ${parseError}`)
+                }
+            } else {
+                reject(`❌ CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
+            }
+        })
+
+        // 监听 Python 进程错误
+        pythonProcess.on("error", (err) => {
+            reject(`❌ Python 进程错误: ${err.message}`)
         })
     })
 }
@@ -308,13 +342,26 @@ export async function calculateSimilarityForAllFilesInDirectory(workspaceFolder:
     // pythonProcess.stdin.end()
 
     // ==================================================
-    const file1 = "/Users/suyunhe/code/python/AnyTool/a.py"
-    const file2 = "/Users/suyunhe/code/python/AnyTool/b.py"
+    const javaFiles = [
+        "/Users/suyunhe/code/python/AnyTool/File1.java",
+        "/Users/suyunhe/code/python/AnyTool/File2.java",
+        "/Users/suyunhe/code/python/AnyTool/File3.java",
+        "/Users/suyunhe/code/python/AnyTool/File4.java",
+        "/Users/suyunhe/code/python/AnyTool/File5.java",
+    ]
+
+    try {
+        const res = await calJavaCBO(javaFiles)
+        console.log("✅ CBO 计算完成:", res)
+    } catch (err) {
+        console.error(err)
+    }
+
 
 
     // 获取文件类型
     const fileTypes = await listFilesWithTypes(workspaceFolder, excludeDirs)
-    console.log('文件类型统计: ' + JSON.stringify(fileTypes))
+    console.log('文件类型统计: \n' + JSON.stringify(fileTypes))
 
     // 按文件类型分类存储文件路径
     const filesByType: Record<string, string[]> = {}
