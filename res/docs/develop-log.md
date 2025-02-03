@@ -243,3 +243,8 @@ git向上提供三个接口：
 1. file之间的cbo(耦合度)、cea(共享元素数量)和Jaccard文本相似度；
 2. artifact之间的cbo、cea和Jaccard文本相似度【工件的粒度需要统一】
 目前通过命令`Repo Cal`启动。
+
+
+### 20240203-syh
+添加针对python和java的cbo计算、单文件的rfc计算。
+- 待优化：性能问题，当repo较大时计算python的cbo会启动很多计算线程，效率很低。
