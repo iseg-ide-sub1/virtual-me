@@ -7,6 +7,7 @@ import * as vscode from 'vscode'
 import * as contextProcess from "./context-process";
 import {deleteInnerCmdSeq} from "./cmd-process";
 import {plugin_version} from '../extension'
+import * as git from "./git";
 
 
 export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): logItem.LogItem[] {
@@ -22,8 +23,7 @@ export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): lo
     // 仅支持 AddTextDocument 和 DeleteTextDocument 的合并操作
     if (eventType != EventType.AddTextDocument && eventType != EventType.DeleteTextDocument) {
         return [log1, log2]
-    }
-    else {
+    } else {
         let log = new logItem.LogItem(log1.eventType, log1.artifact)
         // 如果log1.context.content.after包含以下字符，则说明上一次添加编辑有完成标志，此时不能合并，直接返回两个操作
         if (eventType == EventType.AddTextDocument &&
@@ -130,9 +130,10 @@ export function saveLog(content: string, saveDirectory = '') {
         fs.mkdirSync(saveDirectory, {recursive: true})
     }
     // 名称用日期
-    const fileName = plugin_version + '_' + getFormattedTime1() + '.json'
-    const filePath = path.join(saveDirectory, fileName)
+    const fileName = plugin_version + '_' + getFormattedTime1()
+    const filePath = path.join(saveDirectory, fileName + '.json')
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
+    git.saveSnapshotLog(saveDirectory, fileName)  // 保存快照日志
 }
 
 

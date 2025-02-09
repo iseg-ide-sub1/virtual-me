@@ -92,7 +92,10 @@ export async function getArtifactFromRange(
         'vscode.executeDocumentSymbolProvider', uri
     )
     // console.log('hierarchy symbols =',symbols)
-    if (!symbols) return hierarchy[0] // 没有符号，直接返回
+    if (!symbols) {
+        isCalculatingArtifact.value -= 1
+        return hierarchy[0]
+    } // 没有符号，直接返回
     let curSymbols = symbols // 当前层级的符号表
     let symbolSelf = undefined
     while (curSymbols.length > 0) {
