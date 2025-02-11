@@ -1,7 +1,9 @@
 import ast
 import sys
 import os
+import json
 from collections import defaultdict
+from itertools import combinations
 
 class CBOAnalyzer(ast.NodeVisitor):
     def __init__(self):
@@ -62,8 +64,21 @@ class CBOAnalyzer(ast.NodeVisitor):
         
         return cbo_count
 
+    def analyze_all_files(self, file_list):
+        """ 解析所有 python 文件并计算 CBO """
+        for file in file_list:
+            self.analyze_file(file)
+
+        cbo_results = {}
+        for file1, file2 in combinations(file_list, 2):
+            cbo_results[f"{file1},{file2}"] = self.analyze_cbo(file1, file2)
+
+        return cbo_results
+
 if __name__ == "__main__":
-    file1, file2 = sys.argv[1], sys.argv[2]
+    input_files = json.loads(sys.argv[1])  # 从前端接收 python 文件列表
+    # file1, file2 = sys.argv[1], sys.argv[2]
     analyzer = CBOAnalyzer()
-    cbo_result = analyzer.analyze_cbo(file1, file2)
-    print(cbo_result)
+    # cbo_result = analyzer.analyze_cbo(file1, file2)
+    result = analyzer.analyze_all_files(input_files)
+    print(result)
