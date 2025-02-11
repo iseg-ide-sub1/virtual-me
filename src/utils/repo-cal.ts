@@ -8,8 +8,6 @@ import { spawn } from "child_process"
 import pLimit from "p-limit"
 
 const pythonPath = "python3"
-const cboCalPath = "src/utils/cbo_calculator.py"
-const rfcCalPath = "src/utils/rfc_calculator.py"
 
 // 常见的代码文件类型
 const commonFileTypes = new Set([
@@ -82,6 +80,46 @@ async function listFilesWithTypes(directory: string, excludeDirs: Set<string>): 
     return fileTypes
 }
 
+// 按文件类型分类存储文件路径
+const collectFilesByType = (
+    directory: string,
+    excludeDirs: Set<string>,
+    commonFileTypes: Set<string>
+): Record<string, string[]> => {
+    const filesByType: Record<string, string[]> = {}
+
+    const collect = (dir: string) => {
+        const files = fs.readdirSync(dir)
+        files.forEach(file => {
+            const fullPath = path.join(dir, file)
+            const stat = fs.statSync(fullPath)
+
+            // 排除不需要的目录
+            const relativePath = path.relative(directory, fullPath)
+            if (excludeDirs.has(relativePath) || excludeDirs.has(file)) {
+                return
+            }
+
+            if (stat.isDirectory()) {
+                collect(fullPath)
+            } else {
+                const extname = path.extname(file).toLowerCase()
+                if (commonFileTypes.has(extname)) {
+                    if (!filesByType[extname]) {
+                        filesByType[extname] = []
+                    }
+                    filesByType[extname].push(fullPath)
+                }
+            }
+        })
+    }
+
+    // 遍历工作区目录，收集文件
+    collect(directory)
+    
+    return filesByType
+}
+
 // 提取文件中的词汇
 function extractWords(text: string): Set<string> {
     const words = text.toLowerCase().match(/\b\w+\b/g)
@@ -107,55 +145,53 @@ async function calculateLS(file1Path: string, file2Path: string): Promise<number
 }
 
 // todo: 计算两个文件的cbo
-async function calculateCBO(file1Path: string, file2Path: string, extname: string): Promise<number> {
-    if (extname === '.py') {
-        return calPythonCBO(file1Path, file2Path)
-    } 
-    return 0
-}
 
-async function calPythonCBO(file1: string, file2: string): Promise<number> {
+async function calPythonCBO(filePaths: string[]): Promise<Map<string, number>>  {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/utils/cbo_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, file1, file2])
+        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/python_cbo_calculator.py")
+        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
 
         let result = ""
         let error = ""
 
-        // 监听 Python 输出
+        // 监听标准输出
         pythonProcess.stdout.on("data", (data) => {
-            result += data.toString()
+            result += data.toString();
         })
 
         // 监听错误输出
         pythonProcess.stderr.on("data", (data) => {
-            error += data.toString()
+            error += data.toString();
         })
 
         // 监听 Python 进程结束
         pythonProcess.on("close", (code) => {
             if (code === 0) {
-                const cboValue = parseInt(result.trim(), 10);
-                if (isNaN(cboValue)) {
-                    resolve(0)
-                } else {
-                    resolve(cboValue)
+                try {
+                    console.log(result.trim())
+                    // fs.writeFileSync('/Users/suyunhe/code/virtual-me/test.txt', result.trim(), { encoding: 'utf8' })
+                    // const parsedResult = JSON.parse(result.trim())
+                    // console.log(parsedResult)
+                    // resolve(new Map(Object.entries(parsedResult)))
+                    resolve(new Map())
+                } catch (parseError) {
+                    reject(`JSON 解析错误: ${parseError}`)
                 }
             } else {
-                resolve(0)
+                reject(`CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
             }
-        });
+        })
 
-        // 监听 Python 进程错误 (比如 SIGPIPE)
+        // 监听 Python 进程错误
         pythonProcess.on("error", (err) => {
-            resolve(0)
+            reject(`Python 进程错误: ${err.message}`)
         })
     })
 }
 
 async function calJavaCBO(filePaths: string[]): Promise<Map<string, number>> {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/utils/java_cbo_calculator.py")
+        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/java_cbo_calculator.py")
         const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
 
         let result = ""
@@ -178,16 +214,16 @@ async function calJavaCBO(filePaths: string[]): Promise<Map<string, number>> {
                     const parsedResult = JSON.parse(result.trim())
                     resolve(new Map(Object.entries(parsedResult)))
                 } catch (parseError) {
-                    reject(`❌ JSON 解析错误: ${parseError}`)
+                    reject(`JSON 解析错误: ${parseError}`)
                 }
             } else {
-                reject(`❌ CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
+                reject(`CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
             }
         })
 
         // 监听 Python 进程错误
         pythonProcess.on("error", (err) => {
-            reject(`❌ Python 进程错误: ${err.message}`)
+            reject(`Python 进程错误: ${err.message}`)
         })
     })
 }
@@ -311,92 +347,56 @@ class SimilarityData {
     }
 }
 
-
-
-
 // 计算目录中所有文件类型的两两相似度并记录
 export async function calculateSimilarityForAllFilesInDirectory(workspaceFolder: string, excludeDirs: Set<string>) {
-    // await loadPyodideAndRun()
-    // const pythonScript = "/Users/suyunhe/code/virtual-me/src/utils/rfc_calculator.py"
-    // const filePath = "/Users/suyunhe/code/python/AnyTool/scripts/main.py"
-    // const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const pythonScript = "/Users/suyunhe/code/virtual-me/python/rfc_calculator.py"
+    const filePath = "/Users/suyunhe/code/python/AnyTool/scripts/main.py"
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
 
-    // const pythonProcess = spawn(pythonPath, [pythonScript, fileContent])
-    // pythonProcess.stdout.on("data", (data) => {
-    //     // 直接将输出结果打印到控制台
-    //     console.log(`Python 输出: ${data.toString()}`);
-    // })
-    // pythonProcess.stderr.on("data", (data) => {
-    //     console.error(`Python 错误: ${data.toString()}`)
-    // })
-    // pythonProcess.on("close", (code) => {
-    //     if (code !== 0) {
-    //         console.error("Python 进程关闭，计算失败")
-    //     } else {
-    //         console.log("Python 进程成功结束");
-    //     }
-    // })
+    const pythonProcess = spawn(pythonPath, [pythonScript, fileContent])
+    pythonProcess.stdout.on("data", (data) => {
+        // 直接将输出结果打印到控制台
+        console.log(`Python 输出: ${data.toString()}`);
+    })
+    pythonProcess.stderr.on("data", (data) => {
+        console.error(`Python 错误: ${data.toString()}`)
+    })
+    pythonProcess.on("close", (code) => {
+        if (code !== 0) {
+            console.error("Python 进程关闭，计算失败")
+        } else {
+            console.log("Python 进程成功结束");
+        }
+    })
 
-    // // 发送代码到 Python 子进程的标准输入
-    // pythonProcess.stdin.write(fileContent)
-    // pythonProcess.stdin.end()
-
-    // ==================================================
-    const javaFiles = [
-        "/Users/suyunhe/code/python/AnyTool/File1.java",
-        "/Users/suyunhe/code/python/AnyTool/File2.java",
-        "/Users/suyunhe/code/python/AnyTool/File3.java",
-        "/Users/suyunhe/code/python/AnyTool/File4.java",
-        "/Users/suyunhe/code/python/AnyTool/File5.java",
-    ]
-
-    try {
-        const res = await calJavaCBO(javaFiles)
-        console.log("✅ CBO 计算完成:", res)
-    } catch (err) {
-        console.error(err)
-    }
-
-
+    // 发送代码到 Python 子进程的标准输入
+    pythonProcess.stdin.write(fileContent)
+    pythonProcess.stdin.end()
 
     // 获取文件类型
     const fileTypes = await listFilesWithTypes(workspaceFolder, excludeDirs)
     console.log('文件类型统计: \n' + JSON.stringify(fileTypes))
 
-    // 按文件类型分类存储文件路径
-    const filesByType: Record<string, string[]> = {}
-
-    const collectFilesByType = (directory: string) => {
-        const files = fs.readdirSync(directory)
-        files.forEach(file => {
-            const fullPath = path.join(directory, file)
-            const stat = fs.statSync(fullPath)
-
-            // 排除不需要的目录
-            const relativePath = path.relative(workspaceFolder, fullPath)
-            if (excludeDirs.has(relativePath) || excludeDirs.has(file)) {
-                return
-            }
-
-            if (stat.isDirectory()) {
-                collectFilesByType(fullPath)
-            } else {
-                const extname = path.extname(file).toLowerCase()
-                if (commonFileTypes.has(extname)) {
-                    if (!filesByType[extname]) {
-                        filesByType[extname] = []
-                    }
-                    filesByType[extname].push(fullPath)
-                }
-            }
-        });
-    };
-
-    // 遍历工作区目录，收集文件
-    collectFilesByType(workspaceFolder)
+ 
+    const filesByType = collectFilesByType(workspaceFolder, excludeDirs, commonFileTypes)
+    console.log(filesByType)
 
     // 创建一个 SimilarityData 实例来存储所有相似度数据
     const similarityData = new SimilarityData()
+
+    const javaFiles = filesByType['.java']
+    if (javaFiles && javaFiles.length > 0) {
+        const res = await calJavaCBO(javaFiles)
+        console.log(res)
+    } else {
+        console.log("No .java files found.")
+    }
+
+    const pythonFiles = filesByType['.py']
+    if (pythonFiles && pythonFiles.length > 0) {
+        const res = await calPythonCBO(pythonFiles)
+        console.log(res)
+    }
 
     // 对每种文件类型计算两两之间的相似度并记录
     for (const [extname, files] of Object.entries(filesByType)) {
@@ -407,12 +407,12 @@ export async function calculateSimilarityForAllFilesInDirectory(workspaceFolder:
                 const file1Path = files[i]
                 const file2Path = files[j]
                 try {
-                    // const cbo = 0
+                    const cbo = 0
                     const cea = 0
-                    // const ls = 0
-                    const cbo = await calculateCBO(file1Path, file2Path, extname)
+                    const ls = 0
+                    // const cbo = await calculateCBO(file1Path, file2Path, extname)
                     // const cea = await calculateCEA(file1Path, file2Path)
-                    const ls = await calculateLS(file1Path, file2Path)
+                    // const ls = await calculateLS(file1Path, file2Path)
 
                     fileTypeSimilarity.addFilePair(file1Path, file2Path, cbo, cea, ls)
                 } catch (error) {
