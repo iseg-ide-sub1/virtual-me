@@ -3,7 +3,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 import * as logItem from './types/log-item'
-import {VirtualMeGUIViewProvider} from './types/gui-view'
 import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
 import * as contextProcess from './utils/context-process'
@@ -12,7 +11,9 @@ import * as menuProcess from './utils/cmd-process'
 import * as git from './utils/git'
 import * as cal from './utils/repo-cal'
 
-
+import {LogControlViewProvider} from './views/log-control'
+import {LogDisplayViewProvider} from './views/log-display'
+import {FeatureListViewProvider} from './views/feature-list'
 
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
@@ -139,12 +140,47 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
+    /** 注册命令：virtualme.logsummary，展示日志总结页面 */
+    const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
+        const summaryPanel = vscode.window.createWebviewPanel(
+            'logSummary',
+            "Log Summary",
+            vscode.ViewColumn.One,
+            {
+                localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
+            }
+        );
+        // const htmlFilePath = path.join(extensionPath, 'res', 'media', 'artifact_tree.html');
+        const htmlFilePath = path.join(extensionPath, 'res', 'media', 'test.html');
+        const htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
+        summaryPanel.webview.html = htmlContent;
+        console.log(htmlContent);
+        console.log(htmlContent.length)
+    });
+    context.subscriptions.push(logSummary);
+
     /** 提供图形化界面 */
-    const GUIProvider = new VirtualMeGUIViewProvider(context.extensionUri);
+    const logControlViewProvider = new LogControlViewProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            VirtualMeGUIViewProvider.viewType,
-            GUIProvider,
+            LogControlViewProvider.viewType,
+            logControlViewProvider,
+            {webviewOptions: {retainContextWhenHidden: true}}
+        )
+    );
+    const logDisplayViewProvider = new LogDisplayViewProvider();
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            LogDisplayViewProvider.viewType,
+            logDisplayViewProvider,
+            {webviewOptions: {retainContextWhenHidden: true}}
+        )
+    );
+    const featureListViewProvider = new FeatureListViewProvider(context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            FeatureListViewProvider.viewType,
+            featureListViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
@@ -418,7 +454,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 'logs-num': logs.length,
                 'logs-prev': logs.length === 0 ? "no logs" : logs[logs.length - 1].eventType.toString()
             }
-            GUIProvider.displayInfo = displayInfo
+            logControlViewProvider.displayInfo = displayInfo
         }, 500);
         return interval;
     }

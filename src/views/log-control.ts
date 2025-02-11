@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'virtualme.GUIView';
+export class LogControlViewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'virtualme.LogControlView';
     private _view?: vscode.WebviewView;
     private _logsNum: number = 0;
     private _prevLog: string = "";
@@ -43,10 +43,10 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/main.js'));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/log-control.js'));
         const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/reset.css'));
         const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/vscode.css'));
-        const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/main.css'));
+        const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, '/res/media/log-control.css'));
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
@@ -55,7 +55,7 @@ export class VirtualMeGUIViewProvider implements vscode.WebviewViewProvider {
                 <link href="${styleResetUri}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleMainUri}" rel="stylesheet">
-                <title>VirtualMe</title>
+                <title>Log Control</title>
             </head>
             <body>
                 <div class="control-div">

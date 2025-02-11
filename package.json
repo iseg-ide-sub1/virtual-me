@@ -63,8 +63,18 @@
       "virtualme": [
         {
           "type": "webview",
-          "id": "virtualme.GUIView",
-          "name": ""
+          "id": "virtualme.LogControlView",
+          "name": "记录控制"
+        },
+        {
+          "type": "webview",
+          "id": "virtualme.LogDisplayView",
+          "name": "记录展示"
+        },
+        {
+          "type": "webview",
+          "id": "virtualme.FeatureListView",
+          "name": "功能列表"
         }
       ]
     },
