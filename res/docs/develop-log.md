@@ -248,3 +248,14 @@ git向上提供三个接口：
 ### 20240203-syh
 添加针对python和java的cbo计算、单文件的rfc计算。
 - 待优化：性能问题，当repo较大时计算python的cbo会启动很多计算线程，效率很低。
+
+### 20250210-Katock-Cricket
+
+完成代码快照功能
+1. git.ts中有一个计数器每隔5分钟自动保存一次代码快照，原理是commit与之前的commit进行diff比对
+2. 快照记录随主log保存触发时一起保存，后缀为_snapshot.json
+
+### 20240210-HiMeditator
+
+- 创建 python 模块文件夹
+- 增加 virtualme 功能总结图 `/res/raw `

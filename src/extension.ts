@@ -14,7 +14,6 @@ import * as cal from './utils/repo-cal'
 
 
 
-
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
 export const saveDir = {value: 'virtualme-logs'} // 数据的保存位置
@@ -31,7 +30,7 @@ let lastText: string // 保存上一次编辑后的代码
 let currentTerminal: vscode.Terminal | undefined; // 记录当前活动终端
 let openFile: boolean = false // 是否打开了文件
 export let isCalculatingArtifact = {value: 0} // 防止调用相关API时的vs内部的文件开关事件被记录
-let isRecording = {value: true} // 是否正在记录，默认激活插件时开始记录
+export let isRecording = {value: true} // 是否正在记录，默认激活插件时开始记录
 
 // 用于合并选择操作
 let lastSelectStamp: number = 0;
@@ -84,13 +83,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
     /** 注册命令：virtual-me.git-init */
     const gitCommandInit = vscode.commands.registerCommand('virtualme.git-init', async () => {
-        console.log(await git.init())
+        await git.init()
     });
     context.subscriptions.push(gitCommandInit);
 
     /** 注册命令：virtual-me.git-snapshot */
     const gitCommandSnapshot = vscode.commands.registerCommand('virtualme.git-snapshot', async () => {
-        console.log(await git.snapshot())
+        await git.snapshot()
     });
     context.subscriptions.push(gitCommandSnapshot);
 
@@ -155,8 +154,8 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!isRecording.value) return;
 
         openFile = true
-        if (fileProcess.isFileSkipped(doc.uri.toString())) return
-        const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.toString())
+        if (fileProcess.isFileSkipped(doc.uri.fsPath.toString())) return
+        const log = fileProcess.getLogItemFromOpenTextDocument(doc.uri.fsPath.toString())
         if (!isCalculatingArtifact.value) {
             logs.push(log)
         }
@@ -167,8 +166,8 @@ export async function activate(context: vscode.ExtensionContext) {
     const closeTextDocumentWatcher = vscode.workspace.onDidCloseTextDocument(doc => {
         if (!isRecording.value) return;
 
-        if (fileProcess.isFileSkipped(doc.uri.toString())) return
-        const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.toString())
+        if (fileProcess.isFileSkipped(doc.uri.fsPath.toString())) return
+        const log = fileProcess.getLogItemFromCloseTextDocument(doc.uri.fsPath.toString())
         if (!isCalculatingArtifact.value) {
             logs.push(log)
         }
@@ -186,7 +185,7 @@ export async function activate(context: vscode.ExtensionContext) {
             return
         }
         openFile = false
-        const log = fileProcess.getLogItemFromChangeTextDocument(editor.document.uri.toString())
+        const log = fileProcess.getLogItemFromChangeTextDocument(editor.document.uri.fsPath.toString())
         logs.push(log)
     })
     context.subscriptions.push(changeActiveTextDocumentWatcher)
@@ -196,25 +195,28 @@ export async function activate(context: vscode.ExtensionContext) {
         /** 文件保存 */
         filesWatcher.onDidChange(uri => {
             if (!isRecording.value) return;
-            if (fileProcess.isFileSkipped(uri.toString())) return
+            if (fileProcess.isFileSkipped(uri.fsPath.toString())) return
+            git.addFileToHistory(uri.fsPath.toString())
 
-            const log = fileProcess.getLogItemFromSaveFile(uri.toString())
+            const log = fileProcess.getLogItemFromSaveFile(uri.fsPath.toString())
             logs.push(log)
         })
         /** 文件创建 */
         filesWatcher.onDidCreate(uri => {
             if (!isRecording.value) return;
-            if (fileProcess.isFileSkipped(uri.toString())) return
+            if (fileProcess.isFileSkipped(uri.fsPath.toString())) return
+            git.addFileToHistory(uri.fsPath.toString())
 
-            const log = fileProcess.getLogItemFromCreateFile(uri.toString())
+            const log = fileProcess.getLogItemFromCreateFile(uri.fsPath.toString())
             logs.push(log)
         })
         /** 文件删除 */
         filesWatcher.onDidDelete(uri => {
             if (!isRecording.value) return;
-            if (fileProcess.isFileSkipped(uri.toString())) return
+            if (fileProcess.isFileSkipped(uri.fsPath.toString())) return
+            git.addFileToHistory(uri.fsPath.toString())
 
-            const log = fileProcess.getLogItemFromDeleteFile(uri.toString())
+            const log = fileProcess.getLogItemFromDeleteFile(uri.fsPath.toString())
             logs.push(log)
         })
     } else {
@@ -231,6 +233,7 @@ export async function activate(context: vscode.ExtensionContext) {
             const newUri = common.convertToFilePathUri(newPath)
             if (fileProcess.isFileSkipped(oldUri.toString())) continue
             if (fileProcess.isFileSkipped(newUri.toString())) continue
+            git.addFileToHistory(newUri.toString())
 
             // 检查路径是否发生变化
             if (path.dirname(oldPath) === path.dirname(newPath)) {
@@ -275,6 +278,8 @@ export async function activate(context: vscode.ExtensionContext) {
     /** 修改文件内容(新增、删除、修改、Redo、Undo) */
     const changeTextDocumentWatcher = vscode.workspace.onDidChangeTextDocument(async (event: vscode.TextDocumentChangeEvent) => {
         if (!isRecording.value) return;
+        if (fileProcess.isFileSkipped(event.document.uri.fsPath.toString())) return
+        git.addFileToHistory(event.document.uri.fsPath.toString())
 
         if (event.contentChanges.length === 0) { // 脏状态改变
             lastText = event.document.getText()
@@ -426,7 +431,8 @@ export async function activate(context: vscode.ExtensionContext) {
             console.log('Interval cleared.');
         },
     })
-    
+
+    await git.init() // 初始化internal-git
 }
 
 

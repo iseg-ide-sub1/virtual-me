@@ -5,9 +5,17 @@ import * as os from 'os';
 
 const platform = os.platform();
 
+let stripAnsi: any;
+(async () => {
+    stripAnsi = (await import("strip-ansi")).default;
+})();
+
 export function removeAnsi(input: string) {
-    const ansiRegex = /(?:\x1B\[[0-9;]*[A-Za-z])|(?:\x1B\][^\a]*\a)/g;
-    return input.replace(ansiRegex, '');
+    if (!stripAnsi) {
+        console.error("Module strip-ansi is not loaded yet.");
+        return input;
+    }
+    return stripAnsi(input);
 }
 
 
