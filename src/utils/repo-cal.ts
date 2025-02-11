@@ -8,8 +8,6 @@ import { spawn } from "child_process"
 import pLimit from "p-limit"
 
 const pythonPath = "python3"
-const cboCalPath = "src/utils/cbo_calculator.py"
-const rfcCalPath = "src/utils/rfc_calculator.py"
 
 // 常见的代码文件类型
 const commonFileTypes = new Set([
@@ -147,56 +145,10 @@ async function calculateLS(file1Path: string, file2Path: string): Promise<number
 }
 
 // todo: 计算两个文件的cbo
-async function calculateCBO(file1Path: string, file2Path: string, extname: string): Promise<number> {
-    if (extname === '.py') {
-        return calPythonCBO1(file1Path, file2Path)
-    } else if (extname === '.java') {
-    }
-    return 0
-}
-
-async function calPythonCBO1(file1: string, file2: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/utils/cbo_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, file1, file2])
-
-        let result = ""
-        let error = ""
-
-        // 监听 Python 输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString()
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString()
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                const cboValue = parseInt(result.trim(), 10);
-                if (isNaN(cboValue)) {
-                    resolve(0)
-                } else {
-                    resolve(cboValue)
-                }
-            } else {
-                resolve(0)
-            }
-        });
-
-        // 监听 Python 进程错误 (比如 SIGPIPE)
-        pythonProcess.on("error", (err) => {
-            resolve(0)
-        })
-    })
-}
 
 async function calPythonCBO(filePaths: string[]): Promise<Map<string, number>>  {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../python/python_cbo_calculator.py")
+        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/python_cbo_calculator.py")
         const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
 
         let result = ""
@@ -217,7 +169,7 @@ async function calPythonCBO(filePaths: string[]): Promise<Map<string, number>>  
             if (code === 0) {
                 try {
                     console.log(result.trim())
-                    fs.writeFileSync('/Users/suyunhe/code/virtual-me/test.txt', result.trim(), { encoding: 'utf8' })
+                    // fs.writeFileSync('/Users/suyunhe/code/virtual-me/test.txt', result.trim(), { encoding: 'utf8' })
                     // const parsedResult = JSON.parse(result.trim())
                     // console.log(parsedResult)
                     // resolve(new Map(Object.entries(parsedResult)))
@@ -239,7 +191,7 @@ async function calPythonCBO(filePaths: string[]): Promise<Map<string, number>>  
 
 async function calJavaCBO(filePaths: string[]): Promise<Map<string, number>> {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../python/java_cbo_calculator.py")
+        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/java_cbo_calculator.py")
         const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
 
         let result = ""
@@ -394,9 +346,6 @@ class SimilarityData {
         })
     }
 }
-
-
-
 
 // 计算目录中所有文件类型的两两相似度并记录
 export async function calculateSimilarityForAllFilesInDirectory(workspaceFolder: string, excludeDirs: Set<string>) {
