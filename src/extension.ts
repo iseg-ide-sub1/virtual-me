@@ -120,20 +120,18 @@ export async function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(registerTaskCommand);
 
-    /** 注册命令：repo-cal */
-    const registerRepoCal = vscode.commands.registerCommand('virtualme.repocal', async () => {
-        // 获取当前工作区的路径
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
-        if (workspaceFolder) {
-            // 获取排除的目录或文件列表
-            const excludeDirs = await cal.getExcludeDirs(workspaceFolder)
-            // 计算相似度
-            await cal.calculateSimilarityForAllFilesInDirectory(workspaceFolder, excludeDirs)
-        } else {
-            vscode.window.showInformationMessage(`请先打开一个工作目录!`)
-        }
-    })
-    context.subscriptions.push(registerRepoCal)
+    // /** 注册命令：repo-cal */
+    // const registerRepoCal = vscode.commands.registerCommand('virtualme.repocal', async () => {
+    //     // 获取当前工作区的路径
+    //     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+    //     if (workspaceFolder) {
+    //         // 计算相似度
+    //         await cal.saveRepoCal(workspaceFolder)
+    //     } else {
+    //         vscode.window.showInformationMessage(`请先打开一个工作目录!`)
+    //     }
+    // })
+    // context.subscriptions.push(registerRepoCal)
 
     /** 注册用于标记当前任务的命令 */
     for (const task of Object.values(logItem.TaskType)) {

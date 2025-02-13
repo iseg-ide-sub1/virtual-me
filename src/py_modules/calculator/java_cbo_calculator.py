@@ -79,11 +79,22 @@ class CBOAnalyzer:
         for file in file_list:
             self.analyze_java_file(file)
 
-        cbo_results = {}
-        for file1, file2 in combinations(file_list, 2):
-            cbo_results[f"{file1},{file2}"] = self.compute_cbo(file1, file2)
+        cbo_results = []
 
-        return cbo_results
+        # 遍历文件列表，生成所有文件对的组合
+        for file1, file2 in combinations(file_list, 2):
+            cbo_result = self.compute_cbo(file1, file2)
+    
+            cbo_results.append({
+                "file1": file1,
+                "file2": file2,
+                "cbo": cbo_result
+            })
+
+        # 将结果转换为 JSON 格式的字符串
+        json_results = json.dumps(cbo_results, indent=4)
+
+        return json_results
 
 
 if __name__ == "__main__":
@@ -91,4 +102,4 @@ if __name__ == "__main__":
     analyzer = CBOAnalyzer()
     result = analyzer.analyze_all_files(input_files)
 
-    print(json.dumps(result))  # 返回 JSON 结果
+    print(result)  # 返回 JSON 结果

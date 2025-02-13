@@ -8,6 +8,7 @@ import * as contextProcess from "./context-process";
 import {deleteInnerCmdSeq} from "./cmd-process";
 import {plugin_version} from '../extension'
 import * as git from "./git";
+import * as repocal from "./repo-cal"
 
 
 export function concatEditLogs(log1: logItem.LogItem, log2: logItem.LogItem): logItem.LogItem[] {
@@ -134,6 +135,7 @@ export function saveLog(content: string, saveDirectory = '') {
     const filePath = path.join(saveDirectory, fileName + '.json')
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
     git.saveSnapshotLog(saveDirectory, fileName)  // 保存快照日志
+    repocal.saveRepoCal(workspaceFolders?.[0]?.uri.fsPath, saveDirectory, fileName)
 }
 
 
