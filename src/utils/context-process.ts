@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
-import {EventType} from '../types/event-types'
+import { EventType } from '../types/event-types'
 import * as refUtils from "./ref-process"
-import {isCalculatingArtifact} from '../extension'
+import { isCalculatingArtifact } from '../extension'
 
 /**
  * 将 SymbolKind 枚举值转换为对应的 ArtifactType 枚举描述。
@@ -91,7 +91,7 @@ export async function getArtifactFromRange(
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', uri
     )
-    // console.log('hierarchy symbols =',symbols)
+    // console.log('hierarchy symbols =', symbols)
     if (!symbols) {
         isCalculatingArtifact.value -= 1
         return hierarchy[0]
@@ -177,7 +177,7 @@ export function concatContexts(
     if (context1.type !== context2.type)
         throw new Error('Cannot concat contexts of different types')
     const contextType = context1.type
-    let content = {before: "", after: ""}
+    let content = { before: "", after: "" }
     const start = {
         line: Math.min(context1.start.line, context2.start.line),
         character: Math.min(context1.start.character, context2.start.character)
