@@ -1,16 +1,12 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as acorn from 'acorn'
-import * as walk from 'acorn-walk'
-import { loadPyodide } from "pyodide"
 import { spawn } from "child_process"
-import pLimit from "p-limit"
+import { IntervalCalculateTimer } from "./IntervalCalculateTimer"
+import {plugin_version} from '../extension'
 
 
-const pythonPath = "python3"
-
-// 常见的代码文件类型
+// const timer = new IntervalCalculateTimer();  // 实例化一个定时器，每隔一段时间执行一次snapshot()函数
 const commonFileTypes = new Set([
     '.py', '.java', '.js', '.ts', '.c', '.cpp', '.cc', '.cxx', '.cs', '.go',
     '.rb', '.php', '.swift', '.kt', '.rs', '.sh', '.bash', '.html', '.htm',
@@ -18,384 +14,166 @@ const commonFileTypes = new Set([
     '.r'
 ])
 
-// 常见需要排除的目录
 const commonExcludeDirs = new Set([
     'node_modules', '.git', '.idea', 'build', 'dist', 'out', 'tmp', '.vscode', 'coverage', 'virtualme-logs'
 ])
 
 // 获取排除的目录或文件列表
 export async function getExcludeDirs(workspaceFolder: string): Promise<Set<string>> {
-    const excludeDirs = new Set(commonExcludeDirs);
-
+    const excludeDirs = new Set(commonExcludeDirs)
     const gitignorePath = path.join(workspaceFolder, '.gitignore')
+
     if (fs.existsSync(gitignorePath)) {
         const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8')
-        const lines = gitignoreContent.split('\n')
-        lines.forEach(line => {
-            const trimmedLine = line.trim();
-            // 排除空行和注释
+        gitignoreContent.split('\n').forEach(line => {
+            const trimmedLine = line.trim()
             if (trimmedLine && !trimmedLine.startsWith('#')) {
-                // 将相对路径添加到排除目录中
                 excludeDirs.add(trimmedLine)
             }
         })
     }
-
     return excludeDirs
 }
 
-// 递归遍历目录，获取文件类型
-async function listFilesWithTypes(directory: string, excludeDirs: Set<string>): Promise<Record<string, number>> {
-    const fileTypes: Record<string, number> = {}
+// 统一的函数，用于运行 Python 脚本并返回结果
+async function runPythonScript(scriptPath: string, filePaths: string[]): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
+        let result = ""
+        let error = ""
 
-    const readDir = (dirPath: string) => {
-        const files = fs.readdirSync(dirPath)
+        pythonProcess.stdout.on("data", (data) => {
+            result += data.toString()
+        })
+
+        pythonProcess.stderr.on("data", (data) => {
+            error += data.toString()
+        })
+
+        pythonProcess.on("close", (code) => {
+            if (code === 0) {
+                try {
+                    resolve(result.trim())
+                } catch (parseError) {
+                    console.warn(`JSON 解析错误: ${parseError}`)
+                    resolve("")
+                }
+            } else {
+                console.warn(`计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
+                resolve("")
+            }
+        });
+
+        pythonProcess.on("error", (err) => {
+            console.warn(`Python 进程错误: ${err.message}`)
+            resolve("")
+        });
+    });
+}
+
+// 递归遍历目录，获取文件类型
+async function listFiles(directory: string, excludeDirs: Set<string>, collectTypes: boolean = false): Promise<Record<string, any>> {
+    const filesByType: Record<string, string[]> = {}
+
+    const processDirectory = (dir: string) => {
+        const files = fs.readdirSync(dir)
         files.forEach(file => {
-            const fullPath = path.join(dirPath, file)
+            const fullPath = path.join(dir, file)
             const stat = fs.statSync(fullPath)
 
-            // 排除被标记为排除的目录
             const relativePath = path.relative(directory, fullPath)
-            if (excludeDirs.has(relativePath) || excludeDirs.has(file)) {
-                return // 跳过排除的目录或文件
-            }
+            if (excludeDirs.has(relativePath) || excludeDirs.has(file)) return
 
             if (stat.isDirectory()) {
-                // 如果是目录，递归读取
-                readDir(fullPath)
+                processDirectory(fullPath)
             } else {
                 const extname = path.extname(file).toLowerCase()
                 if (commonFileTypes.has(extname)) {
-                    fileTypes[extname] = (fileTypes[extname] || 0) + 1
+                    if (collectTypes) {
+                        filesByType[extname] = filesByType[extname] || []
+                        filesByType[extname].push(fullPath)
+                    }
                 }
             }
         })
     }
 
     try {
-        readDir(directory)
+        processDirectory(directory)
     } catch (error) {
-        console.log(error)
+        console.error("Error reading directory:", error)
     }
-
-    return fileTypes
-}
-
-// 按文件类型分类存储文件路径
-const collectFilesByType = (
-    directory: string,
-    excludeDirs: Set<string>,
-    commonFileTypes: Set<string>
-): Record<string, string[]> => {
-    const filesByType: Record<string, string[]> = {}
-
-    const collect = (dir: string) => {
-        const files = fs.readdirSync(dir)
-        files.forEach(file => {
-            const fullPath = path.join(dir, file)
-            const stat = fs.statSync(fullPath)
-
-            // 排除不需要的目录
-            const relativePath = path.relative(directory, fullPath)
-            if (excludeDirs.has(relativePath) || excludeDirs.has(file)) {
-                return
-            }
-
-            if (stat.isDirectory()) {
-                collect(fullPath)
-            } else {
-                const extname = path.extname(file).toLowerCase()
-                if (commonFileTypes.has(extname)) {
-                    if (!filesByType[extname]) {
-                        filesByType[extname] = []
-                    }
-                    filesByType[extname].push(fullPath)
-                }
-            }
-        })
-    }
-
-    // 遍历工作区目录，收集文件
-    collect(directory)
 
     return filesByType
 }
 
-async function calPythonCBO(filePaths: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/python_cbo_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
-
-        let result = ""
-        let error = ""
-
-        // 监听标准输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString();
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString();
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                try {
-                    // fs.writeFileSync(path.join(saveDirectory, saveName + '_cbo_python.json'), result.trim(), { encoding: 'utf8' })
-                    resolve(result.trim())
-                } catch (parseError) {
-                    console.warn(`JSON 解析错误: ${parseError}`)
-                    resolve("")
-                }
-            } else {
-                console.warn(`CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
-                resolve("")
-            }
-        })
-
-        // 监听 Python 进程错误
-        pythonProcess.on("error", (err) => {
-            console.warn(`Python 进程错误: ${err.message}`)
-            resolve("")
-        })
-    })
+function writeJsonToFile(filePath: string, data: any): void {
+    const jsonData = JSON.stringify(data, null, 2);
+    fs.writeFileSync(filePath, jsonData, { encoding: 'utf8' })
 }
 
-async function calJavaCBO(filePaths: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/java_cbo_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
-
-        let result = ""
-        let error = ""
-
-        // 监听标准输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString();
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString();
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                try {
-                    // fs.writeFileSync(path.join(saveDirectory, saveName + '_cbo_java.json'), result.trim(), { encoding: 'utf8' })
-                    resolve(result.trim())
-                } catch (parseError) {
-                    console.warn(`JSON 解析错误: ${parseError}`)
-                    resolve("")
-                }
-            } else {
-                console.warn(`CBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
-                resolve("")
-            }
-        })
-
-        // 监听 Python 进程错误
-        pythonProcess.on("error", (err) => {
-            console.warn(`Python 进程错误: ${err.message}`)
-            resolve("")
-        })
-    })
-}
-
-async function calLS(filePaths: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/similarity_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
-
-        let result = ""
-        let error = ""
-
-        // 监听标准输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString();
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString();
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                try {
-                    // fs.writeFileSync(path.join(saveDirectory, saveName + '_cbo_java.json'), result.trim(), { encoding: 'utf8' })
-                    resolve(result.trim())
-                } catch (parseError) {
-                    console.warn(`JSON 解析错误: ${parseError}`)
-                    resolve("")
-                }
-            } else {
-                console.warn(`LS 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
-                resolve("")
-            }
-        })
-
-        // 监听 Python 进程错误
-        pythonProcess.on("error", (err) => {
-            console.warn(`Python 进程错误: ${err.message}`)
-            resolve("")
-        })
-    })
-}
-
-async function calPythonStructure(filePaths: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/python_structure_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
-
-        let result = ""
-        let error = ""
-
-        // 监听标准输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString();
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString();
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                try {
-                    // fs.writeFileSync(path.join(saveDirectory, saveName + '_cbo_java.json'), result.trim(), { encoding: 'utf8' })
-                    resolve(result.trim())
-                } catch (parseError) {
-                    console.warn(`JSON 解析错误: ${parseError}`)
-                    resolve("")
-                }
-            } else {
-                console.warn(`PythonStructure 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
-                resolve("")
-            }
-        })
-
-        // 监听 Python 进程错误
-        pythonProcess.on("error", (err) => {
-            console.warn(`Python 进程错误: ${err.message}`)
-            resolve("")
-        })
-    })
-}
-
-async function calPythonArtifactLS(filePaths: string[]): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const scriptPath = path.resolve(__dirname, "../src/py_modules/calculator/artifact_similarity_calculator.py")
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
-
-        let result = ""
-        let error = ""
-
-        // 监听标准输出
-        pythonProcess.stdout.on("data", (data) => {
-            result += data.toString()
-        })
-
-        // 监听错误输出
-        pythonProcess.stderr.on("data", (data) => {
-            error += data.toString()
-        })
-
-        // 监听 Python 进程结束
-        pythonProcess.on("close", (code) => {
-            if (code === 0) {
-                try {
-                    console.log(result.trim())
-                    resolve(result.trim())
-                } catch (parseError) {
-                    console.warn(`JSON 解析错误: ${parseError}`)
-                    resolve("")
-                }
-            } else {
-                console.warn(`PythonArtifactCBO 计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
-                resolve("")
-            }
-        })
-
-        // 监听 Python 进程错误
-        pythonProcess.on("error", (err) => {
-            console.warn(`Python 进程错误: ${err.message}`)
-            resolve("")
-        })
-    })
-}
-
+// 保存代码分析结果
 export async function saveRepoCal(workspaceFolder: string, saveDirectory: string, saveName: string) {
     const excludeDirs = await getExcludeDirs(workspaceFolder)
+    const filesByType = await listFiles(workspaceFolder, excludeDirs, true)
 
-    const fileTypes = await listFilesWithTypes(workspaceFolder, excludeDirs)
-    console.log('文件类型统计: \n' + JSON.stringify(fileTypes))
-    const filesByType = collectFilesByType(workspaceFolder, excludeDirs, commonFileTypes)
-    const filesByTypeJSON = JSON.stringify(filesByType, (key, value) => {
-        return value
-    }, 2)
 
-    fs.writeFileSync(path.join(saveDirectory, saveName + '_files_by_types.json'), filesByTypeJSON, { encoding: 'utf8' })
 
-    const javaFiles = filesByType['.java']
-    const pythonFiles = filesByType['.py']
-    let javaCBO = ""
-    let javaLS = ""
-    let pythonCBO = ""
-    let pythonLS = ""
-    let pythonStructure = ""
-    let pythonArtifactLS = ""
-    if (javaFiles && javaFiles.length > 0) {
-        javaCBO = await calJavaCBO(javaFiles)
-        javaLS = await calLS(javaFiles)
-    }
+    const javaFiles = filesByType['.java'] || []
+    const pythonFiles = filesByType['.py'] || []
 
-    if (pythonFiles && pythonFiles.length > 0) {
-        pythonCBO = await calPythonCBO(pythonFiles)
-        pythonLS = await calLS(pythonFiles)
-        pythonStructure = await calPythonStructure(pythonFiles)
-        pythonArtifactLS = await calPythonArtifactLS(pythonFiles)
-    }
+    const [javaCBO, javaLS, pythonCBO, pythonLS, pythonStructure, pythonArtifactLS] = await Promise.all([
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/java_cbo_calculator.py"), javaFiles),
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/similarity_calculator.py"), javaFiles),
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/python_cbo_calculator.py"), pythonFiles),
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/similarity_calculator.py"), pythonFiles),
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/python_structure_calculator.py"), pythonFiles),
+        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/artifact_similarity_calculator.py"), pythonFiles),
+    ])
 
-    const CBO = {
-        ".java": JSON.parse(javaCBO),
-        ".py": JSON.parse(pythonCBO)
-    }
-    const CBOJSON = JSON.stringify(CBO, (key, value) => {
-        return value
-    }, 2)
-    fs.writeFileSync(path.join(saveDirectory, saveName + '_fileCBO.json'), CBOJSON, { encoding: 'utf8' })
-
-    const LS = {
-        ".java": JSON.parse(javaLS),
-        ".py": JSON.parse(pythonLS)
-    }
-    const LSJSON = JSON.stringify(LS, (key, value) => {
-        return value
-    }, 2)
-    fs.writeFileSync(path.join(saveDirectory, saveName + '_ls.json'), LSJSON, { encoding: 'utf8' })
-
-    const structure = {
-        ".py": JSON.parse(pythonStructure)
-    }
-    const structureJSON = JSON.stringify(structure, (key, value) => {
-        return value
-    }, 2)
-    fs.writeFileSync(path.join(saveDirectory, saveName + '_structure.json'), structureJSON, { encoding: 'utf8' })
-
-    const artifactLS = {
-        ".py": JSON.parse(pythonArtifactLS)
-    }
-    const artifactLSJSON = JSON.stringify(artifactLS, (key, value) => {
-        return value
-    }, 2)
-    fs.writeFileSync(path.join(saveDirectory, saveName + '_artifactLS.json'), artifactLSJSON, { encoding: 'utf8' })
-
+    writeJsonToFile(path.join(saveDirectory, `${saveName}_files_by_types.json`), filesByType)
+    writeJsonToFile(path.join(saveDirectory, `${saveName}_file_cbo.json`), { ".java": JSON.parse(javaCBO), ".py": JSON.parse(pythonCBO) })
+    writeJsonToFile(path.join(saveDirectory, `${saveName}_file_ls.json`), { ".java": JSON.parse(javaLS), ".py": JSON.parse(pythonLS) })
+    writeJsonToFile(path.join(saveDirectory, `${saveName}_artifact_structure.json`), { ".py": JSON.parse(pythonStructure) })
+    writeJsonToFile(path.join(saveDirectory, `${saveName}_artifactLS.json`), { ".py": JSON.parse(pythonArtifactLS) })
 }
 
+
+function getFormattedTime() {
+    const now = new Date()
+    // 获取年月日小时分钟秒和毫秒
+    const year = now.getFullYear()
+    const month = now.getMonth() + 1 // getMonth() 返回的月份从0开始，所以需要加1
+    const day = now.getDate()
+    const hours = now.getHours()
+    const minutes = now.getMinutes()
+    const seconds = now.getSeconds()
+
+    // 格式化月份、日期、小时、分钟、秒和毫秒，不足两位数的前面补零
+    const formattedMonth = month.toString().padStart(2, '0')
+    const formattedDay = day.toString().padStart(2, '0')
+    const formattedHours = hours.toString().padStart(2, '0')
+    const formattedMinutes = minutes.toString().padStart(2, '0')
+    const formattedSeconds = seconds.toString().padStart(2, '0')
+
+    // 组合成最终的字符串
+    const formattedTime = `${year}-${formattedMonth}-${formattedDay} ${formattedHours}.${formattedMinutes}.${formattedSeconds}`
+    return formattedTime
+}
+
+// 定时器设置
+const timer = new IntervalCalculateTimer(async () => {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+        return
+    }
+    const saveDirectory = path.join(workspaceFolders[0].uri.fsPath, '/virtualme-logs')
+    const saveName = plugin_version + '_' + getFormattedTime()
+
+    // 调用保存代码分析结果的函数
+    await saveRepoCal(workspaceFolders?.[0]?.uri.fsPath, saveDirectory, saveName);
+    console.log('代码分析已保存')
+}, 5* 60 * 1000)  // 每 5 分钟执行一次
+
+// 启动定时器
+timer.start()
