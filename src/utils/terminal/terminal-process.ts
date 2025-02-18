@@ -58,7 +58,7 @@ function getCmdType(cmd: string): [string, string] {
                     return ['Linux', type]
         // 检查Mac命令
         if (platform === 'darwin')
-            for (const type of Object.values(commandTypes.LinuxCommand))
+            for (const type of Object.values(commandTypes.MacCommand))
                 if (c.includes(type))
                     return ['Mac', type]
 
