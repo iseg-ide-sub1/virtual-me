@@ -34,48 +34,55 @@ export function removeAnsi(input: string) {
 // 获取命令类型，识别出命令中具有功能标志性的字段, 返回一个元组（命令类型、功能字段）,便于后续处理成in_features
 // 如：输入 "npm run dev"，返回 ('CrossPlatformCommand', 'npm')
 function getCmdType(cmd: string): [string, string] {
+    //将cmd按空格拆分为数组
+    const cmdArr = cmd.split(' ')
+    for (const c of cmdArr) {
+        // 如果c为参数则不是标志性字段
+        if (c.startsWith('-') || c.startsWith('\\') || c.startsWith('/'))
+            continue
 
-    // 检查通用命令
-    for (const type of Object.values(commandTypes.CrossPlatformCommand))
-        if (cmd.includes(type))
-            return ['CrossPlatform', type]
+        // 检查通用命令
+        for (const type of Object.values(commandTypes.CrossPlatformCommand))
+            if (c.includes(type))
+                return ['CrossPlatform', type]
 
-    // 检查Windows命令
-    if (platform === 'win32')
-        for (const type of Object.values(commandTypes.WindowsCommand))
-            if (cmd.includes(type))
-                return ['Windows', type]
-    // 检查Linux命令
-    if (platform === 'linux')
-        for (const type of Object.values(commandTypes.LinuxCommand))
-            if (cmd.includes(type))
-                return ['Linux', type]
-    // 检查Mac命令
-    if (platform === 'darwin')
-        for (const type of Object.values(commandTypes.LinuxCommand))
-            if (cmd.includes(type))
-                return ['Mac', type]
+        // 检查Windows命令
+        if (platform === 'win32')
+            for (const type of Object.values(commandTypes.WindowsCommand))
+                if (c.includes(type))
+                    return ['Windows', type]
+        // 检查Linux命令
+        if (platform === 'linux')
+            for (const type of Object.values(commandTypes.LinuxCommand))
+                if (c.includes(type))
+                    return ['Linux', type]
+        // 检查Mac命令
+        if (platform === 'darwin')
+            for (const type of Object.values(commandTypes.LinuxCommand))
+                if (c.includes(type))
+                    return ['Mac', type]
 
-    // 检查Python命令
-    for (const type of Object.values(commandTypes.PythonProjectCommand))
-        if (cmd.includes(type))
-            return ['Python', type]
+        // 检查Python命令
+        for (const type of Object.values(commandTypes.PythonProjectCommand))
+            if (c.includes(type))
+                return ['Python', type]
 
-    // 检查JS命令
-    for (const type of Object.values(commandTypes.JSProjectCommand))
-        if (cmd.includes(type))
-            return ['JS', type]
+        // 检查JS命令
+        for (const type of Object.values(commandTypes.JSProjectCommand))
+            if (c.includes(type))
+                return ['JS', type]
 
-    // 检查Java命令
-    for (const type of Object.values(commandTypes.JavaProjectCommand))
-        if (cmd.includes(type))
-            return ['Java', type]
+        // 检查Java命令
+        for (const type of Object.values(commandTypes.JavaProjectCommand))
+            if (c.includes(type))
+                return ['Java', type]
 
-    // 检查C++命令
-    for (const type of Object.values(commandTypes.CProjectCommand))
-        if (cmd.includes(type))
-            return ['C++', type]
+        // 检查C++命令
+        for (const type of Object.values(commandTypes.CProjectCommand))
+            if (c.includes(type))
+                return ['C++', type]
 
+    }
     return ['Unknown', cmd]
 }
 
