@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var child_process_1 = require("child_process");
 // 调用 Python 脚本路径
-var pyPath = 'py_mod.py';
-(0, child_process_1.exec)("python ".concat(pyPath), function (error, stdout, stderr) {
+var pyEnv = 'D:\\ML\\anaconda3\\envs\\d2l\\python.exe';
+var pyMod = 'py_mod.py';
+(0, child_process_1.exec)("".concat(pyEnv, " ").concat(pyMod), function (error, stdout, stderr) {
     if (error) {
         console.error("\u6267\u884C Python \u811A\u672C\u65F6\u51FA\u9519:\n".concat(error.message));
         return;

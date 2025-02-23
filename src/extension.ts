@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs'
+import { exec } from 'child_process';
 
 import * as logItem from './types/log-item'
 import * as common from './utils/common'
@@ -12,8 +13,9 @@ import * as git from './utils/git'
 import * as cal from './utils/repo-cal'
 
 import {LogControlViewProvider} from './views/log-control'
-import {LogDisplayViewProvider} from './views/log-display'
-import {FeatureListViewProvider} from './views/feature-list'
+import {ActionSummaryViewProvider} from './views/action-summary'
+import {DeveloperAnalysisViewProvider} from './views/developer-analysis'
+
 
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
@@ -57,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     // 保存扩展路径
     extensionPath = context.extensionPath;
-
+    console.log(extensionPath)
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
         // 空命令，执行可以激活插件而不产生其他影响
@@ -138,26 +140,25 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
-    /** 注册命令：virtualme.logsummary，展示日志总结页面 */
-    const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
-        const summaryPanel = vscode.window.createWebviewPanel(
-            'logSummary',
-            "Log Summary",
-            vscode.ViewColumn.One,
-            {
-                localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
-            }
-        );
-        // const htmlFilePath = path.join(extensionPath, 'res', 'media', 'artifact_tree.html');
-        const htmlFilePath = path.join(extensionPath, 'res', 'media', 'test.html');
-        const htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
-        summaryPanel.webview.html = htmlContent;
-        console.log(htmlContent);
-        console.log(htmlContent.length)
-    });
-    context.subscriptions.push(logSummary);
+    // 以下计划已经废弃，待删除 2025.02.23
+    // /** 注册命令：virtualme.logsummary，展示日志总结页面 */
+    // const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
+    //     const summaryPanel = vscode.window.createWebviewPanel(
+    //         'logSummary',
+    //         "Log Summary",
+    //         vscode.ViewColumn.One,
+    //         {
+    //             localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
+    //         }
+    //     );
+    //     getLogSummaryHtml(extensionPath, summaryPanel).then(html => {
+    //         summaryPanel.webview.html = html;
+    //     });
+    // });
+    // context.subscriptions.push(logSummary);
 
     /** 提供图形化界面 */
+    // 日志控制页面
     const logControlViewProvider = new LogControlViewProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
@@ -166,19 +167,21 @@ export async function activate(context: vscode.ExtensionContext) {
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
-    const logDisplayViewProvider = new LogDisplayViewProvider();
+    // 行为总结页面
+    const actionSummaryViewProvider = new ActionSummaryViewProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            LogDisplayViewProvider.viewType,
-            logDisplayViewProvider,
+            ActionSummaryViewProvider.viewType,
+            actionSummaryViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
-    const featureListViewProvider = new FeatureListViewProvider(context.extensionUri);
+    // 开发者分析页面
+    const developerAnalysisViewProvider = new DeveloperAnalysisViewProvider();
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            FeatureListViewProvider.viewType,
-            featureListViewProvider,
+            DeveloperAnalysisViewProvider.viewType,
+            developerAnalysisViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );

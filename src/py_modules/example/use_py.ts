@@ -1,9 +1,12 @@
 import { exec } from 'child_process';
 
-// 调用 Python 脚本路径
-const pyPath = 'py_mod.py';
+// 指定 python 解释器
+const pyEnv = 'D:\\ML\\anaconda3\\envs\\d2l\\python.exe'
+// 指定运行模块
+const pyMod = 'py_mod.py';
 
-exec(`python ${pyPath}`, (error, stdout, stderr) => {
+// 创建子进程运行对应模块
+exec(`${pyEnv} ${pyMod}`, (error, stdout, stderr) => {
     if (error) {
         console.error(`执行 Python 脚本时出错:\n${error.message}`);
         return;

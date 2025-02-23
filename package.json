@@ -68,13 +68,13 @@
         },
         {
           "type": "webview",
-          "id": "virtualme.LogDisplayView",
-          "name": "记录展示"
+          "id": "virtualme.ActionSummaryView",
+          "name": "行为总结"
         },
         {
           "type": "webview",
-          "id": "virtualme.FeatureListView",
-          "name": "功能列表"
+          "id": "virtualme.DeveloperAnalysisView",
+          "name": "开发者分析"
         }
       ]
     },
