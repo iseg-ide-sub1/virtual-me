@@ -127,12 +127,15 @@ export function saveLog(content: string, saveDirectory = '') {
         return;
     }
     saveDirectory = path.join(workspaceFolders[0].uri.fsPath, saveDirectory);
-    if (!fs.existsSync(saveDirectory)) {
-        fs.mkdirSync(saveDirectory, {recursive: true})
+
+    if (!fs.existsSync(path.join(saveDirectory, 'event/'))) {
+        fs.mkdirSync(path.join(saveDirectory, 'event/'), {recursive: true})
     }
     // 名称用日期
     const fileName = plugin_version + '_' + getFormattedTime1()
-    const filePath = path.join(saveDirectory, fileName + '.json')
+    const filePath = path.join(saveDirectory, "event", fileName + '.json')
+
+
     fs.writeFileSync(filePath, content, 'utf8') // 写入文件
     git.saveSnapshotLog(saveDirectory, fileName)  // 保存快照日志
     repocal.saveRepoCal(workspaceFolders?.[0]?.uri.fsPath, saveDirectory, fileName)

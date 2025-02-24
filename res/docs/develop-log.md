@@ -266,3 +266,36 @@ git向上提供三个接口：
 ### 20240223-HiMeditator
 
 - 重构插件 WebView View 页面结构框架
+
+
+### 20240224-syh
+1. 完成初版的repocal模块。
+- file_list
+	- 对repo中的file进行分类统计，形成列表，并记录每个file的[在repo中的路径]信息
+- ast
+	- 生成每个代码文件的AST树，记录每个结点(function、Class、Import等)工件的[id, name, type, range, children]信息
+- artifact_list
+	- 生成每类代码文件的工件列表(function、Class)，记录[id, name, file, range, code]信息。
+- similarity_calculator
+	- 计算每两个同类型工件(function、Class)的similarity_score
+- cbo_calculator
+	- 计算每两个同类型工件(function、Class)的cbo
+- cea_calculator
+	- 计算每两个同类型工件(function、Class)的cea
+- rfc_calculator
+	- 计算每两个同类型工件(function、Class)的rfc
+
+  其中，file_list、ast和artifact_list是从用户repo中直接计算并收集上来的，similarity、cbo、cea、rfc依赖ast和artifact_list这两个中间结果计算。
+  
+
+2. 添加py module运行所需环境目录(venv)
+- 启动虚拟环境: `source venv/bin/activate`
+- 退出虚拟环境: `deactivate`
+- 在插件中执行Python脚本，需要指定解释器
+
+
+3. 更新`virtualme-logs/`结构
+- .internal-git
+- repo-cal
+- snapshot
+- event
