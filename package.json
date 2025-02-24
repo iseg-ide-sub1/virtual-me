@@ -9,7 +9,7 @@
   "homepage": "https://github.com/iseg-ide-sub1/virtual-me",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "icon": "res/img/icon.png",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.90.0"
   },

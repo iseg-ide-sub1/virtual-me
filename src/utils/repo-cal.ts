@@ -154,7 +154,7 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
 
 
 
-    const repoCalDir = path.join(workspaceFolder, 'virtualme-logs', 'repo-cal/');
+    const repoCalDir = path.join(saveDirectory, 'repo-cal/');
     if (!fs.existsSync(repoCalDir)) {
         fs.mkdirSync(repoCalDir, {recursive: true})
     }

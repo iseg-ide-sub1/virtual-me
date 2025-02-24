@@ -20,7 +20,7 @@ import {DeveloperAnalysisViewProvider} from './views/developer-analysis'
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
 export const saveDir = {value: 'virtualme-logs'} // 数据的保存位置
-export const plugin_version = 'v0.2.3' // 插件版本
+export const plugin_version = 'v0.3.0' // 插件版本
 export const maxLogItemsNum = 1000 // 允许缓存的最大命令数量，超过后自动进行保存
 //*****************************************************************
 
@@ -122,18 +122,6 @@ export async function activate(context: vscode.ExtensionContext) {
     })
     context.subscriptions.push(registerTaskCommand);
 
-    // /** 注册命令：repo-cal */
-    // const registerRepoCal = vscode.commands.registerCommand('virtualme.repocal', async () => {
-    //     // 获取当前工作区的路径
-    //     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
-    //     if (workspaceFolder) {
-    //         // 计算相似度
-    //         await cal.saveRepoCal(workspaceFolder)
-    //     } else {
-    //         vscode.window.showInformationMessage(`请先打开一个工作目录!`)
-    //     }
-    // })
-    // context.subscriptions.push(registerRepoCal)
 
     /** 注册用于标记当前任务的命令 */
     for (const task of Object.values(logItem.TaskType)) {
