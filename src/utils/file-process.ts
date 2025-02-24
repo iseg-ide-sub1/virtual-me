@@ -2,6 +2,7 @@ import * as logItem from "../types/log-item"
 import {EventType} from '../types/event-types'
 
 const skippedFileTypes = new Set([
+    '.virtualme',
     'virtualme-logs',
     '.DS_Store',
     '.cache',

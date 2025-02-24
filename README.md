@@ -50,7 +50,7 @@ This plugin currently works exclusively with our custom-built VS Code and cannot
    
    ![img04](./res/img/guide/04.png)
    
-7. 操作记录被保存在当前工作目录下的 `virtualme-logs` 文件夹
+7. 操作记录被保存在当前工作目录下的 `.virtualme/` 文件夹
 
    > 注意：只要启动了插件，如果没保存操作记录，插件会在 IDE 正常退出时自动保存记录
 
