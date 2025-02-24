@@ -86,14 +86,14 @@ export async function getArtifactFromRange(
     let hierarchy: logItem.Artifact[] = [
         new logItem.Artifact(uri.toString(), logItem.ArtifactType.File)
     ]
-    isCalculatingArtifact.value += 1 // 标记计算引用信息开始
+    // isCalculatingArtifact.value += 1 // 标记计算引用信息开始
     // 获取该文件的符号表
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', uri
     )
     console.log('hierarchy symbols =', symbols)
     if (!symbols) {
-        isCalculatingArtifact.value -= 1
+        // isCalculatingArtifact.value -= 1
         return hierarchy[0]
     } // 没有符号，直接返回
     let curSymbols = symbols // 当前层级的符号表
@@ -121,14 +121,14 @@ export async function getArtifactFromRange(
 
     // 构造reference
     let references: logItem.Artifact[] = []
-    if (getRef && symbolSelf) {
-        // const st = new Date().getTime()
-        const start = symbolSelf.selectionRange.start
-        references = await refUtils.getUsagesFromSymbol(uri, start);
-        // const et = new Date().getTime()
-        // console.log('getRef time(ms) = ', et - st)
-    }
-    isCalculatingArtifact.value -= 1 // 标记计算引用信息结束
+    // if (getRef && symbolSelf) {
+    //     // const st = new Date().getTime()
+    //     const start = symbolSelf.selectionRange.start
+    //     references = await refUtils.getUsagesFromSymbol(uri, start);
+    //     // const et = new Date().getTime()
+    //     // console.log('getRef time(ms) = ', et - st)
+    // }
+    // isCalculatingArtifact.value -= 1 // 标记计算引用信息结束
     return new logItem.Artifact(
         artifactSelf.name,
         artifactSelf.type,

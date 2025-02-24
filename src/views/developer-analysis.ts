@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-export class LogDisplayViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'virtualme.LogDisplayView';
+export class DeveloperAnalysisViewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'virtualme.DeveloperAnalysisView';
     private _view?: vscode.WebviewView;
 
     constructor() {}
@@ -24,10 +24,11 @@ export class LogDisplayViewProvider implements vscode.WebviewViewProvider {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Log Display</title>
+                <title>Developer Analysis</title>
             </head>
             <body>
-                应该用 TreeView 形式展示，可以用树状结构展示但是收集记录的内容。优先度较低，到底要不要做？
+                开发者分析模块<br>
+                尚未开发
             </body>
             </html>`;
     }

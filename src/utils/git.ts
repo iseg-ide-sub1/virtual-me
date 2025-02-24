@@ -118,12 +118,12 @@ export async function init(fromMain: boolean = false): Promise<string> {
             encoding: 'utf8'
         })
     }
-    // 检查gitignorePath文件中是否有virtualme-logs/，如果没有则添加
+    // 检查gitignorePath文件中是否有.virtualme/，如果没有则添加
     const gitignoreContent = fs.readFileSync(gitignorePath, {
         encoding: 'utf8'
     })
-    if (!gitignoreContent.includes('virtualme-logs/')) {
-        fs.writeFileSync(gitignorePath, '\nvirtualme-logs/\n', {
+    if (!gitignoreContent.includes('.virtualme/')) {
+        fs.writeFileSync(gitignorePath, '\n.virtualme/\n', {
             flag: 'a+',
             encoding: 'utf8'
         })
@@ -180,7 +180,11 @@ export async function saveSnapshotLog(saveDirectory: string, saveName: string) {
     const snapshotLogJSON = JSON.stringify(snapshotLog, (key, value) => {
         return value;
     }, 2);
-    // console.log(snapshotLogJSON)
+    console.log(snapshotLogJSON)
+    saveDirectory = path.join(saveDirectory, 'snapshot')
+    if (!fs.existsSync(saveDirectory)) {
+        fs.mkdirSync(saveDirectory, {recursive: true})
+    }
     const savePath = path.join(saveDirectory, saveName + '_snapshot.json')
     fs.writeFileSync(savePath, snapshotLogJSON, {
         flag: 'a+',

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-export class FeatureListViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'virtualme.FeatureListView';
+export class ActionSummaryViewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'virtualme.ActionSummaryView';
     private _view?: vscode.WebviewView;
 
     constructor(
@@ -44,12 +44,10 @@ export class FeatureListViewProvider implements vscode.WebviewViewProvider {
                 <link href="${styleResetUri}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleMainUri}" rel="stylesheet">
-                <title>Log Control</title>
+                <title>Action Summary</title>
             </head>
             <body>
-                <button id="btn-summary">行为总结</button>
-                <button>能力分析</button>
-                <script src="${scriptUri}"></script>
+                行为总结模块
             </body>
             </html>`;
     }

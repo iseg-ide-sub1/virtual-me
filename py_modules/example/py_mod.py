@@ -1,3 +1,3 @@
-print("Begin")
-print("  Output from py_mod.py")
-print("End")
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())

@@ -236,22 +236,25 @@ git向上提供三个接口：
 - 增加检测，防止新增状态 id 重复
 - 优化界面，插件激活后改为默认开始记录；停止记录改为暂停记录
 
-
 ### 20240121-syh
-在前端添加一个`repo-cal`模块，用于计算工作仓库中file级和artifact级的相关数据，作为知识提供给后端。
+
+在前端添加一个 `repo-cal`模块，用于计算工作仓库中file级和artifact级的相关数据，作为知识提供给后端。
 目前设计中，计算的内容包括：
+
 1. file之间的cbo(耦合度)、cea(共享元素数量)和Jaccard文本相似度；
 2. artifact之间的cbo、cea和Jaccard文本相似度【工件的粒度需要统一】
-目前通过命令`Repo Cal`启动。
-
+   目前通过命令 `Repo Cal`启动。
 
 ### 20240203-syh
+
 添加针对python和java的cbo计算、单文件的rfc计算。
+
 - 待优化：性能问题，当repo较大时计算python的cbo会启动很多计算线程，效率很低。
 
 ### 20250210-Katock-Cricket
 
 完成代码快照功能
+
 1. git.ts中有一个计数器每隔5分钟自动保存一次代码快照，原理是commit与之前的commit进行diff比对
 2. 快照记录随主log保存触发时一起保存，后缀为_snapshot.json
 
@@ -259,3 +262,7 @@ git向上提供三个接口：
 
 - 创建 python 模块文件夹
 - 增加 virtualme 功能总结图 `/res/raw `
+
+### 20240223-HiMeditator
+
+- 重构插件 WebView View 页面结构框架

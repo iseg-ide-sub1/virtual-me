@@ -1,19 +1,21 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as fs from 'fs'
+import { exec } from 'child_process';
 
 import * as logItem from './types/log-item'
 import * as common from './utils/common'
 import * as fileProcess from './utils/file-process'
 import * as contextProcess from './utils/context-process'
-import * as terminalProcess from './utils/terminal-process'
+import * as terminalProcess from './utils/terminal/terminal-process'
+import {TerminalInfo} from './utils/terminal/terminal-process'
 import * as menuProcess from './utils/cmd-process'
 import * as git from './utils/git'
-import * as cal from './utils/repo-cal'
 
 import {LogControlViewProvider} from './views/log-control'
-import {LogDisplayViewProvider} from './views/log-display'
-import {FeatureListViewProvider} from './views/feature-list'
+import {ActionSummaryViewProvider} from './views/action-summary'
+import {DeveloperAnalysisViewProvider} from './views/developer-analysis'
+
 
 //*****************************************************************
 // 需要人工配置的内容，每次发布新版本前都要检查一下
@@ -23,8 +25,8 @@ export const maxLogItemsNum = 1000 // 允许缓存的最大命令数量，超过
 //*****************************************************************
 
 
-
 let logs: logItem.LogItem[] = []
+let terminal_cache: terminalProcess.TerminalInfo[] = []
 
 let lastText: string // 保存上一次编辑后的代码
 
@@ -57,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
     // 保存扩展路径
     extensionPath = context.extensionPath;
-
+    console.log(extensionPath)
     /** 注册命令：virtual-me.activate */
     const disposable = vscode.commands.registerCommand('virtualme.activate', () => {
         // 空命令，执行可以激活插件而不产生其他影响
@@ -138,26 +140,25 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
-    /** 注册命令：virtualme.logsummary，展示日志总结页面 */
-    const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
-        const summaryPanel = vscode.window.createWebviewPanel(
-            'logSummary',
-            "Log Summary",
-            vscode.ViewColumn.One,
-            {
-                localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
-            }
-        );
-        // const htmlFilePath = path.join(extensionPath, 'res', 'media', 'artifact_tree.html');
-        const htmlFilePath = path.join(extensionPath, 'res', 'media', 'test.html');
-        const htmlContent = fs.readFileSync(htmlFilePath, 'utf-8');
-        summaryPanel.webview.html = htmlContent;
-        console.log(htmlContent);
-        console.log(htmlContent.length)
-    });
-    context.subscriptions.push(logSummary);
+    // 以下计划已经废弃，待删除 2025.02.23
+    // /** 注册命令：virtualme.logsummary，展示日志总结页面 */
+    // const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
+    //     const summaryPanel = vscode.window.createWebviewPanel(
+    //         'logSummary',
+    //         "Log Summary",
+    //         vscode.ViewColumn.One,
+    //         {
+    //             localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
+    //         }
+    //     );
+    //     getLogSummaryHtml(extensionPath, summaryPanel).then(html => {
+    //         summaryPanel.webview.html = html;
+    //     });
+    // });
+    // context.subscriptions.push(logSummary);
 
     /** 提供图形化界面 */
+    // 日志控制页面
     const logControlViewProvider = new LogControlViewProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
@@ -166,19 +167,21 @@ export async function activate(context: vscode.ExtensionContext) {
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
-    const logDisplayViewProvider = new LogDisplayViewProvider();
+    // 行为总结页面
+    const actionSummaryViewProvider = new ActionSummaryViewProvider(context.extensionUri);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            LogDisplayViewProvider.viewType,
-            logDisplayViewProvider,
+            ActionSummaryViewProvider.viewType,
+            actionSummaryViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
-    const featureListViewProvider = new FeatureListViewProvider(context.extensionUri);
+    // 开发者分析页面
+    const developerAnalysisViewProvider = new DeveloperAnalysisViewProvider();
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
-            FeatureListViewProvider.viewType,
-            featureListViewProvider,
+            DeveloperAnalysisViewProvider.viewType,
+            developerAnalysisViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
@@ -396,33 +399,84 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalChangeWatcher)
 
 
-    /** 终端执行 */
-    const terminalExecuteWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
+    /** 终端执行开始，记录命令、输出 */
+    const terminalExecuteStartWatcher = vscode.window.onDidStartTerminalShellExecution(async (event: vscode.TerminalShellExecutionStartEvent) => {
         if (!isRecording.value) return;
 
-        const terminal = event.terminal;
+        const processId_ori = await event.terminal.processId;
+        const processId = processId_ori ? processId_ori.toString() : 'unknown'
         const execution = event.execution;
         const cmd = execution.commandLine.value;
         const stream = execution.read();
         let output = '';
+
+        let terminal_log = new TerminalInfo(
+            processId,
+            cmd,
+            output,
+        )
+        terminal_cache.push(terminal_log)
+
+        console.log('terminal execute record start')
         for await (const data of stream) {
             output += data.toString();
         }
-        
-        // 字符串过滤问题待改进
-        // let filtered = output.split('\u0007')
-        // let real_output = filtered[filtered.length - 1]
-        // console.log('++++++++++++++')
-        // console.log(output)
-        // console.log('--------------')
-        // console.log(real_output)
-        // console.log('==============')
-
-        const log = await terminalProcess.getLogItemFromTerminalExecute(terminal, cmd, output)
-        // const log = await terminalProcess.getLogItemFromTerminalExecute(terminal, cmd, real_output)
-        logs.push(log)
+        console.log('terminal execute record end')
+        if (terminal_log.output.length > 0) { // 另一个watcher已经记录了成功情况
+            output = terminal_log.output.concat(output)
+            const log = terminalProcess.getLogItemFromTerminalExecute(processId, cmd, output)
+            logs.push(log)
+            // 删除缓存中的这条记录
+            for (let i = 0; i < terminal_cache.length; i++) {
+                if (terminal_cache[i].equals(terminal_log)) {
+                    terminal_cache.splice(i, 1);
+                }
+            }
+        } else { // 尚未记录成功情况，该记录留在缓存中
+            terminal_log.output = output
+        }
     })
-    context.subscriptions.push(terminalExecuteWatcher)
+    context.subscriptions.push(terminalExecuteStartWatcher)
+
+    /** 终端执行结束，记录执行成功或失败 */
+    const terminalExecuteEndWatcher = vscode.window.onDidEndTerminalShellExecution(async (event: vscode.TerminalShellExecutionEndEvent) => {
+        if (!isRecording.value) return;
+
+        const processId_ori = await event.terminal.processId;
+        const processId = processId_ori ? processId_ori.toString() : 'unknown'
+        const execution = event.execution;
+        const exitCode = event.exitCode;
+        const cmd = execution.commandLine.value;
+        console.log('terminal execute end, in function')
+
+        // 检查已缓存的terminal_logs中与之对应的命令，倒序遍历
+        for (let i = terminal_cache.length - 1; i >= 0; i--) {
+            const terminal_log = terminal_cache[i];
+            if (terminal_log.processId === processId && terminal_log.cmd === cmd) { // 找到对应的记录，更新其输出内容和状态
+                let tag = ''
+                if (exitCode === undefined) {
+                    tag = 'Executed Unknown'
+                } else if (exitCode === 0) {
+                    tag = 'Executed Successfully'
+                } else {
+                    tag = 'Executed Failed'
+                }
+
+                if (terminal_log.output.length > 0) { // 另一个watcher已经记录了输出情况，对应另一个watcher的else分支
+                    const output = `<|${tag}|>${terminal_log.output}`
+                    const log = terminalProcess.getLogItemFromTerminalExecute(processId, cmd, output)
+                    logs.push(log)
+                    // 从缓存中删除该记录
+                    terminal_cache.splice(i, 1)
+                } else { // 尚未记录输出情况，对应另一个watcher的if分支
+                    terminal_log.output = `<|${tag}|>`
+                }
+                return
+            }
+        }
+        console.warn('terminal execute end, no corresponding log found')
+    })
+    context.subscriptions.push(terminalExecuteEndWatcher)
 
     /** IDE命令执行 */
     const CommandWatcher = vscode.commands.onDidExecuteCommand(async (event: vscode.Command) => {
