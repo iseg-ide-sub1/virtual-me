@@ -28,7 +28,7 @@ export class DeveloperAnalysisViewProvider implements vscode.WebviewViewProvider
             </head>
             <body>
                 开发者分析模块<br>
-                尚未开发
+                尚未开始开发
             </body>
             </html>`;
     }

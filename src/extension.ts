@@ -140,6 +140,9 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("virtualme.register.tasktype", task);
     }
 
+
+
+
     // 以下计划已经废弃，待删除 2025.02.23
     // /** 注册命令：virtualme.logsummary，展示日志总结页面 */
     // const logSummary = vscode.commands.registerCommand('virtualme.logsummary', () => {
@@ -151,13 +154,35 @@ export async function activate(context: vscode.ExtensionContext) {
     //             localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'res', 'media'))]
     //         }
     //     );
-    //     getLogSummaryHtml(extensionPath, summaryPanel).then(html => {
-    //         summaryPanel.webview.html = html;
-    //     });
+    //     summaryPanel.webview.html = `<!DOCTYPE html>
+    //         <html lang="en">
+    //         <head>
+    //             <meta charset="UTF-8">
+    //             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    //             <script src='https://cdn.plot.ly/plotly-3.0.0.min.js'></script>
+    //             <title>Action Summary</title>
+    //         </head>
+    //         <body>
+    //             <button>刷新</button>
+    //             <div id="file-change"></div>
+    //             <script>
+    //                 data = [{
+    //                     type: "treemap",
+    //                     labels: ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+    //                     parents: ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ]
+    //                 }]
+    //                 Plotly.newPlot('file-change', data)
+    //             </script>
+    //         </body>
+    //         </html>`;
     // });
     // context.subscriptions.push(logSummary);
 
+
+
+
     /** 提供图形化界面 */
+    // 调试命令：Developer: Toggle Developer Tools
     // 日志控制页面
     const logControlViewProvider = new LogControlViewProvider(context.extensionUri);
     context.subscriptions.push(
@@ -186,6 +211,9 @@ export async function activate(context: vscode.ExtensionContext) {
         )
     );
 
+
+
+    
     /** 打开文件 */
     const openTextDocumentWatcher = vscode.workspace.onDidOpenTextDocument(doc => {
         if (!isRecording.value) return;
