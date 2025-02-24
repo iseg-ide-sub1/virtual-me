@@ -73,6 +73,11 @@
         },
         {
           "type": "webview",
+          "id": "virtualme.ArtifactPredictionView",
+          "name": "工件预测"
+        },
+        {
+          "type": "webview",
           "id": "virtualme.DeveloperAnalysisView",
           "name": "开发者分析"
         }

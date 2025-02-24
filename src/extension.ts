@@ -14,6 +14,7 @@ import * as git from './utils/git'
 
 import {LogControlViewProvider} from './views/log-control'
 import {ActionSummaryViewProvider} from './views/action-summary'
+import {ArtifactPredictionViewProvider} from './views/artifact-prediction'
 import {DeveloperAnalysisViewProvider} from './views/developer-analysis'
 
 
@@ -181,11 +182,20 @@ export async function activate(context: vscode.ExtensionContext) {
         )
     );
     // 行为总结页面
-    const actionSummaryViewProvider = new ActionSummaryViewProvider(context.extensionUri);
+    const actionSummaryViewProvider = new ActionSummaryViewProvider(context.extensionUri, saveDir.value);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(
             ActionSummaryViewProvider.viewType,
             actionSummaryViewProvider,
+            {webviewOptions: {retainContextWhenHidden: true}}
+        )
+    );
+    // 工件预测页面
+    const artifactPredictionViewProvider = new ArtifactPredictionViewProvider();
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            ArtifactPredictionViewProvider.viewType,
+            artifactPredictionViewProvider,
             {webviewOptions: {retainContextWhenHidden: true}}
         )
     );
