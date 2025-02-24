@@ -3,10 +3,10 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { spawn } from "child_process"
 import { IntervalCalculateTimer } from "./IntervalCalculateTimer"
-import {plugin_version} from '../extension'
+import { plugin_version } from '../extension'
 
 
-// const timer = new IntervalCalculateTimer();  // 实例化一个定时器，每隔一段时间执行一次snapshot()函数
+// 常见的代码文件类型
 const commonFileTypes = new Set([
     '.py', '.java', '.js', '.ts', '.c', '.cpp', '.cc', '.cxx', '.cs', '.go',
     '.rb', '.php', '.swift', '.kt', '.rs', '.sh', '.bash', '.html', '.htm',
@@ -14,8 +14,9 @@ const commonFileTypes = new Set([
     '.r'
 ])
 
+// 常见的需要被排除掉的目录
 const commonExcludeDirs = new Set([
-    'node_modules', '.git', '.idea', 'build', 'dist', 'out', 'tmp', '.vscode', 'coverage', 'virtualme-logs'
+    'node_modules', '.git', '.idea', 'build', 'dist', 'out', 'tmp', '.vscode', 'coverage', 'virtualme-logs', 'logs', 'venv'
 ])
 
 // 获取排除的目录或文件列表
@@ -38,7 +39,7 @@ export async function getExcludeDirs(workspaceFolder: string): Promise<Set<strin
 // 统一的函数，用于运行 Python 脚本并返回结果
 async function runPythonScript(scriptPath: string, filePaths: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
-        const pythonProcess = spawn("python3", [scriptPath, JSON.stringify(filePaths)])
+        const pythonProcess = spawn(path.resolve(__dirname, "../venv/bin/python3"), [scriptPath, JSON.stringify(filePaths)])
         let result = ""
         let error = ""
 
@@ -55,19 +56,22 @@ async function runPythonScript(scriptPath: string, filePaths: string[]): Promise
                 try {
                     resolve(result.trim())
                 } catch (parseError) {
+                    vscode.window.showInformationMessage(`JSON 解析错误: ${parseError}`)
                     console.warn(`JSON 解析错误: ${parseError}`)
                     resolve("")
                 }
             } else {
+                vscode.window.showInformationMessage(`计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
                 console.warn(`计算失败: ${error.trim() || `Python 进程退出码 ${code}`}`)
                 resolve("")
             }
-        });
+        })
 
         pythonProcess.on("error", (err) => {
+            vscode.window.showInformationMessage(`Python 进程错误: ${err.message}`)
             console.warn(`Python 进程错误: ${err.message}`)
             resolve("")
-        });
+        })
     });
 }
 
@@ -115,27 +119,56 @@ function writeJsonToFile(filePath: string, data: any): void {
 // 保存代码分析结果
 export async function saveRepoCal(workspaceFolder: string, saveDirectory: string, saveName: string) {
     const excludeDirs = await getExcludeDirs(workspaceFolder)
-    const filesByType = await listFiles(workspaceFolder, excludeDirs, true)
+    const filesListByType = await listFiles(workspaceFolder, excludeDirs, true)
 
+    const javaFiles = filesListByType['.java'] || []
+    const pyFiles = filesListByType['.py'] || []
+    const jsFiles = filesListByType['.js'] || []
+    const tsFiles = filesListByType['.ts'] || []
+    const cppFiles = [...(filesListByType['.cpp'] || []), ...(filesListByType['.c'] || [])]
 
+    /** 计算: 
+     *  1. files_list_by_type
+     *      对repo中的file进行分类统计，形成列表，并记录每个file的[在repo中的路径]信息
+     *  2. artifact_tree_by_structure
+     *      生成每个代码文件的AST树，记录每个结点(function、Class、Import等)工件的[name, type, range, children]信息
+     *  3. similarity_calculator
+     *      计算每两个同类型工件(function、Class)的similarity_score
+     *  4. cbo_calculator
+     *      计算每两个同类型工件(function、Class)的cbo
+     * 5. cea_calculator
+     *      计算每两个同类型工件(function、Class)的cea
+     * 6. rfc_calculator
+     *      计算每两个同类型工件(function、Class)的rfc
+     *         
+    */
 
-    const javaFiles = filesByType['.java'] || []
-    const pythonFiles = filesByType['.py'] || []
-
-    const [javaCBO, javaLS, pythonCBO, pythonLS, pythonStructure, pythonArtifactLS] = await Promise.all([
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/java_cbo_calculator.py"), javaFiles),
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/similarity_calculator.py"), javaFiles),
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/python_cbo_calculator.py"), pythonFiles),
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/similarity_calculator.py"), pythonFiles),
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/python_structure_calculator.py"), pythonFiles),
-        runPythonScript(path.resolve(__dirname, "../src/py_modules/calculator/artifact_similarity_calculator.py"), pythonFiles),
+    const [pyAST, javaAST, jsAST, tsAST, cppAST] = await Promise.all([
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_py_calculator.py"), pyFiles), 
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_java_calculator.py"), javaFiles),
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_js_calculator.py"), jsFiles),
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_ts_calculator.py"), tsFiles),
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_cpp_calculator.py"), cppFiles),
     ])
 
-    writeJsonToFile(path.join(saveDirectory, `${saveName}_files_by_types.json`), filesByType)
-    writeJsonToFile(path.join(saveDirectory, `${saveName}_file_cbo.json`), { ".java": JSON.parse(javaCBO), ".py": JSON.parse(pythonCBO) })
-    writeJsonToFile(path.join(saveDirectory, `${saveName}_file_ls.json`), { ".java": JSON.parse(javaLS), ".py": JSON.parse(pythonLS) })
-    writeJsonToFile(path.join(saveDirectory, `${saveName}_artifact_structure.json`), { ".py": JSON.parse(pythonStructure) })
-    writeJsonToFile(path.join(saveDirectory, `${saveName}_artifactLS.json`), { ".py": JSON.parse(pythonArtifactLS) })
+
+
+
+    const repoCalDir = path.join(workspaceFolder, 'virtualme-logs', 'repo-cal/');
+    if (!fs.existsSync(repoCalDir)) {
+        fs.mkdirSync(repoCalDir, {recursive: true})
+    }
+
+    writeJsonToFile(path.join(saveDirectory, "repo-cal", `${saveName}_files_by_types.json`), filesListByType)
+    writeJsonToFile(path.join(saveDirectory, "repo-cal", `${saveName}_ast.json`), {
+        ".py": JSON.parse(pyAST)['ast'],
+        ".java": JSON.parse(javaAST)['ast'],
+        ".js": JSON.parse(jsAST)['ast'],
+        ".ts": JSON.parse(tsAST)['ast'],
+        ".cpp": JSON.parse(cppAST)['ast']
+    })
+
+
 }
 
 
@@ -167,13 +200,13 @@ const timer = new IntervalCalculateTimer(async () => {
     if (!workspaceFolders) {
         return
     }
-    const saveDirectory = path.join(workspaceFolders[0].uri.fsPath, '/virtualme-logs')
+    const saveDirectory = path.join(workspaceFolders[0].uri.fsPath, 'virtualme-logs')
     const saveName = plugin_version + '_' + getFormattedTime()
 
     // 调用保存代码分析结果的函数
     await saveRepoCal(workspaceFolders?.[0]?.uri.fsPath, saveDirectory, saveName);
     console.log('代码分析已保存')
-}, 5* 60 * 1000)  // 每 5 分钟执行一次
+}, 5 * 60 * 1000)  // 每 5 分钟执行一次
 
 // 启动定时器
 timer.start()

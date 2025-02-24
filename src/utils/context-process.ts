@@ -91,7 +91,7 @@ export async function getArtifactFromRange(
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', uri
     )
-    // console.log('hierarchy symbols =', symbols)
+    console.log('hierarchy symbols =', symbols)
     if (!symbols) {
         isCalculatingArtifact.value -= 1
         return hierarchy[0]

@@ -67,6 +67,13 @@ class CBOAnalyzer(ast.NodeVisitor):
                 if class_a in self.class_dependencies[class_b]:
                     cbo_count += 1
         
+        # print("/n========================")
+        # print(self.class_methods)
+        # print(self.class_attributes)
+        # print(self.class_dependencies)
+        # print(self.imports)
+        # print("========================")
+        
         self.class_methods = defaultdict(set)      # {类名: {方法集合}}
         self.class_attributes = defaultdict(set)   # {类名: {属性集合}}
         self.class_dependencies = defaultdict(set) # {类名: {依赖的其他类}}
