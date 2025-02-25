@@ -16,7 +16,55 @@ const commonFileTypes = new Set([
 
 // 常见的需要被排除掉的目录
 const commonExcludeDirs = new Set([
-    'node_modules', '.git', '.idea', 'build', 'dist', 'out', 'tmp', '.vscode', 'coverage', 'virtualme-logs', 'logs', 'venv'
+    'dist', 
+    'out', 
+    'tmp', 
+    'coverage', 
+    'logs',
+    '.virtualme',
+    'virtualme-logs',
+    '.DS_Store',
+    '.cache',
+    '.conan',
+    '.dart_tool',
+    '.eslint',
+    '.gradle',
+    '.idea',
+    '.git',
+    '.m2',
+    '.mvn',
+    '.nuxt',
+    '.output',
+    '/_/',
+    '.settings',
+    '.stack-work',
+    '.vscode',
+    '.vscode-scm',
+    'bin/',
+    'build/',
+    '_build',
+    '.build',
+    'composer.lock',
+    'Cargo.lock',
+    '.cargo',
+    'Gemfile.lock',
+    'mix.lock',
+    'node_modules',
+    'package-lock.json',
+    'pnpm-lock.yaml',
+    'poetry.lock',
+    'pubspec.lock',
+    '__pycache__',
+    'site-packages',
+    'vendor/',
+    'virtualenv',
+    'venv/',
+    'vcpkg_installed',
+    '.pyc',
+    '.csproj',
+    '.fsproj',
+    '.vbproj',
+    'packages',
 ])
 
 // 获取排除的目录或文件列表
@@ -167,6 +215,29 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
         ".ts": JSON.parse(tsAST)['ast'],
         ".cpp": JSON.parse(cppAST)['ast']
     })
+    writeJsonToFile(path.join(saveDirectory, "repo-cal", `${saveName}_artifact_list.json`), {
+        ".py": {
+            "classes":JSON.parse(pyAST)['all_classes'],
+            "functions":JSON.parse(pyAST)['all_functions']
+        },
+        ".java": {
+            "classes":JSON.parse(javaAST)['all_classes'],
+            "functions":JSON.parse(javaAST)['all_functions']
+        },
+        ".js": {
+            "classes":JSON.parse(jsAST)['all_classes'],
+            "functions":JSON.parse(jsAST)['all_functions']
+        },
+        ".ts": {
+            "classes":JSON.parse(tsAST)['all_classes'],
+            "functions":JSON.parse(tsAST)['all_functions']
+        },
+        ".cpp": {
+            "classes":JSON.parse(cppAST)['all_classes'],
+            "functions":JSON.parse(cppAST)['all_functions']
+        }
+    })
+
 
 
 }
@@ -200,7 +271,7 @@ const timer = new IntervalCalculateTimer(async () => {
     if (!workspaceFolders) {
         return
     }
-    const saveDirectory = path.join(workspaceFolders[0].uri.fsPath, 'virtualme-logs')
+    const saveDirectory = path.join(workspaceFolders[0].uri.fsPath, '.virtualme')
     const saveName = plugin_version + '_' + getFormattedTime()
 
     // 调用保存代码分析结果的函数
