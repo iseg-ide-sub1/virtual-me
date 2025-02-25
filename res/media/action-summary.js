@@ -6,11 +6,12 @@ window.addEventListener('message', event => {
         case 'fileListData':
             handleFileListData(message.data);
             break;
-        case 'fileChangeData':
-            handleFileChangeData(message.data);
+        case 'summaryData':
+            handleSummaryData(message.data);
             break;
         case 'fileChangeError':
-            document.getElementById('file-change').innerText = message.data;
+            document.getElementById('file-change').textContent = message.data;
+            document.getElementById('artifact-visit').textContent = message.data;
             break;
     }
 });
@@ -37,8 +38,9 @@ function handleFileListData(data){
         checkboxList.appendChild(li);
     }
 }
-function handleFileChangeData(data){
-    console.log(JSON.parse(data));
+function handleSummaryData(data){
+    let summaryData = JSON.parse(data)
+    console.log(summaryData[1]);
     let layout = {
         margin: {
             l: 5,
@@ -47,7 +49,11 @@ function handleFileChangeData(data){
             t: 5
         }
     };
-    Plotly.newPlot('file-change', JSON.parse(data), layout);
+    // console.log(summaryData[1]);
+    document.getElementById('file-change').textContent = '';
+    document.getElementById('artifact-visit').textContent = '';
+    Plotly.newPlot('file-change', summaryData[1], layout);
+    Plotly.newPlot('artifact-visit', summaryData[2], layout);
 }
 
 document.getElementById('btn-get-logs').onclick = () => {

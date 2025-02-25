@@ -52,13 +52,34 @@ export class ActionSummaryViewProvider implements vscode.WebviewViewProvider {
                     vscode.window.showErrorMessage(`Failed to read files in ${eventPath}`);
                 }
             }
-            else if(message.command === 'logs.summary'){ // 刷新文件变化图
+            else if(message.command === 'logs.summary'){ // 总结选择的事件
+                const workspaceFolders = vscode.workspace.workspaceFolders;
+                if (!workspaceFolders) {
+                    vscode.window.showErrorMessage('No workspace folder found.');
+                    return;
+                }
+                const eventPath = path.join(workspaceFolders[0].uri.fsPath, this._logFolder, 'event');
+                const summaryPath = path.join(workspaceFolders[0].uri.fsPath, this._logFolder, 'summary');
+                const selectedEventsPath = path.join(summaryPath, 'selectedEvents.json')
+                const eventFiles = JSON.parse(message.data);
+                let events: any[] = [];
+                for(const file of eventFiles){
+                    const filepath = path.join(eventPath, file);
+                    let fileContent = fs.readFileSync(filepath, 'utf8');
+                    let fileData = JSON.parse(fileContent);
+                    events = events.concat(fileData);
+                }
+                // console.log(events.length);
+                if (!fs.existsSync(summaryPath)) {
+                    fs.mkdirSync(summaryPath, {recursive: true});
+                }
+                fs.writeFileSync(selectedEventsPath, JSON.stringify(events), 'utf8');
                 // 指定 python 解释器
                 const pyEnv = 'D:\\ML\\anaconda3\\envs\\d2l\\python.exe'
                 // 指定运行模块
                 const pyMod = path.join(this._extensionUri.fsPath, 'py_modules', 'log_summary', 'summary.py');
                 // 创建子进程运行对应模块
-                exec(`${pyEnv} ${pyMod}`, (error, stdout, stderr) => {
+                exec(`${pyEnv} ${pyMod} ${selectedEventsPath}`, (error, stdout, stderr) => {
                     if (error) {
                         webviewView.webview.postMessage({type: 'fileChangeError', data: error.message})
                         return;
@@ -67,8 +88,8 @@ export class ActionSummaryViewProvider implements vscode.WebviewViewProvider {
                         webviewView.webview.postMessage({type: 'fileChangeError', data: stderr})
                         return;
                     }
-                    // console.log(stdout)
-                    webviewView.webview.postMessage({type: 'fileChangeData', data: stdout})
+                    console.log(stdout)
+                    webviewView.webview.postMessage({type: 'summaryData', data: stdout})
                 });
             }
         });
@@ -100,6 +121,7 @@ export class ActionSummaryViewProvider implements vscode.WebviewViewProvider {
                 <p id="result"></p>
                 <button id="btn-sub">提交行为总结</button>
                 <div id="file-change"></div>
+                <div id="artifact-visit"></div>
                 <script src="${scriptUri}"></script>
             </body>
             </html>`;
