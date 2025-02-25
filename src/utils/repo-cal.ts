@@ -16,6 +16,11 @@ const commonFileTypes = new Set([
 
 // 常见的需要被排除掉的目录
 const commonExcludeDirs = new Set([
+    'dist', 
+    'out', 
+    'tmp', 
+    'coverage', 
+    'logs',
     '.virtualme',
     'virtualme-logs',
     '.DS_Store',
@@ -60,18 +65,6 @@ const commonExcludeDirs = new Set([
     '.fsproj',
     '.vbproj',
     'packages',
-    'node_modules', 
-    '.git', 
-    '.idea', 
-    'build', 
-    'dist', 
-    'out', 
-    'tmp', 
-    '.vscode', 
-    'coverage', 
-    'virtualme-logs', 
-    'logs', 
-    'venv', 
 ])
 
 // 获取排除的目录或文件列表
@@ -244,6 +237,9 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
             "functions":JSON.parse(cppAST)['all_functions']
         }
     })
+
+
+
 }
 
 
