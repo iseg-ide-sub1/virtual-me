@@ -16,10 +16,10 @@ const commonFileTypes = new Set([
 
 // 常见的需要被排除掉的目录
 const commonExcludeDirs = new Set([
-    'dist', 
-    'out', 
-    'tmp', 
-    'coverage', 
+    'dist',
+    'out',
+    'tmp',
+    'coverage',
     'logs',
     '.virtualme',
     'virtualme-logs',
@@ -86,8 +86,11 @@ export async function getExcludeDirs(workspaceFolder: string): Promise<Set<strin
 
 // 统一的函数，用于运行 Python 脚本并返回结果
 async function runPythonScript(scriptPath: string, filePaths: string[]): Promise<string> {
+    const pythonExecutable = process.platform === "win32"
+        ? path.resolve(__dirname, "../venv/Scripts/python.exe") // Windows
+        : path.resolve(__dirname, "../venv/bin/python3");       // Linux/macOS
     return new Promise((resolve, reject) => {
-        const pythonProcess = spawn(path.resolve(__dirname, "../venv/bin/python3"), [scriptPath, JSON.stringify(filePaths)])
+        const pythonProcess = spawn(pythonExecutable, [scriptPath, JSON.stringify(filePaths)])
         let result = ""
         let error = ""
 
@@ -192,7 +195,7 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
     */
 
     const [pyAST, javaAST, jsAST, tsAST, cppAST] = await Promise.all([
-        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_py_calculator.py"), pyFiles), 
+        runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_py_calculator.py"), pyFiles),
         runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_java_calculator.py"), javaFiles),
         runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_js_calculator.py"), jsFiles),
         runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_ts_calculator.py"), tsFiles),
@@ -201,7 +204,7 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
 
     const repoCalDir = path.join(saveDirectory, 'repo-cal/');
     if (!fs.existsSync(repoCalDir)) {
-        fs.mkdirSync(repoCalDir, {recursive: true})
+        fs.mkdirSync(repoCalDir, { recursive: true })
     }
 
     writeJsonToFile(path.join(saveDirectory, "repo-cal", `${saveName}_file_list.json`), filesListByType)
@@ -214,24 +217,24 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
     })
     writeJsonToFile(path.join(saveDirectory, "repo-cal", `${saveName}_artifact_list.json`), {
         ".py": {
-            "classes":JSON.parse(pyAST)['all_classes'],
-            "functions":JSON.parse(pyAST)['all_functions']
+            "classes": JSON.parse(pyAST)['all_classes'],
+            "functions": JSON.parse(pyAST)['all_functions']
         },
         ".java": {
-            "classes":JSON.parse(javaAST)['all_classes'],
-            "functions":JSON.parse(javaAST)['all_functions']
+            "classes": JSON.parse(javaAST)['all_classes'],
+            "functions": JSON.parse(javaAST)['all_functions']
         },
         ".js": {
-            "classes":JSON.parse(jsAST)['all_classes'],
-            "functions":JSON.parse(jsAST)['all_functions']
+            "classes": JSON.parse(jsAST)['all_classes'],
+            "functions": JSON.parse(jsAST)['all_functions']
         },
         ".ts": {
-            "classes":JSON.parse(tsAST)['all_classes'],
-            "functions":JSON.parse(tsAST)['all_functions']
+            "classes": JSON.parse(tsAST)['all_classes'],
+            "functions": JSON.parse(tsAST)['all_functions']
         },
         ".cpp": {
-            "classes":JSON.parse(cppAST)['all_classes'],
-            "functions":JSON.parse(cppAST)['all_functions']
+            "classes": JSON.parse(cppAST)['all_classes'],
+            "functions": JSON.parse(cppAST)['all_functions']
         }
     })
 }

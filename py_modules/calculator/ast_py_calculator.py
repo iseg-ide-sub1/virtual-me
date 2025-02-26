@@ -259,6 +259,7 @@ def analyze_multiple_files(file_paths):
 if __name__ == "__main__":
     # 从命令行参数接收多个文件路径
     file_paths = json.loads(sys.argv[1])  # 接收文件列表
+    # file_paths = ["C:/code/virtual-me/py_modules/calculator/artifact_cbo_calculator.py"]
 
     result = analyze_multiple_files(file_paths)
     print(result)  # 返回 JSON 结果
