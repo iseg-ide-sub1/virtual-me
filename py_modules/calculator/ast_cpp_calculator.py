@@ -1,10 +1,12 @@
 import clang.cindex
 import json
 import sys
+import os
 
 all_classes = []
 all_functions = []
 cnt = 0
+MAX_FILE_SIZE = 10 * 1024  # 10KB的大小阈值
 
 def get_code(file_path, start_line, end_line):
         """获取节点的代码"""
@@ -97,6 +99,9 @@ def analyze_multiple_files(file_paths):
     result = []
 
     for file_path in file_paths:
+        # 检查文件大小，如果超过阈值则跳过该文件
+        if os.path.getsize(file_path) > MAX_FILE_SIZE:
+            continue
         tree_structure = analyze_code_structure(file_path)
         result.append({"file": file_path, "structure": tree_structure})
 

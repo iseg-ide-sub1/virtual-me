@@ -1,10 +1,12 @@
 import ast
 import json
 import sys
+import os
 
 all_classes = []
 all_functions = []
 cnt = 0
+MAX_FILE_SIZE = 10 * 1024  # 10KB的大小阈值
 
 class CodeStructureVisitor(ast.NodeVisitor):
     def __init__(self, file_path):
@@ -233,6 +235,10 @@ def analyze_multiple_files(file_paths):
     result = []
 
     for file_path in file_paths:
+        # 检查文件大小，如果超过阈值则跳过该文件
+        if os.path.getsize(file_path) > MAX_FILE_SIZE:
+            result.append({"file": file_path, "error": "File is too large to analyze"})
+            continue
         tree_structure = analyze_code_structure(file_path)
         result.append({"file": file_path, "structure": tree_structure})
 

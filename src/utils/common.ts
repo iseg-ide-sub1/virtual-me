@@ -118,7 +118,7 @@ export function getFormattedTime1() {
 /**
  * 将内容保存到指定路径文件夹中
  * @param content 要保存的文件内容
- * @param saveDirectory 保存的文件夹路径，默认为 /virtualme-log 文件夹
+ * @param saveDirectory 保存的文件夹路径，默认为 /.virtualme 文件夹
  */
 export function saveLog(content: string, saveDirectory = '') {
     const workspaceFolders = vscode.workspace.workspaceFolders;

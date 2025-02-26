@@ -6,6 +6,7 @@ import os
 all_classes = []
 all_functions = []
 cnt = 0
+MAX_FILE_SIZE = 10 * 1024  # 10KB的大小阈值
 
 def get_code(file_path, start_line, end_line):
         """获取节点的代码"""
@@ -111,15 +112,12 @@ def analyze_multiple_files(file_paths):
         if not os.path.exists(file_path):
             result.append({"file": file_path, "error": "File not found"})
         else:
+            # 跳过过大的文件
+            if os.path.getsize(file_path) > MAX_FILE_SIZE:
+                continue
+
             tree_structure = analyze_code_structure(file_path)
             result.append({"file": file_path, "structure": tree_structure})
-
-    # with open('data.json', 'w') as json_file:
-    #     json.dump({
-    #         "ast": result,
-    #         "all_classes": all_classes,
-    #         "all_functions": all_functions
-    #     }, json_file, indent=2)
 
     return json.dumps({
         "ast": result,
