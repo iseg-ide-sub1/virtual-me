@@ -86,7 +86,6 @@ export async function getExcludeDirs(workspaceFolder: string): Promise<Set<strin
 
 // 统一的函数，用于运行 Python 脚本并返回结果
 async function runPythonScript(scriptPath: string, filePaths: string[]): Promise<string> {
-    vscode.window.showInformationMessage("in runPythonScript") 
     return new Promise((resolve, reject) => {
         const pythonProcess = spawn(path.resolve(__dirname, "../venv/bin/python3"), [scriptPath, JSON.stringify(filePaths)])
         let result = ""
@@ -167,7 +166,6 @@ function writeJsonToFile(filePath: string, data: any): void {
 
 // 保存代码分析结果
 export async function saveRepoCal(workspaceFolder: string, saveDirectory: string, saveName: string) {
-    vscode.window.showInformationMessage(`in saveRepoCal`)
     const excludeDirs = await getExcludeDirs(workspaceFolder)
     const filesListByType = await listFiles(workspaceFolder, excludeDirs, true)
 
@@ -201,14 +199,8 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
         runPythonScript(path.resolve(__dirname, "../py_modules/calculator/ast_cpp_calculator.py"), cppFiles),
     ])
 
-    console.log("pyast", pyAST)
-
-
     const repoCalDir = path.join(saveDirectory, 'repo-cal/');
-    console.log("repoCalDir", repoCalDir)
-    vscode.window.showInformationMessage(`"repoCalDir": ${repoCalDir}`)
     if (!fs.existsSync(repoCalDir)) {
-        vscode.window.showInformationMessage("make")
         fs.mkdirSync(repoCalDir, {recursive: true})
     }
 
@@ -242,9 +234,6 @@ export async function saveRepoCal(workspaceFolder: string, saveDirectory: string
             "functions":JSON.parse(cppAST)['all_functions']
         }
     })
-
-
-
 }
 
 
