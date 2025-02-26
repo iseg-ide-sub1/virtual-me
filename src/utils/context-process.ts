@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 import * as logItem from "../types/log-item"
+import { EventType } from '../types/event-types'
 import * as refUtils from "./ref-process"
-import {isCalculatingArtifact} from '../extension'
+import { isCalculatingArtifact } from '../extension'
 
 /**
  * 将 SymbolKind 枚举值转换为对应的 ArtifactType 枚举描述。
@@ -85,13 +86,16 @@ export async function getArtifactFromRange(
     let hierarchy: logItem.Artifact[] = [
         new logItem.Artifact(uri.toString(), logItem.ArtifactType.File)
     ]
-    isCalculatingArtifact.value = true // 标记正在计算引用信息, 防止API内的文件开关行为被记录
+    // isCalculatingArtifact.value += 1 // 标记计算引用信息开始
     // 获取该文件的符号表
     const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
         'vscode.executeDocumentSymbolProvider', uri
     )
-    // console.log('hierarchy symbols =',symbols)
-    if (!symbols) return hierarchy[0] // 没有符号，直接返回
+    console.log('hierarchy symbols =', symbols)
+    if (!symbols) {
+        // isCalculatingArtifact.value -= 1
+        return hierarchy[0]
+    } // 没有符号，直接返回
     let curSymbols = symbols // 当前层级的符号表
     let symbolSelf = undefined
     while (curSymbols.length > 0) {
@@ -117,14 +121,14 @@ export async function getArtifactFromRange(
 
     // 构造reference
     let references: logItem.Artifact[] = []
-    if (getRef && symbolSelf) {
-        // const st = new Date().getTime()
-        const start = symbolSelf.selectionRange.start
-        references = await refUtils.getUsagesFromSymbol(uri, start);
-        // const et = new Date().getTime()
-        // console.log('getRef time(ms) = ', et - st)
-    }
-    isCalculatingArtifact.value = false // 标记计算引用信息结束
+    // if (getRef && symbolSelf) {
+    //     // const st = new Date().getTime()
+    //     const start = symbolSelf.selectionRange.start
+    //     references = await refUtils.getUsagesFromSymbol(uri, start);
+    //     // const et = new Date().getTime()
+    //     // console.log('getRef time(ms) = ', et - st)
+    // }
+    // isCalculatingArtifact.value -= 1 // 标记计算引用信息结束
     return new logItem.Artifact(
         artifactSelf.name,
         artifactSelf.type,
@@ -145,7 +149,7 @@ export async function getLogItemFromSelectedText(
     start: vscode.Position,
     end: vscode.Position
 ): Promise<logItem.LogItem> {
-    const eventType = logItem.EventType.SelectText
+    const eventType = EventType.SelectText
     const artifact = await getArtifactFromRange(document.uri, start, end)
     const context = new logItem.Context(
         logItem.ContextType.Select,
@@ -173,7 +177,7 @@ export function concatContexts(
     if (context1.type !== context2.type)
         throw new Error('Cannot concat contexts of different types')
     const contextType = context1.type
-    let content = {before: "", after: ""}
+    let content = { before: "", after: "" }
     const start = {
         line: Math.min(context1.start.line, context2.start.line),
         character: Math.min(context1.start.character, context2.start.character)
@@ -217,7 +221,7 @@ export async function getLogItemsFromChangedText(
     for (let change of event.contentChanges) { // 遍历每次修改的内容
         let start = change.range.start
         let end = change.range.end
-        let eventType: logItem.EventType = logItem.EventType.EditTextDocument
+        let eventType: EventType = EventType.EditTextDocument
         let contextType: logItem.ContextType = logItem.ContextType.Edit
         let before: string = ''
         let after: string = change.text // 增加的内容
@@ -227,20 +231,20 @@ export async function getLogItemsFromChangedText(
             before = lastText.substring(change.rangeOffset, change.rangeOffset + change.rangeLength)
         }
         if (reason === vscode.TextDocumentChangeReason.Undo) {
-            eventType = logItem.EventType.UndoTextDocument
+            eventType = EventType.UndoTextDocument
             contextType = logItem.ContextType.Undo
         } else if (reason === vscode.TextDocumentChangeReason.Redo) {
-            eventType = logItem.EventType.RedoTextDocument
+            eventType = EventType.RedoTextDocument
             contextType = logItem.ContextType.Redo
         } else {
             if (before !== '' && after !== '') { // 删除和增加内容均有，说明是修改操作
-                eventType = logItem.EventType.EditTextDocument
+                eventType = EventType.EditTextDocument
                 contextType = logItem.ContextType.Edit
             } else if (before !== '') { // 只有删除内容，说明是删除操作
-                eventType = logItem.EventType.DeleteTextDocument
+                eventType = EventType.DeleteTextDocument
                 contextType = logItem.ContextType.Delete
             } else if (after !== '') { // 只有增加内容，说明是增加操作
-                eventType = logItem.EventType.AddTextDocument
+                eventType = EventType.AddTextDocument
                 contextType = logItem.ContextType.Add
             }
         }
@@ -279,7 +283,7 @@ export async function getLogItemsFromHoverCollector(
 ): Promise<logItem.LogItem> {
     let range = document.getWordRangeAtPosition(position)
     if (!range) range = new vscode.Range(position, position.translate(0, 1))
-    const eventType = logItem.EventType.MouseHover
+    const eventType = EventType.MouseHover
     const artifact = await getArtifactFromRange(document.uri, range.start, range.end)
     const context = new logItem.Context(
         logItem.ContextType.Hover,
@@ -307,7 +311,7 @@ export async function getLogItemsFromHoverCollector(
 export async function getLogItemFromDebugConsole(
     output: { output: string, category?: string, line?: number }
 ): Promise<logItem.LogItem> {
-    const eventType = logItem.EventType.DebugConsoleOutput
+    const eventType = EventType.DebugConsoleOutput
 
     // 获取当前活动的编辑器和文档
     const editor = vscode.window.activeTextEditor

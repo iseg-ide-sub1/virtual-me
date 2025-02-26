@@ -19,8 +19,9 @@
         "directory": "types/vscode"
     },
     "scripts": {},
-    "dependencies": {},
-    "peerDependencies": {},
+    "dependencies": {
+        "@types/vscode": "file:"
+    },
     "typesPublisherContentHash": "59f05a0883aacb49dc18f0f591575f411b9c0fabdc824b1ef85cd23457c1346f",
     "typeScriptVersion": "4.8"
 }

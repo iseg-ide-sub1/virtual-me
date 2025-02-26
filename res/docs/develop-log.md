@@ -74,10 +74,12 @@
 - 实现鼠标悬停事件 `MouseHover`
 
 ### 20241125-suyunhe
+
 - 完成对vscode内所有菜单项命令的收集
-- 完善`plugin-architecture.md`文档
+- 完善 `plugin-architecture.md`文档
 
 ### 20241127-suyunhe
+
 - 修复文档路径不统一的Bug
 
 ### 20241127-Katock-Cricket
@@ -106,6 +108,7 @@
 - 因为当前功能存在一定问题，将该事件对应的函数注释了
 
 ### 20241203-suyunhe
+
 - 完成对vscode内菜单项命令的收集(目前仅能在使用键盘快捷键执行的情况才能收集到)
 - 完善文档
 
@@ -145,4 +148,154 @@
 - 在 README 文档中新增数据收集规范
 
 ### 20241217-suyunhe
+
 - 修复未启动插件时快捷键无法正常使用和插件激活部分快捷键失效的bug
+- 降低兼容版本 from 1.9.3 to 1.9.0
+
+## v0.2.0
+
+### 20241222-Katock-Cricket
+
+重写编辑操作合并逻辑
+
+1. 重写log合并办法
+2. 细化context合并规则
+
+### 20241228-Katock-Cricket
+
+适配定制内核，添加CommandWatcher
+
+1. 适配定制vscode内核，需要使用定制头文件，将定制头文件放到了./src/vscode，把vscode从npm依赖中删除
+2. 添加CommandWatcher监听，请根据log内容的格式，添加对应的收集逻辑
+3. 定制vscode的版本是1.95.3，兼容性应该OK的，但是需要进一步详细测试其功能是否完善
+
+### 20250105-suyunhe
+
+- feat:适配定制vscode，添加menucommand的收集
+- (0108) fix:错误收集了一些不是由程序员执行的command
+
+## v0.2.1
+
+### 20250114-Katock-Cricket
+
+0.2.1版本更新
+
+1. 重构IDE命令的保存方式，使用eventType保存命令名称，对应的声明文件改为event-types.ts与之前的事件类型合并了。args带有文件或工件的命令，保存在artifact字段并计算ref。
+2. 改善鼠标悬停记录逻辑，悬停超过1.5秒才记录
+3. 修改插件激活逻辑：增加“开始记录”和”停止记录“按钮，手动开始和结束记录，结束时自动保存
+4. 过滤掉一些无用IDE命令和inner命令序列，现在的数据log冗余信息减少了。
+
+## v0.2.2
+
+### 20250119-Katock-Cricket
+
+更新0.2.2
+
+1. GUI可见上一操作类型
+2. 鼠标悬停1秒阈值
+3. 完善文件忽略表
+
+## next version
+
+### 20240119-HiMeditator
+
+- 修改 `.gitignore`, `package.json`：忽略 `virtualme-logs` 文件夹，登记注册命令
+- 更新 develop-log, README
+- 新增 plugin-architecture-v2
+- 记录命名规则改为 `版本_年-月-日 时.分.秒.json`
+
+### 20240120-HiMeditator
+
+- 测试全部指令并更新到 plugin-architecture-v2
+- 更新架构图
+
+### 20250120-Katock-Cricket
+
+集成win32版的git（未启用）
+git向上提供三个接口：
+
+1. init，初始化virtualme内部的git存储，位于virtualme-logs/.internal-git
+2. snapshot(filePaths?: string[], commitMessage?: string)，将某些文件保存快照，内部是commit
+3. getDiffFromLastSnapshot(filePaths?: string[], commitMessage?: string)，获取当前情况与上一次快照的代码diff情况，内部是commit一次，与上次commit做对比。
+
+问题：保存快照的时机、需要记录当前快照前、上一次快照后变更过的文件的路径，需要讨论。如果这个git记录全仓的文件变更，项目大了会很慢。
+
+集成git
+只使用用户本地的git
+
+修复问题
+
+1. saveDir过滤失效（循环引用问题，需要单独的文件存储states才能根本解决）
+2. 按键失效（git测试按键注释掉）
+3. 修改部分文件编码：GBK到UTF8
+
+### 20240121-HiMeditator
+
+- 继续更新文档
+- 重构插件界面数据更新逻辑
+- 增加检测，防止新增状态 id 重复
+- 优化界面，插件激活后改为默认开始记录；停止记录改为暂停记录
+
+### 20240121-syh
+
+在前端添加一个 `repo-cal`模块，用于计算工作仓库中file级和artifact级的相关数据，作为知识提供给后端。
+目前设计中，计算的内容包括：
+
+1. file之间的cbo(耦合度)、cea(共享元素数量)和Jaccard文本相似度；
+2. artifact之间的cbo、cea和Jaccard文本相似度【工件的粒度需要统一】
+   目前通过命令 `Repo Cal`启动。
+
+### 20240203-syh
+
+添加针对python和java的cbo计算、单文件的rfc计算。
+
+- 待优化：性能问题，当repo较大时计算python的cbo会启动很多计算线程，效率很低。
+
+### 20250210-Katock-Cricket
+
+完成代码快照功能
+
+1. git.ts中有一个计数器每隔5分钟自动保存一次代码快照，原理是commit与之前的commit进行diff比对
+2. 快照记录随主log保存触发时一起保存，后缀为_snapshot.json
+
+### 20240210-HiMeditator
+
+- 创建 python 模块文件夹
+- 增加 virtualme 功能总结图 `/res/raw `
+
+### 20240223-HiMeditator
+
+- 重构插件 WebView View 页面结构框架
+
+
+### 20240224-syh
+1. 完成初版的repocal模块。
+- file_list
+	- 对repo中的file进行分类统计，形成列表，并记录每个file的[在repo中的路径]信息
+- ast
+	- 生成每个代码文件的AST树，记录每个结点(function、Class、Import等)工件的[id, name, type, range, children]信息
+- artifact_list
+	- 生成每类代码文件的工件列表(function、Class)，记录[id, name, file, range, code]信息。
+- similarity_calculator
+	- 计算每两个同类型工件(function、Class)的similarity_score
+- cbo_calculator
+	- 计算每两个同类型工件(function、Class)的cbo
+- cea_calculator
+	- 计算每两个同类型工件(function、Class)的cea
+- rfc_calculator
+	- 计算每两个同类型工件(function、Class)的rfc
+
+  其中，file_list、ast和artifact_list是从用户repo中直接计算并收集上来的，similarity、cbo、cea、rfc依赖ast和artifact_list这两个中间结果计算。
+  
+
+2. 添加py module运行所需环境目录(venv)
+- 启动虚拟环境: `source venv/bin/activate`
+- 退出虚拟环境: `deactivate`
+- 在插件中执行Python脚本，需要指定解释器
+
+
+3. 更新`virtualme-logs/`结构
+- .internal-git
+- repo-cal
+- snapshot
+- event

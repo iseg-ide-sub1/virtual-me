@@ -1,16 +1,15 @@
 {
   "name": "virtual-me",
-  "displayName": "virtual-me-v0.2.0 (under development)",
+  "displayName": "virtual-me",
   "publisher": "iseg-ide-sub1",
   "repository": {
     "type": "git",
     "url": "https://github.com/iseg-ide-sub1/virtual-me"
   },
   "homepage": "https://github.com/iseg-ide-sub1/virtual-me",
-  "license": "Apache-2.0",
   "description": "A VS Code plugin for collecting and predicting developer action sequences in the IDE.",
   "icon": "res/img/icon.png",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -27,6 +26,14 @@
         "title": "VirtualMe Activate"
       },
       {
+        "command": "virtualme.start",
+        "title": "VirtualMe Start Recording"
+      },
+      {
+        "command": "virtualme.stop",
+        "title": "VirtualMe Stop Recording"
+      },
+      {
         "command": "virtualme.clear",
         "title": "VirtualMe Clear"
       },
@@ -37,6 +44,10 @@
       {
         "command": "virtualme.register.tasktype",
         "title": "Resister Task Type"
+      },
+      {
+        "command": "virtualme.repocal",
+        "title": "Repo Cal"
       }
     ],
     "viewsContainers": {
@@ -52,8 +63,23 @@
       "virtualme": [
         {
           "type": "webview",
-          "id": "virtualme.GUIView",
-          "name": ""
+          "id": "virtualme.LogControlView",
+          "name": "记录控制"
+        },
+        {
+          "type": "webview",
+          "id": "virtualme.ActionSummaryView",
+          "name": "行为总结"
+        },
+        {
+          "type": "webview",
+          "id": "virtualme.ArtifactPredictionView",
+          "name": "工件预测"
+        },
+        {
+          "type": "webview",
+          "id": "virtualme.DeveloperAnalysisView",
+          "name": "开发者分析"
         }
       ]
     },
@@ -67,7 +93,15 @@
         "key": "ctrl+alt+s",
         "when": "myExtension.active"
       }
-    ]
+    ],
+    "configuration": {
+      "webview": {
+        "enableScripts": true,
+        "allowedDomains": [
+          "cdn.jsdelivr.net"
+        ]
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -78,7 +112,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "gen-vsix": "vsce package"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.7",
@@ -94,6 +129,9 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "acorn-walk": "^8.3.4",
+    "pyodide": "^0.27.2",
+    "strip-ansi": "^7.1.0",
     "virtual-me": "file:",
     "vsce": "^2.15.0"
   }

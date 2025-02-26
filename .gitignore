@@ -5,6 +5,12 @@ node_modules
 *.vsix
 /res/log/*
 /log/
+/virtualme-logs
 .obsidian
 .idea/
 .DS_Store
+
+virtualme-logs/
+
+.virtualme/
+venv/

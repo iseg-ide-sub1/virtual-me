@@ -1,0 +1,4 @@
+esprima==4.0.1
+javalang==0.13.0
+libclang==18.1.1
+scikit_learn==1.6.1
